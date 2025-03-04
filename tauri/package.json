@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "tabuild": "tauri build",
+    "tadev": "tauri dev"
   },
   "dependencies": {
     "@icon-park/vue-next": "^1.4.2",
