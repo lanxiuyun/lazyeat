@@ -39,7 +39,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='LazyEat',
+    name='LazyEatBackend',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
