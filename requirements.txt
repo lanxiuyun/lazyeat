@@ -1,0 +1,10 @@
+pynput
+win10toast
+pyautogui
+mediapipe
+fastapi
+opencv-python
+numpy
+pyaudio
+uvicorn
+vosk
