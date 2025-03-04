@@ -8,4 +8,3 @@ numpy
 pyaudio
 uvicorn
 vosk
-win10toast
