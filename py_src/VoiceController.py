@@ -10,7 +10,7 @@ small_model_path = "model"
 
 
 class VoiceController:
-    def __init__(self, model_type='big'):
+    def __init__(self, model_type='small'):
         from MyDetector import show_toast
 
         if model_type == 'small':
