@@ -41,7 +41,7 @@ events.on("windowClose", () => {
     <el-container>
       <el-aside width="200px">
         <div class="aside-header">
-          <img src="./assets/vue.svg" alt="logo" class="logo" />
+          <!-- <img src="/vue.svg" alt="logo" class="logo" /> -->
           <span class="logo-text">LazyEat</span>
         </div>
         <AppMenu />
