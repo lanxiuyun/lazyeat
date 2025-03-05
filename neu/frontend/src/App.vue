@@ -62,6 +62,20 @@ events.on("windowClose", () => {
   </n-spin>
 </template>
 
+<style lang="scss">
+.n-spin-container {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.n-spin-content {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+</style>
+
 <style scoped lang="scss">
 .el-container {
   height: 100%;
