@@ -1,0 +1,46 @@
+import { createApp } from "vue";
+import App from "./App.vue";
+import { create } from "naive-ui";
+import { NButton } from "naive-ui";
+import {
+  NLayout,
+  NLayoutHeader,
+  NLayoutContent,
+  NLayoutFooter,
+  NMenu,
+  NSpace,
+  NImage,
+  NDivider,
+  NSwitch,
+  NSelect,
+  NSpin,
+} from "naive-ui";
+
+// 引入element-plus
+import "element-plus/dist/index.css";
+
+const naive = create({
+  components: [
+    NButton,
+    NLayout,
+    NLayoutHeader,
+    NLayoutContent,
+    NLayoutFooter,
+    NMenu,
+    NSpace,
+    NImage,
+    NDivider,
+    NSwitch,
+    NSelect,
+    NSpin,
+  ],
+});
+
+// Import init function from "@neutralinojs/lib"
+import { init } from "@neutralinojs/lib";
+
+const app = createApp(App);
+
+init();
+app.use(naive);
+app.mount("#app");
