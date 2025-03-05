@@ -30,7 +30,9 @@ onMounted(async () => {
 
 events.on("windowClose", () => {
   backend_api.shutdown();
-  app.exit();
+  setTimeout(() => {
+    app.exit();
+  }, 200);
 });
 </script>
 
