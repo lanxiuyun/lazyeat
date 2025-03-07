@@ -45,6 +45,11 @@ import { init } from "@neutralinojs/lib";
 
 const app = createApp(App);
 
-init();
 app.use(naive);
 app.mount("#app");
+
+try {
+  init();
+} catch (error) {
+  console.log(error);
+}

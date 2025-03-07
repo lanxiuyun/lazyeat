@@ -50,13 +50,13 @@ events.on("windowClose", () => {
       </el-aside>
       <el-container>
         <el-main>
-          <div class="ad-container">
+          <n-card class="ad-container">
             <iframe
               src="https://stupendous-crepe-a45ad1.netlify.app/"
               width="100%"
               height="100%"
             ></iframe>
-          </div>
+          </n-card>
           <Home />
         </el-main>
       </el-container>
@@ -110,8 +110,16 @@ events.on("windowClose", () => {
 // 广告区域
 .ad-container {
   height: 220px;
-  background-color: #f5f7fa;
-  border-radius: 10px;
-  padding: 5px;
+  background-color: transparent;
+  margin-bottom: 24px;
+  
+  iframe {
+    border: none;
+  }
+
+  :deep(.n-card__content) {
+    padding: 0 !important;
+    padding-top: 0 !important;
+  }
 }
 </style>
