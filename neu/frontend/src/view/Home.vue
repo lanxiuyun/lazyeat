@@ -262,15 +262,18 @@ watch(
   transition: all 0.3s ease;
   background: linear-gradient(145deg, #f8faff, #ffffff);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e9f2;
+  border-radius: 12px;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(64, 152, 252, 0.15);
+    border-color: #4098fc;
   }
 }
 
 .gesture-content {
-  padding: 8px;
+  padding: 12px;
 }
 
 .gesture-icon {
@@ -280,6 +283,7 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid rgba(64, 152, 252, 0.2);
 }
 
 .gesture-info {
