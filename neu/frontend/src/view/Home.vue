@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <!-- 顶部控制区域 -->
-    <n-card class="control-panel">
+    <n-card class="control-panel" hoverable>
       <n-space vertical>
         <n-space justify="space-between" align="center">
           <h2 class="section-title">手势识别控制</h2>
@@ -41,7 +41,7 @@
     </n-card>
 
     <!-- 手势设置区域 -->
-    <n-card class="gesture-panel">
+    <n-card class="gesture-panel" hoverable>
       <template #header>
         <h2 class="section-title">手势操作指南</h2>
       </template>
@@ -228,7 +228,6 @@ watch(
 .home-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
 }
 
 .control-panel {
