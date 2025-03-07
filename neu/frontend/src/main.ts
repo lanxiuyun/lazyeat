@@ -14,6 +14,8 @@ import {
   NSwitch,
   NSelect,
   NSpin,
+  NIcon,
+  NCard,
 } from "naive-ui";
 
 // 引入element-plus
@@ -33,6 +35,8 @@ const naive = create({
     NSwitch,
     NSelect,
     NSpin,
+    NIcon,
+    NCard,
   ],
 });
 
