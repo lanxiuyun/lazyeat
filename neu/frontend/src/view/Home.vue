@@ -232,7 +232,6 @@ watch(
 
 .control-panel {
   margin-bottom: 24px;
-  background: linear-gradient(145deg, #ffffff, #f5f7fa);
 }
 
 .section-title {
