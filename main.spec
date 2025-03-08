@@ -38,7 +38,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='LazyEatBackend',
+    name='LazyeatBackend',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
