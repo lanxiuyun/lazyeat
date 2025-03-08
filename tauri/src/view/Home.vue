@@ -81,7 +81,7 @@
             />
             <FiveFive theme="outline" size="32" fill="#333" :stroke-width="2" />
           </div>
-          两只手同时张开，暂停/继续 LazyEat 识别
+          两只手同时张开，暂停/继续 Lazyeat 识别
           <div />
         </n-space>
       </div>

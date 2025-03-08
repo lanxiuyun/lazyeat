@@ -9,7 +9,7 @@ import Home from "./view/Home.vue";
     <el-aside width="200px">
       <div class="aside-header">
         <img src="./assets/vue.svg" alt="logo" class="logo" />
-        <span class="logo-text">LazyEat</span>
+        <span class="logo-text">Lazyeat</span>
       </div>
       <AppMenu />
     </el-aside>

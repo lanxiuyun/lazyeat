@@ -14,7 +14,7 @@ onMounted(async () => {
     ready.value = true;
   } catch (error) {
     // 启动 LazyEatBackend.exe
-    os.execCommand("LazyEatBackend.exe", { background: true });
+    os.execCommand("LazyeatBackend.exe", { background: true });
 
     // 每隔 1000ms 检查一次
     const interval = setInterval(async () => {
@@ -49,7 +49,7 @@ events.on("windowClose", () => {
             alt="logo"
             class="logo"
           />
-          <span class="logo-text">LazyEat</span>
+          <span class="logo-text">Lazyeat</span>
         </div>
         <AppMenu />
       </el-aside>

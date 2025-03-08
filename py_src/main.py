@@ -83,7 +83,7 @@ def thread_detect():
 
         if CONFIG.show_detect_window:
             img = my_detector.draw_mouse_move_box(img)
-            cv2.imshow("LazyEat Detect Window", img)
+            cv2.imshow("Lazyeat Detect Window", img)
             cv2.waitKey(1)
         else:
             try:
