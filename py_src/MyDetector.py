@@ -216,7 +216,7 @@ class MyDetector(HandDetector):
                         return
 
                     mouse.click(Button.left, 1)
-                    print(length)
+                    # print(length)
                     self.last_click_time = current_time
 
             # 三根手指同时竖起 - 滚动屏幕
