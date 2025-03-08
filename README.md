@@ -1,6 +1,6 @@
 <h1 align="center">
   <a href="https://github.com/maplelost/lazy-eat/releases">
-    <img src="https://github.com/maplelost/lazy-eat/blob/neu/frontend/public/lazyteat.png?raw=true" width="150" height="150" alt="banner" /><br>
+    <img src="https://github.com/maplelost/lazy-eat/blob/master/neu/frontend/public/lazyteat.png?raw=true" width="150" height="150" alt="banner" /><br>
   </a>
 </h1>
 
