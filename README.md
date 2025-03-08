@@ -4,15 +4,12 @@
   </a>
 </h1>
 
-# 🍕 Lazy Eat
+# 🍕 Lazyeat
 
-Lazy-Eat 是一款
+Lazyeat 是吃饭时使用的免触碰控制器！吃饭时看剧/刷网页不想沾油手？对着摄像头比划手势就能暂停视频/全屏/切换视频！
 
 # 🌠 截图
-
-# 🌟 特性
-
-1. **Diverse LLM Provider Support**:
+![img.png](.readme/img.png)
 
 # 📝 TODO
 
