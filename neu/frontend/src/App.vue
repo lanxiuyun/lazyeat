@@ -43,7 +43,12 @@ events.on("windowClose", () => {
     <el-container>
       <el-aside width="200px">
         <div class="aside-header">
-          <!-- <img src="/vue.svg" alt="logo" class="logo" /> -->
+          <img
+            style="width: 30px; height: 30px"
+            src="/lazyteat.png"
+            alt="logo"
+            class="logo"
+          />
           <span class="logo-text">LazyEat</span>
         </div>
         <AppMenu />
@@ -112,7 +117,7 @@ events.on("windowClose", () => {
   height: 220px;
   background-color: transparent;
   margin-bottom: 24px;
-  
+
   iframe {
     border: none;
   }
