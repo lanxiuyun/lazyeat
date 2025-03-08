@@ -32,7 +32,7 @@ events.on("windowClose", () => {
   backend_api.shutdown();
   setTimeout(() => {
     app.exit();
-  }, 200);
+  }, 500);
 });
 </script>
 
