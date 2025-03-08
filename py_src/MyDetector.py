@@ -12,7 +12,6 @@ from pynput.mouse import Button, Controller
 from win10toast import ToastNotifier
 
 from HandTrackingModule import HandDetector
-from VoiceController import VoiceController
 
 screen_width, screen_height = pyautogui.size()
 mouse = Controller()
@@ -83,12 +82,14 @@ class MyDetector(HandDetector):
     last_change_flag_time = 0
 
     flag_detect = True
-    voice_controller: VoiceController = None
+    voice_controller = None
 
     def __init__(self, mode=False, maxHands=2, detectionCon=0.5, minTrackCon=0.5):
         super().__init__(mode, maxHands, detectionCon, minTrackCon)
 
         def init_voice_controller():
+            from VoiceController import VoiceController
+
             self.voice_controller = VoiceController()
             show_toast(
                 title='语音识别模块初始化成功',
