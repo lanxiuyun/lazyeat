@@ -4,8 +4,10 @@ import cv2
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from typing import TYPE_CHECKING
 
-from MyDetector import MyDetector
+if TYPE_CHECKING:
+    from MyDetector import MyDetector
 
 app = FastAPI()
 app.add_middleware(
@@ -25,7 +27,6 @@ class Config:
 
 CONFIG = Config()
 
-my_detector = MyDetector(maxHands=2)
 cap = cv2.VideoCapture(CONFIG.camera_index)
 # https://blog.csdn.net/NoamaNelson/article/details/103135056
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))  # 优化帧率
@@ -33,6 +34,15 @@ cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))  # 优�
 work_thread_lock = threading.Lock()
 work_thread: threading.Thread = None
 flag_work = False
+
+my_detector: 'MyDetector' = None
+
+
+def thread_init():
+    from MyDetector import MyDetector
+
+    global my_detector
+    my_detector = MyDetector(maxHands=2)
 
 
 @app.get("/")
@@ -43,6 +53,15 @@ def read_root():
 def thread_detect():
     while True:
         success, img = cap.read()
+
+        if my_detector is None:
+            from MyDetector import show_toast
+            show_toast(
+                title='初始化中',
+                msg='初始化中',
+                duration=1
+            )
+            continue
 
         if not flag_work:
             try:
@@ -117,6 +136,10 @@ def shutdown():
 
 
 if __name__ == '__main__':
+    print("Initializing...")
+    t_init = threading.Thread(target=thread_init, daemon=True)
+    t_init.start()
+
     port = 62334
 
     print(f"Starting server at http://localhost:{port}/docs")
