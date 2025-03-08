@@ -52,7 +52,7 @@ class VoiceController:
 
     def start_record_thread(self):
         self.is_recording = True
-        threading.Thread(target=self.record_audio).start()
+        threading.Thread(target=self.record_audio, daemon=True).start()
 
     def stop_record(self):
         self.is_recording = False
