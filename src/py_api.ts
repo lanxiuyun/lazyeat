@@ -32,10 +32,15 @@ class PyApi {
     return response.text();
   }
 
-  shutdown() {
-    fetch(`${base_url}/shutdown`, {
-      method: "GET",
-    });
+  async shutdown() {
+    try {
+      await fetch(`${base_url}/shutdown`, {
+        method: "GET",
+        signal: AbortSignal.timeout(500),
+      });
+    } catch (error) {
+      console.error("关闭服务失败:", error);
+    }
   }
 }
 
