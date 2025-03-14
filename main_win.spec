@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['py_src\\main.py'],
+    ['src-py\\main.py'],
     pathex=[],
     binaries=[],
         datas=[
@@ -15,7 +15,6 @@ a = Analysis(
         ('C:\\Users\\xu\\.conda\\envs\\lazy-eat\\Lib\\site-packages\\uvicorn\\*', 'uvicorn'),
         ('C:\\Users\\xu\\.conda\\envs\\lazy-eat\\Lib\\site-packages\\win10toast\\*', 'win10toast'),
     ],
-
     hiddenimports=[
         'vosk',
         'mediapipe',
@@ -38,7 +37,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='LazyeatBackend',
+    name='Lazyeat Backend-x86_64-pc-windows-msvc',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -57,5 +56,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='main',
+    name='backend-py',
 )
