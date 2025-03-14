@@ -25,11 +25,15 @@ class PyApi {
     return response.json();
   }
 
-  async check_ready() {
-    const response = await fetch(`${base_url}/`, {
-      signal: AbortSignal.timeout(1000),
-    });
-    return response.text();
+  async ready(): Promise<boolean> {
+    try {
+      await fetch(`${base_url}/`, {
+        signal: AbortSignal.timeout(1000),
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   async shutdown() {
@@ -44,6 +48,6 @@ class PyApi {
   }
 }
 
-const py_api = new PyApi();
+const pyApi = new PyApi();
 
-export default py_api;
+export default pyApi;

@@ -189,11 +189,10 @@ import {
   Boxing,
   FiveFive,
   Camera,
-  Monitor,
   Browser,
 } from "@icon-park/vue-next";
 import { ref, watch } from "vue";
-import py_api from "../py_api";
+import pyApi from "../py_api";
 
 const start = ref(false);
 const config = ref({
@@ -210,13 +209,13 @@ const camera_options = ref(
 );
 
 watch(start, async () => {
-  await py_api.toggle_detect();
+  await pyApi.toggle_detect();
 });
 
 watch(
   config,
   async (newVal) => {
-    await py_api.update_config(newVal);
+    await pyApi.update_config(newVal);
   },
   {
     deep: true,

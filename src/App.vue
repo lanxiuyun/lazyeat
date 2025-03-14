@@ -2,10 +2,19 @@
 import { ElContainer, ElMain, ElAside } from "element-plus";
 import AppMenu from "./components/Menu.vue";
 import Home from "./view/Home.vue";
-import py_api from "./py_api";
+import pyApi from "./py_api";
 import { onMounted, ref } from "vue";
 
 const ready = ref(true);
+
+onMounted(async () => {
+  const timer = setInterval(async () => {
+    ready.value = await pyApi.ready();
+    if (ready.value) {
+      clearInterval(timer);
+    }
+  }, 1000);
+});
 </script>
 
 <template>
