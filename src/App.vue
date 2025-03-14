@@ -4,6 +4,7 @@ import AppMenu from "./components/Menu.vue";
 import Home from "./view/Home.vue";
 import pyApi from "./py_api";
 import { onMounted, ref } from "vue";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 const ready = ref(true);
 
@@ -14,6 +15,10 @@ onMounted(async () => {
       clearInterval(timer);
     }
   }, 1000);
+
+  await getCurrentWindow().onCloseRequested(async () => {
+    pyApi.shutdown();
+  });
 });
 </script>
 
