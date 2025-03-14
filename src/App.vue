@@ -6,9 +6,11 @@ import pyApi from "./py_api";
 import { onMounted, ref } from "vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
-const ready = ref(true);
+const ready = ref(false);
 
 onMounted(async () => {
+  ready.value = await pyApi.ready();
+
   const timer = setInterval(async () => {
     ready.value = await pyApi.ready();
     if (ready.value) {
