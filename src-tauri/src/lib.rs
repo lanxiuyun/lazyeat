@@ -35,13 +35,13 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             // 在应用启动时自动启动sidecar
-            let app_handle = app.handle().clone();
-            tauri::async_runtime::spawn(async move {
-                match start_sidecar(app_handle).await {
-                    Ok(msg) => println!("{}", msg),
-                    Err(e) => eprintln!("启动sidecar失败: {}", e),
-                }
-            });
+            // let app_handle = app.handle().clone();
+            // tauri::async_runtime::spawn(async move {
+            //     match start_sidecar(app_handle).await {
+            //         Ok(msg) => println!("{}", msg),
+            //         Err(e) => eprintln!("启动sidecar失败: {}", e),
+            //     }
+            // });
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![greet, run_sidecar])

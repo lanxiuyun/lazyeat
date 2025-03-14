@@ -17,7 +17,7 @@ const ready = ref(true);
         <div class="aside-header">
           <img
             style="width: 30px; height: 30px"
-            src="/lazyteat.png"
+            src="/lazyeat.png"
             alt="logo"
             class="logo"
           />
