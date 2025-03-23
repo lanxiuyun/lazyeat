@@ -2,6 +2,14 @@
   <a href="https://github.com/maplelost/lazy-eat/releases">
     <img src="https://github.com/maplelost/lazy-eat/blob/master/public/lazyeat.png?raw=true" width="150" height="150" alt="banner" /><br>
   </a>
+<div align="center">
+
+![GitHub stars](https://img.shields.io/github/stars/maplelost/lazyeat)
+![GitHub forks](https://img.shields.io/github/forks/maplelost/lazyeat?style=flat)
+![GitHub License](https://img.shields.io/github/license/maplelost/lazyeat)
+
+[English README](README_EN.md)
+</div>
 </h1>
 
 # 🍕 Lazyeat
@@ -13,6 +21,8 @@ Lazyeat 是吃饭时使用的免触碰控制器！吃饭时看剧/刷网页不�
 如果你觉得对你有用的话，不妨给我一个star吧！
 
 # 🌠 截图
+
+视频链接:https://www.bilibili.com/video/BV11SXTYTEJi/?spm_id_from=333.1387.homepage.video_card.click
 
 ![img.png](.readme/img.png)
 
