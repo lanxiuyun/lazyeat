@@ -21,7 +21,7 @@ Lazyeat 是吃饭时使用的免触碰控制器！吃饭时看剧/刷网页不�
 
 # 🌠 截图
 
-视频链接:https://www.bilibili.com/video/BV11SXTYTEJi/?spm_id_from=333.1387.homepage.video_card.click
+视频演示:https://www.bilibili.com/video/BV11SXTYTEJi/?spm_id_from=333.1387.homepage.video_card.click
 
 ![img.png](.readme/img.png)
 
