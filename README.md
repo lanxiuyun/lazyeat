@@ -6,7 +6,6 @@
 
 ![GitHub stars](https://img.shields.io/github/stars/maplelost/lazyeat)
 ![GitHub forks](https://img.shields.io/github/forks/maplelost/lazyeat?style=flat)
-![GitHub License](https://img.shields.io/github/license/maplelost/lazyeat)
 
 [English README](README_EN.md)
 </div>
