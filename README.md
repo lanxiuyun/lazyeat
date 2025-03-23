@@ -10,6 +10,8 @@ Lazyeat 是吃饭时使用的免触碰控制器！吃饭时看剧/刷网页不�
 
 对着摄像头比划手势就能暂停视频/全屏/切换视频！
 
+如果你觉得对你有用的话，不妨给我一个star吧！
+
 # 🌠 截图
 
 ![img.png](.readme/img.png)
@@ -33,3 +35,7 @@ Lazyeat 是吃饭时使用的免触碰控制器！吃饭时看剧/刷网页不�
 # 📃 License
 
 [LICENSE](./LICENSE)
+
+# Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=maplelost/lazyeat&type=Date)](https://www.star-history.com/#maplelost/lazyeat&Date)
