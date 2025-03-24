@@ -13,13 +13,17 @@
 
         <n-space align="center" class="settings-row">
           <n-space align="center" style="display: flex; align-items: center">
+            <AutoStart />
+          </n-space>
+
+          <n-space align="center" style="display: flex; align-items: center">
             <span style="display: flex; align-items: center">
               <n-icon size="20" style="margin-right: 8px">
                 <Browser />
               </n-icon>
               <span>显示识别窗口</span>
             </span>
-            <n-switch v-model:value="config.show_window" />
+            <n-switch v-model:value="app_store.config.show_window" />
           </n-space>
 
           <n-space align="center" style="display: flex; align-items: center">
@@ -30,7 +34,7 @@
               <span>摄像头选择</span>
             </span>
             <n-select
-              v-model:value="config.camera_index"
+              v-model:value="app_store.config.camera_index"
               :options="camera_options"
               :disabled="start"
               style="width: 100px"
@@ -181,24 +185,23 @@
 
 <script setup lang="ts">
 import {
-  OneOne,
-  TwoTwo,
-  ThreeThree,
-  FourFour,
-  Six,
   Boxing,
-  FiveFive,
-  Camera,
   Browser,
+  Camera,
+  FiveFive,
+  FourFour,
+  OneOne,
+  Six,
+  ThreeThree,
+  TwoTwo,
 } from "@icon-park/vue-next";
 import { ref, watch } from "vue";
+import AutoStart from "../components/AutoStart.vue";
 import pyApi from "../py_api";
+import { use_app_store } from "../store/app";
 
 const start = ref(false);
-const config = ref({
-  show_window: false,
-  camera_index: 0,
-});
+const app_store = use_app_store();
 
 // 摄像头选项,动态生成0-10的选项
 const camera_options = ref(
@@ -213,7 +216,7 @@ watch(start, async () => {
 });
 
 watch(
-  config,
+  () => app_store.config,
   async (newVal) => {
     await pyApi.update_config(newVal);
   },

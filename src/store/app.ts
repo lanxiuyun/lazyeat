@@ -2,13 +2,12 @@ import { defineStore } from "pinia";
 
 export const use_app_store = defineStore("app-store", {
   state: () => ({
-    auto_start: false,
-  }),
-  actions: {
-    setAutoStart(value: boolean) {
-      this.auto_start = value;
+    config: {
+      auto_start: false,
+      show_window: false,
+      camera_index: 0,
     },
-  },
+  }),
 });
 
 export default use_app_store;
