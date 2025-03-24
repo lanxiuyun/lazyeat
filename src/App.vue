@@ -5,6 +5,7 @@ import Home from "./view/Home.vue";
 import pyApi from "./py_api";
 import { onMounted, ref } from "vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import use_app_store from "./store/app";
 
 const ready = ref(false);
 
@@ -22,6 +23,26 @@ onMounted(async () => {
     pyApi.shutdown();
   });
 });
+
+// app_store 数据加载
+import { watch } from "vue";
+import { LazyStore } from "@tauri-apps/plugin-store";
+
+const app_store = use_app_store();
+const app_store_bin = new LazyStore("settings.json");
+onMounted(async () => {
+  const config_data = await app_store_bin.get("config");
+  app_store.config = config_data;
+});
+
+watch(
+  () => app_store.config,
+  async (value) => {
+    await app_store_bin.set("config", value);
+    app_store_bin.save();
+  },
+  { deep: true }
+);
 </script>
 
 <template>
