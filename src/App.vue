@@ -34,7 +34,7 @@ onMounted(async () => {
   const config_data = await app_store_json.get("config");
   console.log("config_data", config_data);
   if (config_data) {
-    app_store.config = config_data;
+    app_store.config = JSON.parse(JSON.stringify(config_data));
   }
 });
 
