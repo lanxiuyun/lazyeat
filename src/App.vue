@@ -29,17 +29,20 @@ import { watch } from "vue";
 import { LazyStore } from "@tauri-apps/plugin-store";
 
 const app_store = use_app_store();
-const app_store_bin = new LazyStore("settings.json");
+const app_store_json = new LazyStore("settings.json");
 onMounted(async () => {
-  const config_data = await app_store_bin.get("config");
-  app_store.config = config_data;
+  const config_data = await app_store_json.get("config");
+  console.log("config_data", config_data);
+  if (config_data) {
+    app_store.config = config_data;
+  }
 });
 
 watch(
   () => app_store.config,
   async (value) => {
-    await app_store_bin.set("config", value);
-    app_store_bin.save();
+    await app_store_json.set("config", value);
+    app_store_json.save();
   },
   { deep: true }
 );
