@@ -1,8 +1,11 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import { create } from "naive-ui";
-import { NButton } from "naive-ui";
+
+import { createPinia } from "pinia";
+
 import {
+  NButton,
   NLayout,
   NLayoutHeader,
   NLayoutContent,
@@ -41,6 +44,8 @@ const naive = create({
 });
 
 const app = createApp(App);
+const pinia = createPinia();
 
 app.use(naive);
+app.use(pinia);
 app.mount("#app");
