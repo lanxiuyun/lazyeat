@@ -45,3 +45,7 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 # Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=maplelost/lazyeat&type=Date)](https://www.star-history.com/#maplelost/lazyeat&Date)
+
+# 开发问题
+
+[tauri build 失败](https://github.com/tauri-apps/tauri/issues/7338)
