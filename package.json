@@ -12,7 +12,8 @@
     "build:icons": "npm run tauri icon public/lazyeat.png",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "tauri dev": "tauri"
   },
   "dependencies": {
     "@icon-park/vue-next": "^1.4.2",
