@@ -20,7 +20,7 @@ onMounted(async () => {
   }, 1000);
 
   await getCurrentWindow().onCloseRequested(async () => {
-    pyApi.shutdown();
+    await pyApi.shutdown();
   });
 });
 
