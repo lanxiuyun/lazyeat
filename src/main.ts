@@ -19,6 +19,10 @@ import {
   NSpin,
   NIcon,
   NCard,
+  NInput,
+  NForm,
+  NFormItem,
+  NCheckbox,
 } from "naive-ui";
 
 // 引入element-plus
@@ -39,6 +43,10 @@ const naive = create({
     NSelect,
     NSpin,
     NIcon,
+    NInput,
+    NForm,
+    NFormItem,
+    NCheckbox,
     NCard,
   ],
 });

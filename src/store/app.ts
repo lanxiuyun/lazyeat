@@ -6,6 +6,7 @@ export const use_app_store = defineStore("app-store", {
       auto_start: false,
       show_window: false,
       camera_index: 0,
+      four_fingers_up_send: "f",
     },
   }),
 });

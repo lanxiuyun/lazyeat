@@ -118,7 +118,20 @@
             </div>
             <div class="gesture-info">
               <h3>全屏控制</h3>
-              <p>四指并拢发送按键 [F] 全屏</p>
+              <p>四指并拢发送按键</p>
+              <n-input
+                :value="app_store.config.four_fingers_up_send"
+                readonly
+                placeholder="点击设置快捷键"
+                @click="listenForKey"
+                :status="isListening ? 'warning' : undefined"
+                :bordered="true"
+                style="width: 100px"
+              >
+                <template #suffix>
+                  {{ isListening ? "请按下按键..." : "点击设置" }}
+                </template>
+              </n-input>
             </div>
           </n-space>
         </n-card>
@@ -210,6 +223,21 @@ const camera_options = ref(
     value: i,
   }))
 );
+
+// 监听 四指发送按键
+const isListening = ref(false);
+const listenForKey = () => {
+  isListening.value = true;
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    e.preventDefault();
+    app_store.config.four_fingers_up_send = e.key.toLowerCase();
+    isListening.value = false;
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+};
 
 watch(start, async () => {
   await pyApi.toggle_detect();
