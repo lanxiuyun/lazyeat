@@ -38,7 +38,9 @@ def show_toast(title: str = '手势识别',
         notification.show_toast(
             title=title,
             msg=msg,
-            duration=duration
+            duration=duration,
+            icon_path='icon.ico',
+            threaded=True
         )
     except Exception as e:
         traceback.print_exc()
