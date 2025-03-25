@@ -126,7 +126,7 @@
                 @click="listenForKey"
                 :status="isListening ? 'warning' : undefined"
                 :bordered="true"
-                style="width: 100px"
+                style="width: 200px"
               >
                 <template #suffix>
                   {{ isListening ? "请按下按键..." : "点击设置" }}
@@ -231,7 +231,26 @@ const listenForKey = () => {
 
   const handleKeyDown = (e: KeyboardEvent) => {
     e.preventDefault();
-    app_store.config.four_fingers_up_send = e.key.toLowerCase();
+
+    const modifiers = [];
+    if (e.ctrlKey) modifiers.push("Ctrl");
+    if (e.shiftKey) modifiers.push("Shift");
+    if (e.altKey) modifiers.push("Alt");
+
+    let key = e.key;
+    // 处理功能键
+    if (key.startsWith("F") && key.length > 1) {
+      // F1-F12 保持原样
+    } else if (key === "Control" || key === "Shift" || key === "Alt") {
+      // 忽略单独的修饰键
+      return;
+    } else {
+      // 其他键转换为大写
+      key = key.toUpperCase();
+    }
+
+    const shortcut = [...modifiers, key].join("+");
+    app_store.config.four_fingers_up_send = shortcut;
     isListening.value = false;
     window.removeEventListener("keydown", handleKeyDown);
   };
