@@ -251,8 +251,7 @@ class MyDetector(HandDetector):
                 current_time = time.time()
                 if not current_time - self.last_full_screen_time > 1.5:
                     return
-                keyboard.press('f')
-                keyboard.release('f')
+                keyboard.tap('f')
                 self.last_full_screen_time = current_time
 
             # 拇指和食指同时竖起 - 语音识别
@@ -287,7 +286,7 @@ class MyDetector(HandDetector):
             elif hand_state == HandState.delete_gesture:
                 keyboard.tap(Key.backspace)
 
-    # 防止误触
+    # 防止手势误识别
     def is_false_touch(self):
         current_time = time.time()
         if current_time - self.last_move_time < 0.2:  # 防止误触, 移动鼠标后立即点击
