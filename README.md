@@ -49,3 +49,13 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 # 开发问题
 
 [tauri build 失败](https://github.com/tauri-apps/tauri/issues/7338)
+
+## cargo 被墙
+
+[cargo 被墙,换源](https://www.chenreal.com/post/599)
+
+```
+rm -rf ~/.cargo/.package-cache
+```
+
+
