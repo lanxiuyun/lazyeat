@@ -86,6 +86,12 @@ def thread_detect():
             img = my_detector.draw_mouse_move_box(img)
             cv2.imshow("Lazyeat Detect Window", img)
             cv2.waitKey(1)
+        else:
+            # CONFIG.show_detect_window 改变需要关闭窗口
+            try:
+                cv2.destroyAllWindows()
+            except:
+                pass
 
 
 @app.get("/toggle_work")
