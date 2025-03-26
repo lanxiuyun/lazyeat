@@ -6,6 +6,11 @@ import pyApi from "./py_api";
 import { onMounted, ref } from "vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import use_app_store from "./store/app";
+import {
+  saveWindowState,
+  StateFlags,
+  restoreStateCurrent,
+} from "@tauri-apps/plugin-window-state";
 
 const ready = ref(false);
 
@@ -20,8 +25,14 @@ onMounted(async () => {
   }, 1000);
 
   await getCurrentWindow().onCloseRequested(async () => {
+    await saveWindowState(StateFlags.ALL);
     await pyApi.shutdown();
   });
+});
+
+// 窗口恢复上一次状态
+onMounted(() => {
+  restoreStateCurrent(StateFlags.ALL);
 });
 
 // app_store 数据加载

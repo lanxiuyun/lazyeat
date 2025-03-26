@@ -9,6 +9,7 @@
     "main"
   ],
   "permissions": [
-    "autostart:allow-enable"
+    "autostart:allow-enable",
+    "window-state:default"
   ]
 }
