@@ -86,11 +86,6 @@ def thread_detect():
             img = my_detector.draw_mouse_move_box(img)
             cv2.imshow("Lazyeat Detect Window", img)
             cv2.waitKey(1)
-        else:
-            try:
-                cv2.destroyAllWindows()
-            except:
-                pass
 
 
 @app.get("/toggle_work")
