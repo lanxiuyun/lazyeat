@@ -1,10 +1,10 @@
 import threading
+from typing import TYPE_CHECKING
 
 import cv2
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from MyDetector import MyDetector
@@ -110,6 +110,8 @@ def toggle_work():
 
 @app.post("/update_config")
 def update_config(data: dict):
+    from pinia_store import PINIA_STORE
+
     global cap
     CONFIG.show_detect_window = data.get("show_window", False)
 
@@ -119,7 +121,12 @@ def update_config(data: dict):
         cap = cv2.VideoCapture(camera_index)
         cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))  # 优化帧率
         CONFIG.camera_index = camera_index
-    return "updated"
+
+    # 更新四个手指同时竖起发送的按键
+    new_key = data.get("four_fingers_up_send")
+    if new_key:
+        gesture_sender = PINIA_STORE.gesture_sender
+        gesture_sender.set_gesture_send(gesture_sender.four_fingers_up, new_key)
 
 
 @app.get("/shutdown")

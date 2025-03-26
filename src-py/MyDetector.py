@@ -247,14 +247,7 @@ class MyDetector(HandDetector):
 
             # 四根手指同时竖起 - 视频全屏
             elif hand_state == HandState.four_fingers_up:
-                if self.is_false_touch():
-                    return
-
-                current_time = time.time()
-                if not current_time - self.last_full_screen_time > 1.5:
-                    return
-                keyboard.tap('f')
-                self.last_full_screen_time = current_time
+                self._four_fingers_up_trigger()
 
             # 拇指和食指同时竖起 - 语音识别
             elif hand_state == HandState.voice_gesture_start:
@@ -287,6 +280,20 @@ class MyDetector(HandDetector):
                         keyboard.tap(Key.enter)
             elif hand_state == HandState.delete_gesture:
                 keyboard.tap(Key.backspace)
+
+    def _four_fingers_up_trigger(self):
+        if self.is_false_touch():
+            return
+
+        from pinia_store import PINIA_STORE
+
+        current_time = time.time()
+        if not current_time - self.last_full_screen_time > 1.5:
+            return
+
+        gesture_sender = PINIA_STORE.gesture_sender
+        gesture_sender.send_four_fingers_up()
+        self.last_full_screen_time = current_time
 
     # 防止手势误识别
     def is_false_touch(self):
