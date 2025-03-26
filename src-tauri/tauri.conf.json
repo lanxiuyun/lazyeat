@@ -25,7 +25,8 @@
     "active": true,
     "externalBin": ["bin/backend-py/Lazyeat Backend"],
     "resources": {
-      "bin/backend-py/_internal": "_internal/"
+      "bin/backend-py/_internal": "_internal/",
+      "../model": "model/"
     },
     "targets": "all",
     "icon": [
