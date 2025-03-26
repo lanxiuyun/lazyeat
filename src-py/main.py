@@ -28,7 +28,7 @@ class Config:
 CONFIG = Config()
 
 cap = cv2.VideoCapture(CONFIG.camera_index)
-# https://blog.csdn.net/laizi_laizi/article/details/130230282 稳定取图速度
+# 2025年3月26日，待测试 https://blog.csdn.net/laizi_laizi/article/details/130230282 稳定取图速度
 fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
 cap.set(cv2.CAP_PROP_FOURCC, fourcc)  # 优化帧率
 
