@@ -9,6 +9,14 @@ from fastapi.middleware.cors import CORSMiddleware
 if TYPE_CHECKING:
     from MyDetector import MyDetector
 
+import sys
+import os
+if hasattr(sys, 'frozen'):
+    # pyinstaller打包成exe时，sys.argv[0]的值是exe的路径
+    # os.path.dirname(sys.argv[0])可以获取exe的所在目录
+    # os.chdir()可以将工作目录更改为exe的所在目录
+    os.chdir(os.path.dirname(sys.argv[0]))
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
