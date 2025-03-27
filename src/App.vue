@@ -83,7 +83,7 @@ watch(
             <iframe
               :src="
                 is_dev
-                  ? '/lazyeat_ad/index.html'
+                  ? '/lazyeat_ad/html/index.html'
                   : 'https://stupendous-crepe-a45ad1.netlify.app/'
               "
               width="100%"
