@@ -13,6 +13,7 @@ import {
 } from "@tauri-apps/plugin-window-state";
 
 const ready = ref(false);
+const is_dev = import.meta.env.DEV;
 
 onMounted(async () => {
   ready.value = await pyApi.ready();
@@ -80,7 +81,11 @@ watch(
         <el-main>
           <n-card class="ad-container">
             <iframe
-              src="https://stupendous-crepe-a45ad1.netlify.app/"
+              :src="
+                is_dev
+                  ? '/lazyeat_ad/html/index.html'
+                  : 'https://stupendous-crepe-a45ad1.netlify.app/'
+              "
               width="100%"
               height="100%"
             ></iframe>
