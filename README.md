@@ -28,6 +28,29 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
 ![img.png](.readme/img.png)
 
+# 快速开始
+
+```bash
+# 1. 安装 npm 以及 python 环境
+npm run install-reqs
+
+# 2. build tauri 图标
+npm run build:icons
+
+# 3. pyinstaller 打包
+npm run py-build
+
+# 4. tauri 开发模式
+npm run tauri dev
+
+# 5. tauri 生产构建
+# npm run tauri build
+```
+
+如果你需要 debug 后端，那么先 pyinstaller 打包，再运行 `python src-py/main.py`。
+`npm run tauri dev` 需要先生成 [tauri.conf.json](src-tauri/tauri.conf.json) 中编写的 sidecar。
+详见：https://v2.tauri.app/zh-cn/develop/sidecar/
+
 # 📢 语音识别模型下载
 
 [小模型](https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip)
@@ -57,7 +80,5 @@ cargo 被墙:[cargo 被墙,换源](https://www.chenreal.com/post/599)
 
 ```
 # 不知道有没有用
-rm -rf ~/.cargo/.package-cache 
+rm -rf ~/.cargo/.package-cache
 ```
-
-
