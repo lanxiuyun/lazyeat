@@ -29,7 +29,7 @@ app.add_middleware(
 # config
 class Config:
     show_detect_window: bool = False  # 显示检测窗口
-    camera_index: int = 1  # 当前摄像头索引
+    camera_index: int = 0  # 当前摄像头索引
 
 
 CONFIG = Config()
@@ -46,14 +46,29 @@ flag_work = False
 my_detector: 'MyDetector' = None
 
 
-def thread_init():
-    global my_detector
-    my_detector = MyDetector(maxHands=2)
-
-
 @app.get("/")
 def read_root():
     return "ready"
+
+
+@app.get("/get_all_cameras")
+def get_all_cameras() -> dict:
+    # {0: '组合摄像头', 1: 'Xiaomi 12S（前置）', 2: 'Xiaomi 12S（后置）', 3: 'USB webcam'}
+    from pygrabber.dshow_graph import FilterGraph
+
+    devices = FilterGraph().get_input_devices()
+
+    available_cameras = {}
+
+    for device_index, device_name in enumerate(devices):
+        available_cameras[device_index] = device_name
+
+    return available_cameras
+
+
+def thread_init():
+    global my_detector
+    my_detector = MyDetector(maxHands=2)
 
 
 def thread_detect():
