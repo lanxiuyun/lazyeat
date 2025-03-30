@@ -37,7 +37,7 @@
               v-model:value="app_store.config.camera_index"
               :options="camera_options"
               :disabled="start"
-              style="width: 100px"
+              style="width: 250px"
             />
           </n-space>
         </n-space>
@@ -208,7 +208,7 @@ import {
   ThreeThree,
   TwoTwo,
 } from "@icon-park/vue-next";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import AutoStart from "../components/AutoStart.vue";
 import pyApi from "../py_api";
 import { use_app_store } from "../store/app";
@@ -216,13 +216,16 @@ import { use_app_store } from "../store/app";
 const start = ref(false);
 const app_store = use_app_store();
 
-// 摄像头选项,动态生成0-10的选项
-const camera_options = ref(
-  Array.from({ length: 11 }, (_, i) => ({
-    label: i.toString(),
-    value: i,
-  }))
-);
+// 定义 camera_options
+const camera_options = ref([{ label: "0", value: 0 }]);
+onMounted(async () => {
+  pyApi.get_all_cameras().then((res) => {
+    camera_options.value = Object.entries(res).map(([key, value]) => ({
+      label: value,
+      value: Number(key),
+    }));
+  });
+});
 
 // 监听 四指发送按键
 const isListening = ref(false);

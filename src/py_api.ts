@@ -14,6 +14,11 @@ class PyApi {
     return response.json();
   }
 
+  async get_all_cameras(): Promise<Record<number, string>> {
+    const response = await fetch(`${base_url}/get_all_cameras`);
+    return response.json();
+  }
+
   async update_config(config: any) {
     const response = await fetch(`${base_url}/update_config`, {
       method: "POST",
