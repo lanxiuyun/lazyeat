@@ -30,6 +30,10 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
 # 快速开始
 
+1. 安装 [rust](https://www.rust-lang.org/zh-CN/tools/install)
+2. 安装 [nodejs](https://nodejs.org/zh-cn/)
+3. 执行下面命令
+
 ```bash
 # 1. 安装 npm 以及 python 环境
 npm run install-reqs
