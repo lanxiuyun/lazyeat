@@ -1,16 +1,15 @@
+import os
+import sys
 import threading
-from typing import TYPE_CHECKING
 
 import cv2
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-if TYPE_CHECKING:
-    from MyDetector import MyDetector
+from MyDetector import MyDetector, \
+    show_toast  # https://github.com/maplelost/lazyeat/issues/15 线程中 import mediapipe as mp 出错
 
-import sys
-import os
 if hasattr(sys, 'frozen'):
     # pyinstaller打包成exe时，sys.argv[0]的值是exe的路径
     # os.path.dirname(sys.argv[0])可以获取exe的所在目录
@@ -48,8 +47,6 @@ my_detector: 'MyDetector' = None
 
 
 def thread_init():
-    from MyDetector import MyDetector
-
     global my_detector
     my_detector = MyDetector(maxHands=2)
 
@@ -64,7 +61,6 @@ def thread_detect():
         success, img = cap.read()
 
         if my_detector is None:
-            from MyDetector import show_toast
             show_toast(
                 title='初始化中',
                 msg='初始化中',
