@@ -64,7 +64,7 @@ watch(
   <n-spin :show="!ready" size="large">
     <template #description> 手势识别模块加载中... </template>
 
-    <el-container>
+    <el-container v-if="ready">
       <el-aside width="200px">
         <div class="aside-header">
           <img
