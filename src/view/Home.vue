@@ -63,6 +63,12 @@
           </template>
         </GestureCard>
 
+        <GestureCard title="单击操作" description="双指并拢执行鼠标单击">
+          <template #icon>
+            <GestureIcon :icon="Rock" />
+          </template>
+        </GestureCard>
+
         <GestureCard title="滚动控制" description="三指上下滑动控制页面滚动">
           <template #icon>
             <GestureIcon :icon="ThreeThree" />
@@ -128,6 +134,7 @@ import {
   Six,
   ThreeThree,
   TwoTwo,
+  Rock,
 } from "@icon-park/vue-next";
 import { onMounted, ref, watch } from "vue";
 import AutoStart from "../components/AutoStart.vue";
