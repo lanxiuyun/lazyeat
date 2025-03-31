@@ -8,4 +8,5 @@ numpy
 pyaudio
 uvicorn
 vosk
+pygrabber
 pyinstaller
