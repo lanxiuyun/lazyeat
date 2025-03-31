@@ -51,146 +51,67 @@
       </template>
 
       <div class="gesture-grid">
-        <!-- 手势卡片 1 -->
-        <n-card class="gesture-card" :bordered="false">
-          <n-space align="center" class="gesture-content">
-            <div class="gesture-icon">
-              <OneOne
-                theme="outline"
-                size="40"
-                fill="#4098fc"
-                :stroke-width="3"
-              />
-            </div>
-            <div class="gesture-info">
-              <h3>光标控制</h3>
-              <p>竖起食指滑动控制光标位置</p>
-            </div>
-          </n-space>
-        </n-card>
+        <GestureCard title="光标控制" description="竖起食指滑动控制光标位置">
+          <template #icon>
+            <GestureIcon :icon="OneOne" />
+          </template>
+        </GestureCard>
 
-        <!-- 手势卡片 2 -->
-        <n-card class="gesture-card" :bordered="false">
-          <n-space align="center" class="gesture-content">
-            <div class="gesture-icon">
-              <TwoTwo
-                theme="outline"
-                size="40"
-                fill="#4098fc"
-                :stroke-width="3"
-              />
-            </div>
-            <div class="gesture-info">
-              <h3>单击操作</h3>
-              <p>双指并拢执行鼠标单击</p>
-            </div>
-          </n-space>
-        </n-card>
+        <GestureCard title="单击操作" description="双指并拢执行鼠标单击">
+          <template #icon>
+            <GestureIcon :icon="TwoTwo" />
+          </template>
+        </GestureCard>
 
-        <!-- 手势卡片 3 -->
-        <n-card class="gesture-card" :bordered="false">
-          <n-space align="center" class="gesture-content">
-            <div class="gesture-icon">
-              <ThreeThree
-                theme="outline"
-                size="40"
-                fill="#4098fc"
-                :stroke-width="3"
-              />
-            </div>
-            <div class="gesture-info">
-              <h3>滚动控制</h3>
-              <p>三指上下滑动控制页面滚动</p>
-            </div>
-          </n-space>
-        </n-card>
+        <GestureCard title="滚动控制" description="三指上下滑动控制页面滚动">
+          <template #icon>
+            <GestureIcon :icon="ThreeThree" />
+          </template>
+        </GestureCard>
 
-        <!-- 手势卡片 4 -->
-        <n-card class="gesture-card" :bordered="false">
-          <n-space align="center" class="gesture-content">
-            <div class="gesture-icon">
-              <FourFour
-                theme="outline"
-                size="40"
-                fill="#4098fc"
-                :stroke-width="3"
-              />
-            </div>
-            <div class="gesture-info">
-              <h3>全屏控制</h3>
-              <p>四指并拢发送按键</p>
-              <n-input
-                :value="app_store.config.four_fingers_up_send"
-                readonly
-                placeholder="点击设置快捷键"
-                @click="listenForKey"
-                :status="isListening ? 'warning' : undefined"
-                :bordered="true"
-                style="width: 200px"
-              >
-                <template #suffix>
-                  {{ isListening ? "请按下按键..." : "点击设置" }}
-                </template>
-              </n-input>
-            </div>
-          </n-space>
-        </n-card>
+        <GestureCard title="全屏控制" description="四指并拢发送按键">
+          <template #icon>
+            <GestureIcon :icon="FourFour" />
+          </template>
+          <template #extra>
+            <n-input
+              :value="app_store.config.four_fingers_up_send"
+              readonly
+              placeholder="点击设置快捷键"
+              @click="listenForKey"
+              :status="isListening ? 'warning' : undefined"
+              :bordered="true"
+              style="width: 200px"
+            >
+              <template #suffix>
+                {{ isListening ? "请按下按键..." : "点击设置" }}
+              </template>
+            </n-input>
+          </template>
+        </GestureCard>
 
-        <!-- 手势卡片 5 -->
-        <n-card class="gesture-card" :bordered="false">
-          <n-space align="center" class="gesture-content">
-            <div class="gesture-icon">
-              <Six theme="outline" size="40" fill="#4098fc" :stroke-width="3" />
-            </div>
-            <div class="gesture-info">
-              <h3>开始语音识别</h3>
-              <p>六指手势开始语音识别</p>
-            </div>
-          </n-space>
-        </n-card>
+        <GestureCard title="开始语音识别" description="六指手势开始语音识别">
+          <template #icon>
+            <GestureIcon :icon="Six" />
+          </template>
+        </GestureCard>
 
-        <!-- 手势卡片 6 -->
-        <n-card class="gesture-card" :bordered="false">
-          <n-space align="center" class="gesture-content">
-            <div class="gesture-icon">
-              <Boxing
-                theme="outline"
-                size="40"
-                fill="#4098fc"
-                :stroke-width="3"
-              />
-            </div>
-            <div class="gesture-info">
-              <h3>结束语音识别</h3>
-              <p>拳头手势结束语音识别</p>
-            </div>
-          </n-space>
-        </n-card>
+        <GestureCard title="结束语音识别" description="拳头手势结束语音识别">
+          <template #icon>
+            <GestureIcon :icon="Boxing" />
+          </template>
+        </GestureCard>
 
-        <!-- 手势卡片 7 -->
-        <n-card class="gesture-card" :bordered="false">
-          <n-space align="center" class="gesture-content">
-            <div class="gesture-icon double-hand">
-              <FiveFive
-                theme="outline"
-                size="40"
-                fill="#4098fc"
-                :stroke-width="3"
-                class="flipped"
-              />
-              <FiveFive
-                theme="outline"
-                size="40"
-                fill="#4098fc"
-                :stroke-width="3"
-              />
-            </div>
-            <div class="gesture-info">
-              <h3>暂停/继续</h3>
-              <p>双手张开暂停/继续 手势识别</p>
-            </div>
-          </n-space>
-        </n-card>
+        <GestureCard
+          title="暂停/继续"
+          description="双手张开暂停/继续 手势识别"
+          :isDoubleHand="true"
+        >
+          <template #icon>
+            <GestureIcon :icon="FiveFive" flipped />
+            <GestureIcon :icon="FiveFive" />
+          </template>
+        </GestureCard>
       </div>
     </n-card>
   </div>
@@ -212,6 +133,8 @@ import { onMounted, ref, watch } from "vue";
 import AutoStart from "../components/AutoStart.vue";
 import pyApi from "../py_api";
 import { use_app_store } from "../store/app";
+import GestureCard from "../components/GestureCard.vue";
+import GestureIcon from "../components/GestureIcon.vue";
 
 const start = ref(false);
 const app_store = use_app_store();
@@ -305,63 +228,5 @@ watch(
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   padding: 16px 0;
-}
-
-.gesture-card {
-  transition: all 0.3s ease;
-  background: linear-gradient(145deg, #f8faff, #ffffff);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e5e9f2;
-  border-radius: 12px;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(64, 152, 252, 0.15);
-    border-color: #4098fc;
-  }
-}
-
-.gesture-content {
-  padding: 12px;
-}
-
-.gesture-icon {
-  background: rgba(64, 152, 252, 0.1);
-  padding: 16px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(64, 152, 252, 0.2);
-}
-
-.gesture-info {
-  flex: 1;
-
-  h3 {
-    margin: 0 0 4px 0;
-    font-size: 1.1rem;
-    color: #2c3e50;
-  }
-
-  p {
-    margin: 0;
-    color: #666;
-    font-size: 0.9rem;
-  }
-}
-
-.flipped {
-  transform: scaleX(-1);
-}
-
-.double-hand {
-  display: flex;
-  gap: 8px;
-
-  :deep(svg) {
-    width: 32px;
-    height: 32px;
-  }
 }
 </style>
