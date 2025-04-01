@@ -84,7 +84,7 @@ watch(
               :src="
                 is_dev
                   ? '/lazyeat_ad/html/index.html'
-                  : 'https://stupendous-crepe-a45ad1.netlify.app/'
+                  : 'https://lazyeat-ad.pages.dev/'
               "
               width="100%"
               height="100%"

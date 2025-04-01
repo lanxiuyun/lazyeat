@@ -50,8 +50,9 @@ class HandState:
     # 食指举起，移动鼠标
     only_index_up = 'only_index_up'
 
-    # 食指和中指同时竖起 - 点击模式
+    # 食指和中指同时竖起 - 鼠标左键点击
     index_and_middle_up = 'index_and_middle_up'
+    click_gesture_second = 'click_gesture_second'
 
     # 三根手指同时竖起 - 滚动屏幕
     three_fingers_up = 'three_fingers_up'
@@ -111,6 +112,8 @@ class MyDetector(HandDetector):
             return HandState.only_index_up
         elif fingers == [0, 1, 1, 0, 0]:
             return HandState.index_and_middle_up
+        elif fingers == [0, 1, 0, 0, 1] or fingers == [1, 1, 0, 0, 1]:
+            return HandState.click_gesture_second
         elif fingers == [0, 1, 1, 1, 0]:
             return HandState.three_fingers_up
         elif fingers == [0, 1, 1, 1, 1]:
@@ -207,21 +210,17 @@ class MyDetector(HandDetector):
                 self.last_move_time = time.time()
 
             # 食指举起，中指举起
-            elif hand_state == HandState.index_and_middle_up:
+            elif hand_state == HandState.index_and_middle_up or hand_state == HandState.click_gesture_second:
                 if self.is_false_touch():
                     return
 
-                length, info = self.findDistance((x1, y1), (x2, y2))
+                current_time = time.time()
+                if not current_time - self.last_click_time > 0.5:  # 点击间隔 0.5s
+                    return
 
-                if length < 15:
-                    current_time = time.time()
-                    if not current_time - self.last_click_time > 0.5:  # 点击间隔 0.5s
-                        return
-
-                    mouse.click(Button.left, 1)
-                    # print(length)
-                    self.last_click_time = current_time
-
+                mouse.click(Button.left, 1)
+                # print(length)
+                self.last_click_time = current_time
             # 三根手指同时竖起 - 滚动屏幕
             elif hand_state == HandState.three_fingers_up:
                 if self.is_false_touch():
