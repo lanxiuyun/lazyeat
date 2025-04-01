@@ -1,6 +1,7 @@
 import os
 import sys
 import threading
+import time
 
 import cv2
 import uvicorn
@@ -33,17 +34,11 @@ class Config:
 
 
 CONFIG = Config()
-
-cap = cv2.VideoCapture(CONFIG.camera_index)
-# 2025年3月26日，待测试 https://blog.csdn.net/laizi_laizi/article/details/130230282 稳定取图速度
-fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
-cap.set(cv2.CAP_PROP_FOURCC, fourcc)  # 优化帧率
+my_detector: MyDetector = None
 
 work_thread_lock = threading.Lock()
 work_thread: threading.Thread = None
 flag_work = False
-
-my_detector: 'MyDetector' = None
 
 
 @app.get("/")
@@ -72,8 +67,17 @@ def thread_init():
 
 
 def thread_detect():
+    from MyDetector import wCam, hCam
+    thread_cam = cv2.VideoCapture(CONFIG.camera_index, cv2.CAP_DSHOW)
+    thread_cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))  # 设置编码格式
+    thread_cam.set(cv2.CAP_PROP_FRAME_WIDTH, wCam)
+    thread_cam.set(cv2.CAP_PROP_FRAME_HEIGHT, hCam)
+
+    count = 0
+    total_cost_time = 0
     while True:
-        success, img = cap.read()
+        start_time = time.time()
+        success, img = thread_cam.read()
 
         if my_detector is None:
             show_toast(
@@ -84,10 +88,6 @@ def thread_detect():
             continue
 
         if not flag_work:
-            try:
-                cv2.destroyAllWindows()
-            except:
-                pass
             break
 
         if not success:
@@ -95,22 +95,32 @@ def thread_detect():
 
         if CONFIG.show_detect_window:
             all_hands, img = my_detector.findHands(img, draw=True)
-        else:
-            all_hands = my_detector.findHands(img, draw=False)
-
-        if all_hands:
-            state = my_detector.process(all_hands)
-
-        if CONFIG.show_detect_window:
+            if all_hands:
+                my_detector.process(all_hands)
             img = my_detector.draw_mouse_move_box(img)
             cv2.imshow("Lazyeat Detect Window", img)
             cv2.waitKey(1)
         else:
-            # CONFIG.show_detect_window 改变需要关闭窗口
-            try:
-                cv2.destroyAllWindows()
-            except:
-                pass
+            all_hands = my_detector.findHands(img, draw=False)
+            if all_hands:
+                my_detector.process(all_hands)
+                # not CONFIG.show_detect_window 改变需要关闭窗口
+                try:
+                    cv2.destroyAllWindows()
+                except:
+                    pass
+
+        count += 1
+        end_time = time.time()
+        total_cost_time += (end_time - start_time) * 1000
+        if count % 100 == 0:
+            print(f"FPS: {1000 / (total_cost_time / count):.2f}")
+            print(f"每100帧平均耗时: {total_cost_time / count:.2f} ms")
+            total_cost_time = 0
+            count = 0
+
+    # 结束取图，释放资源
+    thread_cam.release()
 
 
 @app.get("/toggle_work")
