@@ -58,6 +58,40 @@ watch(
   },
   { deep: true }
 );
+
+// 通知
+enum WsDataType {
+  INFO = "info",
+  SUCCESS = "success",
+  WARNING = "warning",
+  ERROR = "error",
+}
+
+interface WsData {
+  type: WsDataType;
+  msg: string;
+  duration?: number;
+  title?: string;
+  data?: any;
+}
+
+onMounted(() => {
+  const ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
+
+  ws.onmessage = (event: MessageEvent) => {
+    const response: WsData = JSON.parse(event.data);
+
+    console.log(response);
+  };
+
+  ws.onopen = () => {
+    ws.send("ws_lazyeat start");
+  };
+
+  ws.onclose = () => {
+    console.log("ws_lazyeat closed");
+  };
+});
 </script>
 
 <template>

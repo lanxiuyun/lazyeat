@@ -7,6 +7,7 @@ import cv2
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from router.ws import router as ws_router
 
 from MyDetector import MyDetector, \
     show_toast  # https://github.com/maplelost/lazyeat/issues/15 线程中 import mediapipe as mp 出错
@@ -25,6 +26,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 添加 WebSocket 路由
+app.include_router(ws_router)
 
 
 # config

@@ -34,14 +34,16 @@ prev_scroll_y = 0
 def show_toast(title: str = '手势识别',
                msg: str = '手势识别',
                duration: int = 1):
+
+    from router.ws import send_message, WsDataType
     try:
-        notification.show_toast(
-            title=title,
+        import asyncio
+        asyncio.run(send_message(
+            ws_data_type=WsDataType.INFO,
             msg=msg,
+            title=title,
             duration=duration,
-            icon_path='icon.ico',
-            threaded=True
-        )
+        ))
     except Exception as e:
         traceback.print_exc()
 
