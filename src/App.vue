@@ -26,7 +26,7 @@ onMounted(async () => {
     if (ready.value) {
       clearInterval(timer);
     }
-  }, 1000);
+  }, 5000);
 
   await getCurrentWindow().onCloseRequested(async () => {
     await saveWindowState(StateFlags.ALL);
