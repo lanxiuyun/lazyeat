@@ -147,14 +147,10 @@ def toggle_work():
 def update_config(data: dict):
     from pinia_store import PINIA_STORE
 
-    global cap
     CONFIG.show_detect_window = data.get("show_window", False)
 
     camera_index = int(data.get("camera_index", 0))
     if camera_index != CONFIG.camera_index:
-        cap.release()
-        cap = cv2.VideoCapture(camera_index)
-        cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))  # 优化帧率
         CONFIG.camera_index = camera_index
 
     # 更新四个手指同时竖起发送的按键
@@ -167,7 +163,6 @@ def update_config(data: dict):
 @app.get("/shutdown")
 def shutdown():
     try:
-        cap.release()
         cv2.destroyAllWindows()
     except:
         pass
