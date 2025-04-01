@@ -13,7 +13,6 @@ a = Analysis(
         ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\mediapipe\\modules\\hand_landmark\\*', 'mediapipe/modules/hand_landmark'),
         ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\mediapipe\\python\\*', 'mediapipe/python'),
         ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\uvicorn\\*', 'uvicorn'),
-        ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\win10toast\\*', 'win10toast'),
     ],
     hiddenimports=[
         'vosk',
@@ -21,7 +20,6 @@ a = Analysis(
         'uvicorn',
         'uvicorn.logging',
         'uvicorn.protocols',
-        'win10toast',
     ],
     hookspath=[],
     hooksconfig={},
