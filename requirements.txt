@@ -1,5 +1,4 @@
 pynput
-win10toast
 pyautogui
 mediapipe
 fastapi

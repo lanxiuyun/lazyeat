@@ -9,14 +9,12 @@ import pyautogui
 from pynput.keyboard import Controller as KeyboardController
 from pynput.keyboard import Key
 from pynput.mouse import Button, Controller
-from win10toast import ToastNotifier
 
 from HandTrackingModule import HandDetector
 
 screen_width, screen_height = pyautogui.size()
 mouse = Controller()
 keyboard = KeyboardController()
-notification = ToastNotifier()
 
 ######################
 wCam, hCam = 640, 480
