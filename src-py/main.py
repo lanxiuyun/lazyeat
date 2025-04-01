@@ -38,6 +38,7 @@ class Config:
 
 
 CONFIG = Config()
+FPS = 0
 my_detector: MyDetector = None
 
 work_thread_lock = threading.Lock()
@@ -118,13 +119,20 @@ def thread_detect():
         end_time = time.time()
         total_cost_time += (end_time - start_time) * 1000
         if count % 100 == 0:
-            print(f"FPS: {1000 / (total_cost_time / count):.2f}")
+            global FPS
+            FPS = 1000 / (total_cost_time / count)
+            print(f"FPS: {FPS:.2f}")
             print(f"每100帧平均耗时: {total_cost_time / count:.2f} ms")
             total_cost_time = 0
             count = 0
 
     # 结束取图，释放资源
     thread_cam.release()
+
+
+@app.get("/fps")
+def get_fps():
+    return f"{int(FPS)}"
 
 
 @app.get("/toggle_work")

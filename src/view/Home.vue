@@ -5,6 +5,7 @@
       <n-space vertical>
         <n-space justify="space-between" align="center">
           <h2 class="section-title">手势识别控制</h2>
+          <span>FPS: {{ fps }}</span>
           <n-switch v-model:value="start" size="large">
             <template #checked>运行中</template>
             <template #unchecked>已停止</template>
@@ -159,6 +160,18 @@ import GestureIcon from "../components/GestureIcon.vue";
 
 const start = ref(false);
 const app_store = use_app_store();
+const fps = ref("0");
+
+let timer: number | undefined;
+const updateFps = () => {
+  if (timer) clearInterval(timer);
+  timer = window.setInterval(async () => {
+    const res = await pyApi.get_fps();
+    fps.value = res;
+  }, 5000);
+};
+
+updateFps();
 
 // 定义 camera_options
 const camera_options = ref([{ label: "0", value: 0 }]);
