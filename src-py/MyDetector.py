@@ -87,6 +87,11 @@ class MyDetector(HandDetector):
     flag_detect = True
     voice_controller = None
 
+    # 添加手势计数相关变量
+    previous_gesture = None
+    gesture_counter = 0
+    GESTURE_THRESHOLD = 3  # 需要达到的帧数阈值
+
     def __init__(self, mode=False, maxHands=2, detectionCon=0.5, minTrackCon=0.5):
         super().__init__(mode, maxHands, detectionCon, minTrackCon)
 
@@ -144,64 +149,75 @@ class MyDetector(HandDetector):
 
         # 没有手
         if len(all_hands) <= 0:
+            # 重置手势计数
+            self.previous_gesture = None
+            self.gesture_counter = 0
             return
 
-        # 暂停识别
+        # 获取当前手势
+        current_gesture = None
+
+        # 处理双手手势
         if len(all_hands) == 2:
             right_hand = all_hands[0]
             left_hand = all_hands[1]
 
-            # 两只手的类型相同, 不处理
-            if right_hand['type'] == left_hand['type']:
-                return
+            if right_hand['type'] != left_hand['type']:  # 如果一只手是左手，一只手是右手
+                right_hand_gesture = self.get_hand_gesture(right_hand)
+                left_hand_gesture = self.get_hand_gesture(left_hand)
 
-            right_hand_gesture = self.get_hand_gesture(right_hand)
-            left_hand_gesture = self.get_hand_gesture(left_hand)
+                if (right_hand_gesture == HandGesture.stop_gesture and
+                        left_hand_gesture == HandGesture.stop_gesture):
+                    current_gesture = HandGesture.stop_gesture
 
-            # 暂停/开始 识别
-            if right_hand_gesture == HandGesture.stop_gesture and left_hand_gesture == HandGesture.stop_gesture:
-                current_time = time.time()
-                if not current_time - self.last_change_flag_time > 1.5:
-                    return
-
-                self.flag_detect = not self.flag_detect
-
-                show_toast(
-                    msg='继续手势识别' if self.flag_detect else '暂停手势识别',
-                    duration=1
-                )
-                self.last_change_flag_time = current_time
-
-        if not self.flag_detect:
-            return
-
-        # 只有一只手
-        if len(all_hands) >= 1:
+        # 处理单手手势
+        if len(all_hands) >= 1 and self.flag_detect:
             if len(all_hands) == 1:
                 right_hand = all_hands[0]
             else:
                 right_hand = all_hands[0] if all_hands[0]['type'] == 'Right' else all_hands[1]
 
-            lmList, bbox = right_hand['lmList'], right_hand['bbox']
-            hand_gesture = self.get_hand_gesture(right_hand)
+            if not current_gesture:  # 如果不是双手手势
+                current_gesture = self.get_hand_gesture(right_hand)
 
-            x1, y1 = lmList[8][:-1]  # 食指指尖坐标
-            x2, y2 = lmList[12][:-1]  # 中指指尖坐标
+        # 更新手势计数
+        if current_gesture == self.previous_gesture:
+            self.gesture_counter += 1
+        else:
+            self.gesture_counter = 0
+            self.previous_gesture = current_gesture
 
-            if hand_gesture == HandGesture.only_index_up:
-                self._trigger_mouse_move(x1, y1)
-            elif hand_gesture == HandGesture.index_and_middle_up or hand_gesture == HandGesture.click_gesture_second:
-                self._trigger_mouse_click()
-            elif hand_gesture == HandGesture.three_fingers_up:
-                self._trigger_scroll(y1)
-            elif hand_gesture == HandGesture.four_fingers_up:
-                self._trigger_full_screen()
-            elif hand_gesture == HandGesture.voice_gesture_start:
-                self._trigger_voice_record_start()
-            elif hand_gesture == HandGesture.voice_gesture_stop:
-                self._trigger_voice_record_stop()
-            elif hand_gesture == HandGesture.delete_gesture:
-                self._trigger_backspace()
+        # 只有当手势计数达到阈值时才触发动作
+        if self.gesture_counter >= self.GESTURE_THRESHOLD:
+            if current_gesture == HandGesture.stop_gesture:
+                current_time = time.time()
+                if current_time - self.last_change_flag_time > 1.5:
+                    self.flag_detect = not self.flag_detect
+                    show_toast(
+                        msg='继续手势识别' if self.flag_detect else '暂停手势识别',
+                        duration=1
+                    )
+                    self.last_change_flag_time = current_time
+            elif self.flag_detect:
+                print(current_gesture, self.gesture_counter)
+                lmList = right_hand['lmList']
+                x1, y1 = lmList[8][:-1]  # 食指指尖坐标
+                x2, y2 = lmList[12][:-1]  # 中指指尖坐标
+
+                if current_gesture == HandGesture.only_index_up:
+                    self._trigger_mouse_move(x1, y1)
+                elif current_gesture in [HandGesture.index_and_middle_up, HandGesture.click_gesture_second]:
+                    self._trigger_mouse_click()
+                elif current_gesture == HandGesture.three_fingers_up:
+                    self._trigger_scroll(y1)
+                elif current_gesture == HandGesture.four_fingers_up:
+                    self._trigger_full_screen()
+                elif current_gesture == HandGesture.voice_gesture_start:
+                    self._trigger_voice_record_start()
+                elif current_gesture == HandGesture.voice_gesture_stop:
+                    self._trigger_voice_record_stop()
+                elif current_gesture == HandGesture.delete_gesture:
+                    self._trigger_backspace()
 
     def _trigger_mouse_move(self, x1, y1):
         global prev_loc_x, prev_loc_y
