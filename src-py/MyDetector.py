@@ -83,7 +83,7 @@ class MyDetector(HandDetector):
     last_full_screen_time = 0
     last_change_flag_time = 0
 
-    flag_detect = True
+    flag_detecting = True
     voice_controller = None
 
     # 添加手势计数相关变量
@@ -169,7 +169,7 @@ class MyDetector(HandDetector):
                         left_hand_gesture == HandGesture.stop_gesture):
                     current_gesture = HandGesture.stop_gesture
         # 处理单手手势
-        elif len(all_hands) >= 1 and self.flag_detect:
+        elif len(all_hands) >= 1 and self.flag_detecting:
             if len(all_hands) == 1:
                 right_hand = all_hands[0]
             else:
@@ -196,13 +196,13 @@ class MyDetector(HandDetector):
             if current_gesture == HandGesture.stop_gesture and len(all_hands) >= 2:
                 current_time = time.time()
                 if current_time - self.last_change_flag_time > 1.5:
-                    self.flag_detect = not self.flag_detect
+                    self.flag_detecting = not self.flag_detecting
                     show_toast(
-                        msg='继续手势识别' if self.flag_detect else '暂停手势识别',
+                        msg='继续手势识别' if self.flag_detecting else '暂停手势识别',
                         duration=1
                     )
                     self.last_change_flag_time = current_time
-            elif self.flag_detect:
+            elif self.flag_detecting:
                 lmList = right_hand['lmList']
                 x1, y1 = lmList[8][:-1]  # 食指指尖坐标
                 x2, y2 = lmList[12][:-1]  # 中指指尖坐标
