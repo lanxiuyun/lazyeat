@@ -1,6 +1,6 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from typing import Dict, Any
 import json
+
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()
 
@@ -20,13 +20,13 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             # 接收客户端消息
             data = await websocket.receive_text()
-            # 发送响应回客户端
-            response = {
-                "type": WsDataType.SUCCESS,
-                "msg": "success",
-                "data": data
-            }
-            await websocket.send_text(json.dumps(response))
+            # # 发送响应回客户端
+            # response = {
+            #     "type": WsDataType.SUCCESS,
+            #     "msg": "success",
+            #     "data": data
+            # }
+            # await websocket.send_text(json.dumps(response))
 
     except WebSocketDisconnect:
         # 连接断开时，清除连接
