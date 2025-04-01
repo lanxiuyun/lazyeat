@@ -60,6 +60,12 @@ watch(
 );
 
 // 通知
+import {
+  isPermissionGranted,
+  requestPermission,
+  sendNotification,
+} from "@tauri-apps/plugin-notification";
+
 enum WsDataType {
   INFO = "info",
   SUCCESS = "success",
@@ -75,13 +81,29 @@ interface WsData {
   data?: any;
 }
 
+onMounted(async () => {
+  // when using `"withGlobalTauri": true`, you may use
+  // const { isPermissionGranted, requestPermission, sendNotification, } = window.__TAURI__.notification;
+
+  // Do you have permission to send a notification?
+  let permissionGranted = await isPermissionGranted();
+
+  // If not we need to request it
+  if (!permissionGranted) {
+    const permission = await requestPermission();
+    permissionGranted = permission === "granted";
+  }
+});
+
 onMounted(() => {
   const ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
 
   ws.onmessage = (event: MessageEvent) => {
     const response: WsData = JSON.parse(event.data);
-
-    console.log(response);
+    sendNotification({
+      title: response.title || "Lazyeat",
+      body: response.msg,
+    });
   };
 
   ws.onopen = () => {
