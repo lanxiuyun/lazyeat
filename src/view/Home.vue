@@ -1,5 +1,36 @@
 <template>
   <div class="home-container">
+    <n-card class="control-panel" hoverable>
+      <n-card class="performance-card" hoverable>
+        <template #header>
+          <n-space align="center">
+            <n-icon size="20">
+              <Speed />
+            </n-icon>
+            <span>性能监控</span>
+          </n-space>
+        </template>
+        <n-space vertical :size="0">
+          <n-space justify="space-between">
+            <span>FPS:</span>
+            <span>{{ fps }}</span>
+          </n-space>
+          <n-space justify="space-between">
+            <span>cv2平均取图时间:</span>
+            <span>{{ avg_catch_time }}ms</span>
+          </n-space>
+          <n-space justify="space-between">
+            <span>平均预测时间:</span>
+            <span>{{ avg_predict_time }}ms</span>
+          </n-space>
+          <n-space justify="space-between">
+            <span>平均总耗时:</span>
+            <span>{{ avg_cost_time }}ms</span>
+          </n-space>
+        </n-space>
+      </n-card>
+    </n-card>
+
     <!-- 顶部控制区域 -->
     <n-card class="control-panel" hoverable>
       <n-space vertical>
@@ -149,6 +180,7 @@ import {
   ThreeThree,
   TwoTwo,
   Rock,
+  Speed,
 } from "@icon-park/vue-next";
 import { onMounted, ref, watch } from "vue";
 import AutoStart from "../components/AutoStart.vue";
@@ -159,6 +191,24 @@ import GestureIcon from "../components/GestureIcon.vue";
 
 const start = ref(false);
 const app_store = use_app_store();
+const fps = ref("0");
+const avg_catch_time = ref("0");
+const avg_predict_time = ref("0");
+const avg_cost_time = ref("0");
+
+let timer: number | undefined;
+const updatePerformance = () => {
+  if (timer) clearInterval(timer);
+  timer = window.setInterval(async () => {
+    const res = await pyApi.get_performance();
+    fps.value = res.fps;
+    avg_catch_time.value = res.avg_catch_time;
+    avg_predict_time.value = res.avg_predict_time;
+    avg_cost_time.value = res.avg_cost_time;
+  }, 1000);
+};
+
+updatePerformance();
 
 // 定义 camera_options
 const camera_options = ref([{ label: "0", value: 0 }]);
@@ -268,5 +318,18 @@ a:hover {
 
 a:active {
   color: #0d47a1; // 点击时使用更深的蓝色
+}
+
+.performance-card {
+  width: 300px;
+
+  :deep(.n-card-header) {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+  }
+
+  :deep(.n-card__content) {
+    padding: 16px;
+  }
 }
 </style>

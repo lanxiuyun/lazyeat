@@ -11,11 +11,14 @@ import {
   StateFlags,
   restoreStateCurrent,
 } from "@tauri-apps/plugin-window-state";
+import { getVersion } from "@tauri-apps/api/app";
 
+const appVersion = ref("");
 const ready = ref(false);
 const is_dev = import.meta.env.DEV;
 
 onMounted(async () => {
+  appVersion.value = await getVersion();
   ready.value = await pyApi.ready();
 
   const timer = setInterval(async () => {
@@ -23,7 +26,7 @@ onMounted(async () => {
     if (ready.value) {
       clearInterval(timer);
     }
-  }, 1000);
+  }, 5000);
 
   await getCurrentWindow().onCloseRequested(async () => {
     await saveWindowState(StateFlags.ALL);
@@ -58,6 +61,78 @@ watch(
   },
   { deep: true }
 );
+
+// 通知
+import {
+  isPermissionGranted,
+  requestPermission,
+  sendNotification,
+} from "@tauri-apps/plugin-notification";
+
+enum WsDataType {
+  INFO = "info",
+  SUCCESS = "success",
+  WARNING = "warning",
+  ERROR = "error",
+}
+
+interface WsData {
+  type: WsDataType;
+  msg: string;
+  duration?: number;
+  title?: string;
+  data?: any;
+}
+
+onMounted(async () => {
+  // when using `"withGlobalTauri": true`, you may use
+  // const { isPermissionGranted, requestPermission, sendNotification, } = window.__TAURI__.notification;
+
+  // Do you have permission to send a notification?
+  let permissionGranted = await isPermissionGranted();
+
+  // If not we need to request it
+  if (!permissionGranted) {
+    const permission = await requestPermission();
+    permissionGranted = permission === "granted";
+  }
+});
+
+let ws: WebSocket | null = null;
+const connectWebSocket = () => {
+  // 尝试创建 WebSocket 实例，并捕获可能的异常
+  try {
+    ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
+    ws.onmessage = (event: MessageEvent) => {
+      const response: WsData = JSON.parse(event.data);
+      sendNotification({
+        title: response.title || "Lazyeat",
+        body: response.msg,
+      });
+    };
+    ws.onopen = () => {
+      console.log("ws_lazyeat connected");
+      ws?.send("ws_lazyeat start");
+    };
+    ws.onclose = () => {
+      console.log("ws_lazyeat closed, retrying...");
+      ws = null; // 清除当前 WebSocket 实例
+      setTimeout(connectWebSocket, 3000); // 每隔 3 秒重试一次
+    };
+    ws.onerror = (error) => {
+      console.error("ws_lazyeat error:", error);
+      ws?.close(); // 如果发生错误，主动关闭连接以触发重连逻辑
+    };
+  } catch (error) {
+    console.error("Failed to create WebSocket instance:", error);
+    ws = null; // 确保 ws 被设置为 null
+    setTimeout(connectWebSocket, 1000); // 在实例化失败时重试
+  }
+};
+
+onMounted(() => {
+  connectWebSocket();
+});
 </script>
 
 <template>
@@ -73,7 +148,7 @@ watch(
             alt="logo"
             class="logo"
           />
-          <span class="logo-text">Lazyeat</span>
+          <span class="logo-text">Lazyeat {{ appVersion }}</span>
         </div>
         <AppMenu />
       </el-aside>
@@ -137,7 +212,7 @@ watch(
 }
 
 .logo-text {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 // 广告区域

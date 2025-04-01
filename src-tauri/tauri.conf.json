@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Lazyeat",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "identifier": "com.Lazyeat.maplelost",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -26,9 +26,10 @@
     "externalBin": ["bin/backend-py/Lazyeat Backend"],
     "resources": {
       "bin/backend-py/_internal": "_internal/",
-      "../model": "model/"
+      "../model": "model/",
+      "../debug backend.bat": "/"
     },
-    "targets": "all",
+    "targets": "msi",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
