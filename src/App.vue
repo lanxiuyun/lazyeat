@@ -98,24 +98,40 @@ onMounted(async () => {
   }
 });
 
+let ws: WebSocket | null = null;
+const connectWebSocket = () => {
+  // 尝试创建 WebSocket 实例，并捕获可能的异常
+  try {
+    ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
+    ws.onmessage = (event: MessageEvent) => {
+      const response: WsData = JSON.parse(event.data);
+      sendNotification({
+        title: response.title || "Lazyeat",
+        body: response.msg,
+      });
+    };
+    ws.onopen = () => {
+      console.log("ws_lazyeat connected");
+      ws?.send("ws_lazyeat start");
+    };
+    ws.onclose = () => {
+      console.log("ws_lazyeat closed, retrying...");
+      ws = null; // 清除当前 WebSocket 实例
+      setTimeout(connectWebSocket, 3000); // 每隔 3 秒重试一次
+    };
+    ws.onerror = (error) => {
+      console.error("ws_lazyeat error:", error);
+      ws?.close(); // 如果发生错误，主动关闭连接以触发重连逻辑
+    };
+  } catch (error) {
+    console.error("Failed to create WebSocket instance:", error);
+    ws = null; // 确保 ws 被设置为 null
+    setTimeout(connectWebSocket, 1000); // 在实例化失败时重试
+  }
+};
+
 onMounted(() => {
-  const ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
-
-  ws.onmessage = (event: MessageEvent) => {
-    const response: WsData = JSON.parse(event.data);
-    sendNotification({
-      title: response.title || "Lazyeat",
-      body: response.msg,
-    });
-  };
-
-  ws.onopen = () => {
-    ws.send("ws_lazyeat start");
-  };
-
-  ws.onclose = () => {
-    console.log("ws_lazyeat closed");
-  };
+  connectWebSocket();
 });
 </script>
 
