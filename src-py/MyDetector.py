@@ -199,7 +199,6 @@ class MyDetector(HandDetector):
                     )
                     self.last_change_flag_time = current_time
             elif self.flag_detect:
-                print(current_gesture, self.gesture_counter)
                 lmList = right_hand['lmList']
                 x1, y1 = lmList[8][:-1]  # 食指指尖坐标
                 x2, y2 = lmList[12][:-1]  # 中指指尖坐标
