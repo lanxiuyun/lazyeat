@@ -187,103 +187,95 @@ class MyDetector(HandDetector):
 
             x1, y1 = lmList[8][:-1]  # 食指指尖坐标
             x2, y2 = lmList[12][:-1]  # 中指指尖坐标
-            # print(x1, y1, x2, y2)
 
-            # 食指举起，移动鼠标
             if hand_state == HandState.only_index_up:
-                # 步骤5: 坐标转换（摄像头坐标系转屏幕坐标系）
-                x3 = np.interp(x1, (frameR, wCam - frameR), (0, screen_width))
-                y3 = np.interp(y1, (frameR, hCam - frameR), (0, screen_height))
-
-                # 步骤6: 平滑处理
-                clocX = prev_loc_x + (x3 - prev_loc_x) / smoothening
-                clocY = prev_loc_y + (y3 - prev_loc_y) / smoothening
-
-                # 步骤7: 移动鼠标
-                # print(screen_width - clocX, clocY)
-                mouse.position = (screen_width - clocX, clocY)
-                # mouse.position = (screen_width - (clocX * 1.1), clocY * 1.1) # *1.1 优化移动速度
-
-                prev_loc_x, prev_loc_y = clocX, clocY
-
-                # 更新最后移动时间, 防止误触
-                self.last_move_time = time.time()
-
-            # 食指举起，中指举起
+                self._trigger_mouse_move(x1, y1)
             elif hand_state == HandState.index_and_middle_up or hand_state == HandState.click_gesture_second:
-                if self.is_false_touch():
-                    return
-
-                current_time = time.time()
-                if not current_time - self.last_click_time > 0.5:  # 点击间隔 0.5s
-                    return
-
-                mouse.click(Button.left, 1)
-                # print(length)
-                self.last_click_time = current_time
-            # 三根手指同时竖起 - 滚动屏幕
+                self._trigger_mouse_click()
             elif hand_state == HandState.three_fingers_up:
-                if self.is_false_touch():
-                    return
-
-                y3 = np.interp(y1, (frameR, hCam - frameR), (0, screen_height))
-
-                clocY = prev_scroll_y + (y3 - prev_scroll_y) / smoothening
-
-                if abs(y3 - clocY) < 60:  # 防止手抖
-                    return
-                # print(clocY, prev_scroll_y)
-
-                current_time = time.time()
-                if current_time - self.last_scroll_time > 0.3:  # 滚动间隔 0.3s
-                    if clocY > prev_scroll_y:
-                        mouse.scroll(0, scroll_increment)
-                    elif clocY < prev_scroll_y:
-                        mouse.scroll(0, -scroll_increment)
-
-                    self.last_scroll_time = current_time
-                    prev_scroll_y = clocY
-
-            # 四根手指同时竖起 - 视频全屏
+                self._trigger_scroll(y1)
             elif hand_state == HandState.four_fingers_up:
-                self._four_fingers_up_trigger()
-
-            # 拇指和食指同时竖起 - 语音识别
+                self._trigger_four_fingers_up()
             elif hand_state == HandState.voice_gesture_start:
-                if not self.voice_controller:
-                    return
-
-                if not self.voice_controller.is_recording:
-                    self.voice_controller.start_record_thread()
-                    show_toast(
-                        title='开始语音识别',
-                        msg='开始语音识别',
-                        duration=1
-                    )
+                self._trigger_voice_record_start()
             elif hand_state == HandState.voice_gesture_stop:
-                if not self.voice_controller:
-                    return
-
-                if self.voice_controller.is_recording:
-                    self.voice_controller.stop_record()
-                    show_toast(
-                        title='结束语音识别',
-                        msg='结束语音识别',
-                        duration=1
-                    )
-
-                    text = self.voice_controller.transcribe_audio()
-                    # 将文本输入到当前焦点的应用程序
-                    if text:
-                        keyboard.type(text)
-                        keyboard.tap(Key.enter)
+                self._trigger_voice_record_stop()
             elif hand_state == HandState.delete_gesture:
-                keyboard.tap(Key.backspace)
+                self._trigger_backspace()
 
-    def _four_fingers_up_trigger(self):
-        if self.is_false_touch():
+    def _trigger_mouse_move(self, x1, y1):
+        global prev_loc_x, prev_loc_y
+
+        x3 = np.interp(x1, (frameR, wCam - frameR), (0, screen_width))
+        y3 = np.interp(y1, (frameR, hCam - frameR), (0, screen_height))
+
+        clocX = prev_loc_x + (x3 - prev_loc_x) / smoothening
+        clocY = prev_loc_y + (y3 - prev_loc_y) / smoothening
+
+        mouse.position = (screen_width - clocX, clocY)
+        prev_loc_x, prev_loc_y = clocX, clocY
+        self.last_move_time = time.time()
+
+    def _trigger_mouse_click(self):
+        current_time = time.time()
+        if not current_time - self.last_click_time > 0.5:
             return
 
+        mouse.click(Button.left, 1)
+        self.last_click_time = current_time
+
+    def _trigger_scroll(self, y1):
+        global prev_scroll_y
+
+        y3 = np.interp(y1, (frameR, hCam - frameR), (0, screen_height))
+        clocY = prev_scroll_y + (y3 - prev_scroll_y) / smoothening
+
+        if abs(y3 - clocY) < 60:
+            return
+
+        current_time = time.time()
+        if current_time - self.last_scroll_time > 0.3:
+            if clocY > prev_scroll_y:
+                mouse.scroll(0, scroll_increment)
+            elif clocY < prev_scroll_y:
+                mouse.scroll(0, -scroll_increment)
+
+            self.last_scroll_time = current_time
+            prev_scroll_y = clocY
+
+    def _trigger_voice_record_start(self):
+        if not self.voice_controller:
+            return
+
+        if not self.voice_controller.is_recording:
+            self.voice_controller.start_record_thread()
+            show_toast(
+                title='开始语音识别',
+                msg='开始语音识别',
+                duration=1
+            )
+
+    def _trigger_voice_record_stop(self):
+        if not self.voice_controller:
+            return
+
+        if self.voice_controller.is_recording:
+            self.voice_controller.stop_record()
+            show_toast(
+                title='结束语音识别',
+                msg='结束语音识别',
+                duration=1
+            )
+
+            text = self.voice_controller.transcribe_audio()
+            if text:
+                keyboard.type(text)
+                keyboard.tap(Key.enter)
+
+    def _trigger_backspace(self):
+        keyboard.tap(Key.backspace)
+
+    def _trigger_four_fingers_up(self):
         from pinia_store import PINIA_STORE
 
         current_time = time.time()
@@ -293,10 +285,3 @@ class MyDetector(HandDetector):
         gesture_sender = PINIA_STORE.gesture_sender
         gesture_sender.send_four_fingers_up()
         self.last_full_screen_time = current_time
-
-    # 防止手势误识别
-    def is_false_touch(self):
-        current_time = time.time()
-        if current_time - self.last_move_time < 0.2:  # 防止误触, 移动鼠标后立即点击
-            return True
-        return False
