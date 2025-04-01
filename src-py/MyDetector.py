@@ -46,7 +46,7 @@ def show_toast(title: str = '手势识别',
         traceback.print_exc()
 
 
-class HandState:
+class HandGesture:
     # 食指举起，移动鼠标
     only_index_up = 'only_index_up'
 
@@ -103,36 +103,36 @@ class MyDetector(HandDetector):
         thread = threading.Thread(target=init_voice_controller, daemon=True)
         thread.start()
 
-    def get_hand_state(self, hand):
+    def get_hand_gesture(self, hand):
         fingers = self.fingersUp(hand)
         # print(fingers)
 
         # 0,1,2,3,4 分别代表 大拇指，食指，中指，无名指，小拇指
         if fingers == [0, 1, 0, 0, 0]:
-            return HandState.only_index_up
+            return HandGesture.only_index_up
         elif fingers == [0, 1, 1, 0, 0]:
-            return HandState.index_and_middle_up
+            return HandGesture.index_and_middle_up
         elif fingers == [0, 1, 0, 0, 1] or fingers == [1, 1, 0, 0, 1]:
-            return HandState.click_gesture_second
+            return HandGesture.click_gesture_second
         elif fingers == [0, 1, 1, 1, 0]:
-            return HandState.three_fingers_up
+            return HandGesture.three_fingers_up
         elif fingers == [0, 1, 1, 1, 1]:
-            return HandState.four_fingers_up
+            return HandGesture.four_fingers_up
         elif fingers == [1, 1, 1, 1, 1]:
-            return HandState.stop_gesture
+            return HandGesture.stop_gesture
         elif fingers == [1, 0, 0, 0, 1]:
-            return HandState.voice_gesture_start
+            return HandGesture.voice_gesture_start
         elif fingers == [0, 0, 0, 0, 0]:
-            return HandState.voice_gesture_stop
+            return HandGesture.voice_gesture_stop
         # 拇指在左边，其他全收起 手势判断
         elif (hand['lmList'][4][0] > (hand['lmList'][8][0] + 20)
               and hand['lmList'][4][0] > (hand['lmList'][12][0] + 20)
               and hand['lmList'][4][0] > (hand['lmList'][16][0] + 20)
               and hand['lmList'][4][0] > (hand['lmList'][20][0] + 20)
               and fingers == [1, 0, 0, 0, 0]):
-            return HandState.delete_gesture
+            return HandGesture.delete_gesture
         else:
-            return HandState.other
+            return HandGesture.other
 
     def draw_mouse_move_box(self, img) -> np.ndarray:
         cv2.rectangle(img, (frameR, frameR), (wCam - frameR, hCam - frameR),
@@ -155,11 +155,11 @@ class MyDetector(HandDetector):
             if right_hand['type'] == left_hand['type']:
                 return
 
-            right_hand_state = self.get_hand_state(right_hand)
-            left_hand_state = self.get_hand_state(left_hand)
+            right_hand_gesture = self.get_hand_gesture(right_hand)
+            left_hand_state = self.get_hand_gesture(left_hand)
 
             # 暂停/开始 识别
-            if right_hand_state == HandState.stop_gesture and left_hand_state == HandState.stop_gesture:
+            if right_hand_gesture == HandGesture.stop_gesture and left_hand_state == HandGesture.stop_gesture:
                 current_time = time.time()
                 if not current_time - self.last_change_flag_time > 1.5:
                     return
@@ -183,24 +183,24 @@ class MyDetector(HandDetector):
                 right_hand = all_hands[0] if all_hands[0]['type'] == 'Right' else all_hands[1]
 
             lmList, bbox = right_hand['lmList'], right_hand['bbox']
-            hand_state = self.get_hand_state(right_hand)
+            hand_state = self.get_hand_gesture(right_hand)
 
             x1, y1 = lmList[8][:-1]  # 食指指尖坐标
             x2, y2 = lmList[12][:-1]  # 中指指尖坐标
 
-            if hand_state == HandState.only_index_up:
+            if hand_state == HandGesture.only_index_up:
                 self._trigger_mouse_move(x1, y1)
-            elif hand_state == HandState.index_and_middle_up or hand_state == HandState.click_gesture_second:
+            elif hand_state == HandGesture.index_and_middle_up or hand_state == HandGesture.click_gesture_second:
                 self._trigger_mouse_click()
-            elif hand_state == HandState.three_fingers_up:
+            elif hand_state == HandGesture.three_fingers_up:
                 self._trigger_scroll(y1)
-            elif hand_state == HandState.four_fingers_up:
+            elif hand_state == HandGesture.four_fingers_up:
                 self._trigger_four_fingers_up()
-            elif hand_state == HandState.voice_gesture_start:
+            elif hand_state == HandGesture.voice_gesture_start:
                 self._trigger_voice_record_start()
-            elif hand_state == HandState.voice_gesture_stop:
+            elif hand_state == HandGesture.voice_gesture_stop:
                 self._trigger_voice_record_stop()
-            elif hand_state == HandState.delete_gesture:
+            elif hand_state == HandGesture.delete_gesture:
                 self._trigger_backspace()
 
     def _trigger_mouse_move(self, x1, y1):
