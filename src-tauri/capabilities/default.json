@@ -20,8 +20,10 @@
     "core:window:allow-set-title",
     "store:default",
 
+    "notification:default",
     "notification:allow-is-permission-granted",
     "notification:allow-notify",
-    "notification:allow-show"
+    "notification:allow-show",
+    "notification:allow-request-permission"
   ]
 }

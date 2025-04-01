@@ -11,11 +11,14 @@ import {
   StateFlags,
   restoreStateCurrent,
 } from "@tauri-apps/plugin-window-state";
+import { getVersion } from "@tauri-apps/api/app";
 
+const appVersion = ref("");
 const ready = ref(false);
 const is_dev = import.meta.env.DEV;
 
 onMounted(async () => {
+  appVersion.value = await getVersion();
   ready.value = await pyApi.ready();
 
   const timer = setInterval(async () => {
@@ -129,7 +132,7 @@ onMounted(() => {
             alt="logo"
             class="logo"
           />
-          <span class="logo-text">Lazyeat</span>
+          <span class="logo-text">Lazyeat {{ appVersion }}</span>
         </div>
         <AppMenu />
       </el-aside>
@@ -193,7 +196,7 @@ onMounted(() => {
 }
 
 .logo-text {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 // 广告区域
