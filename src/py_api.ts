@@ -14,9 +14,9 @@ class PyApi {
     return response.json();
   }
 
-  async get_fps() {
-    const response = await fetch(`${base_url}/fps`);
-    return response.text();
+  async get_performance() {
+    const response = await fetch(`${base_url}/get_performance`);
+    return response.json();
   }
 
   async get_all_cameras(): Promise<Record<number, string>> {

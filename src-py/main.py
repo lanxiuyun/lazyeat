@@ -39,6 +39,9 @@ class Config:
 
 CONFIG = Config()
 FPS = 0
+AVERAGE_CATCH_TIME = 0
+AVERAGE_PREDICT_TIME = 0
+AVERAGE_COST_TIME = 0
 my_detector: MyDetector = None
 
 work_thread_lock = threading.Lock()
@@ -79,10 +82,14 @@ def thread_detect():
     thread_cam.set(cv2.CAP_PROP_FRAME_HEIGHT, hCam)
 
     count = 0
+    total_catch_time = 0
+    total_predict_time = 0
     total_cost_time = 0
     while True:
-        start_time = time.time()
+        catch_time = time.time()
         success, img = thread_cam.read()
+        catch_time_end = time.time()
+        total_catch_time += (catch_time_end - catch_time) * 1000
 
         if my_detector is None:
             show_toast(
@@ -99,14 +106,20 @@ def thread_detect():
             continue
 
         if CONFIG.show_detect_window:
+            predict_time = time.time()
             all_hands, img = my_detector.findHands(img, draw=True)
+            predict_time_end = time.time()
+            total_predict_time += (predict_time_end - predict_time) * 1000
             if all_hands:
                 my_detector.process(all_hands)
             img = my_detector.draw_mouse_move_box(img)
             cv2.imshow("Lazyeat Detect Window", img)
             cv2.waitKey(1)
         else:
+            predict_time = time.time()
             all_hands = my_detector.findHands(img, draw=False)
+            predict_time_end = time.time()
+            total_predict_time += (predict_time_end - predict_time) * 1000
             if all_hands:
                 my_detector.process(all_hands)
             # not CONFIG.show_detect_window 改变需要关闭窗口
@@ -117,12 +130,21 @@ def thread_detect():
 
         count += 1
         end_time = time.time()
-        total_cost_time += (end_time - start_time) * 1000
-        if count % 100 == 0:
-            global FPS
+        total_cost_time += (end_time - catch_time) * 1000
+        if count == 100:
+            global FPS, AVERAGE_CATCH_TIME, AVERAGE_PREDICT_TIME, AVERAGE_COST_TIME
             FPS = 1000 / (total_cost_time / count)
+            AVERAGE_CATCH_TIME = total_catch_time / count
+            AVERAGE_PREDICT_TIME = total_predict_time / count
+            AVERAGE_COST_TIME = total_cost_time / count
+
             print(f"FPS: {FPS:.2f}")
-            print(f"每100帧平均耗时: {total_cost_time / count:.2f} ms")
+            print(f"每100帧平均取图时间: {AVERAGE_CATCH_TIME:.2f} ms")
+            print(f"每100帧平均预测时间: {AVERAGE_PREDICT_TIME:.2f} ms")
+            print(f"每100帧平均耗时: {AVERAGE_COST_TIME:.2f} ms")
+            print()
+            total_catch_time = 0
+            total_predict_time = 0
             total_cost_time = 0
             count = 0
 
@@ -130,9 +152,14 @@ def thread_detect():
     thread_cam.release()
 
 
-@app.get("/fps")
-def get_fps():
-    return f"{int(FPS)}"
+@app.get("/get_performance")
+def get_performance():
+    return {
+        "fps": round(FPS, 2),
+        "avg_catch_time": round(AVERAGE_CATCH_TIME, 2),
+        "avg_predict_time": round(AVERAGE_PREDICT_TIME, 2),
+        "avg_cost_time": round(AVERAGE_COST_TIME, 2)
+    }
 
 
 @app.get("/toggle_work")
@@ -187,5 +214,5 @@ if __name__ == '__main__':
 
     port = 62334
 
-    print(f"Starting server at http://localhost:{port}/docs")
+    print(f"Starting server at http://127.0.0.1:{port}/docs")
     uvicorn.run(app, host="127.0.0.1", port=port)
