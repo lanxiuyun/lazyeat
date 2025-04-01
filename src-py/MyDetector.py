@@ -34,7 +34,6 @@ prev_scroll_y = 0
 def show_toast(title: str = '手势识别',
                msg: str = '手势识别',
                duration: int = 1):
-
     from router.ws import send_message, WsDataType
     try:
         import asyncio
@@ -191,7 +190,7 @@ class MyDetector(HandDetector):
 
         # 只有当手势计数达到阈值时才触发动作
         if self.gesture_counter >= self.GESTURE_THRESHOLD:
-            if current_gesture == HandGesture.stop_gesture:
+            if current_gesture == HandGesture.stop_gesture and len(all_hands) == 2:
                 current_time = time.time()
                 if current_time - self.last_change_flag_time > 1.5:
                     self.flag_detect = not self.flag_detect
