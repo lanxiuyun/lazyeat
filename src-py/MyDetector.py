@@ -156,10 +156,10 @@ class MyDetector(HandDetector):
                 return
 
             right_hand_gesture = self.get_hand_gesture(right_hand)
-            left_hand_state = self.get_hand_gesture(left_hand)
+            left_hand_gesture = self.get_hand_gesture(left_hand)
 
             # 暂停/开始 识别
-            if right_hand_gesture == HandGesture.stop_gesture and left_hand_state == HandGesture.stop_gesture:
+            if right_hand_gesture == HandGesture.stop_gesture and left_hand_gesture == HandGesture.stop_gesture:
                 current_time = time.time()
                 if not current_time - self.last_change_flag_time > 1.5:
                     return
@@ -183,24 +183,24 @@ class MyDetector(HandDetector):
                 right_hand = all_hands[0] if all_hands[0]['type'] == 'Right' else all_hands[1]
 
             lmList, bbox = right_hand['lmList'], right_hand['bbox']
-            hand_state = self.get_hand_gesture(right_hand)
+            hand_gesture = self.get_hand_gesture(right_hand)
 
             x1, y1 = lmList[8][:-1]  # 食指指尖坐标
             x2, y2 = lmList[12][:-1]  # 中指指尖坐标
 
-            if hand_state == HandGesture.only_index_up:
+            if hand_gesture == HandGesture.only_index_up:
                 self._trigger_mouse_move(x1, y1)
-            elif hand_state == HandGesture.index_and_middle_up or hand_state == HandGesture.click_gesture_second:
+            elif hand_gesture == HandGesture.index_and_middle_up or hand_gesture == HandGesture.click_gesture_second:
                 self._trigger_mouse_click()
-            elif hand_state == HandGesture.three_fingers_up:
+            elif hand_gesture == HandGesture.three_fingers_up:
                 self._trigger_scroll(y1)
-            elif hand_state == HandGesture.four_fingers_up:
-                self._trigger_four_fingers_up()
-            elif hand_state == HandGesture.voice_gesture_start:
+            elif hand_gesture == HandGesture.four_fingers_up:
+                self._trigger_full_screen()
+            elif hand_gesture == HandGesture.voice_gesture_start:
                 self._trigger_voice_record_start()
-            elif hand_state == HandGesture.voice_gesture_stop:
+            elif hand_gesture == HandGesture.voice_gesture_stop:
                 self._trigger_voice_record_stop()
-            elif hand_state == HandGesture.delete_gesture:
+            elif hand_gesture == HandGesture.delete_gesture:
                 self._trigger_backspace()
 
     def _trigger_mouse_move(self, x1, y1):
@@ -275,7 +275,7 @@ class MyDetector(HandDetector):
     def _trigger_backspace(self):
         keyboard.tap(Key.backspace)
 
-    def _trigger_four_fingers_up(self):
+    def _trigger_full_screen(self):
         from pinia_store import PINIA_STORE
 
         current_time = time.time()
