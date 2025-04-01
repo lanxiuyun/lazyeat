@@ -104,11 +104,11 @@ def thread_detect():
             all_hands = my_detector.findHands(img, draw=False)
             if all_hands:
                 my_detector.process(all_hands)
-                # not CONFIG.show_detect_window 改变需要关闭窗口
-                try:
-                    cv2.destroyAllWindows()
-                except:
-                    pass
+            # not CONFIG.show_detect_window 改变需要关闭窗口
+            try:
+                cv2.destroyAllWindows()
+            except:
+                pass
 
         count += 1
         end_time = time.time()
