@@ -168,8 +168,9 @@ class MyDetector(HandDetector):
                 if (right_hand_gesture == HandGesture.stop_gesture and
                         left_hand_gesture == HandGesture.stop_gesture):
                     current_gesture = HandGesture.stop_gesture
+
         # 处理单手手势
-        elif len(all_hands) >= 1 and self.flag_detecting:
+        if len(all_hands) >= 1 and self.flag_detecting:
             if len(all_hands) == 1:
                 right_hand = all_hands[0]
             else:
