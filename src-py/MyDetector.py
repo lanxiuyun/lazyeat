@@ -210,23 +210,10 @@ class MyDetector(HandDetector):
                 self.last_move_time = time.time()
 
             # 食指举起，中指举起
-            elif hand_state == HandState.index_and_middle_up:
+            elif hand_state == HandState.index_and_middle_up or hand_state == HandState.click_gesture_second:
                 if self.is_false_touch():
                     return
 
-                length, info = self.findDistance((x1, y1), (x2, y2))
-
-                if length < 15:
-                    current_time = time.time()
-                    if not current_time - self.last_click_time > 0.5:  # 点击间隔 0.5s
-                        return
-
-                    mouse.click(Button.left, 1)
-                    # print(length)
-                    self.last_click_time = current_time
-            elif hand_state == HandState.click_gesture_second:
-                if self.is_false_touch():
-                    return
                 current_time = time.time()
                 if not current_time - self.last_click_time > 0.5:  # 点击间隔 0.5s
                     return
@@ -234,7 +221,6 @@ class MyDetector(HandDetector):
                 mouse.click(Button.left, 1)
                 # print(length)
                 self.last_click_time = current_time
-
             # 三根手指同时竖起 - 滚动屏幕
             elif hand_state == HandState.three_fingers_up:
                 if self.is_false_touch():

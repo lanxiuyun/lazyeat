@@ -57,15 +57,29 @@
           </template>
         </GestureCard>
 
-        <GestureCard title="单击操作" description="双指并拢执行鼠标单击">
+        <GestureCard title="单击操作" description="双指举起执行鼠标单击">
           <template #icon>
             <GestureIcon :icon="TwoTwo" />
           </template>
         </GestureCard>
 
-        <GestureCard title="单击操作" description="双指并拢执行鼠标单击">
+        <GestureCard title="单击操作" description="Rock手势执行鼠标单击">
           <template #icon>
             <GestureIcon :icon="Rock" />
+          </template>
+          <template #extra>
+            <n-space>
+              <a href="https://github.com/MiKoto-Railgun" target="_blank">
+                @MiKoto-Railgun
+              </a>
+
+              <a
+                href="https://github.com/maplelost/lazyeat/issues/26"
+                target="_blank"
+              >
+                issues
+              </a>
+            </n-space>
           </template>
         </GestureCard>
 
@@ -235,5 +249,24 @@ watch(
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   padding: 16px 0;
+}
+
+// 链接样式
+a {
+  color: #2196f3; // 默认使用适中的蓝色
+  text-decoration: none;
+  transition: all 0.3s ease; // 添加过渡效果
+}
+
+a:visited {
+  color: #2196f3;
+}
+
+a:hover {
+  color: #1976d2; // 悬停时使用深蓝色
+}
+
+a:active {
+  color: #0d47a1; // 点击时使用更深的蓝色
 }
 </style>
