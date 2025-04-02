@@ -30,7 +30,10 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { Detector } from "../hand_landmark/detector";
+import { Detector } from "@/hand_landmark/detector";
+import utils_func from "@/utils";
+
+onMounted(() => {});
 
 const videoElement = ref(null);
 const canvasElement = ref(null);

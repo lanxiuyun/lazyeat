@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import HandLandmarkDetection from "./components/HandLandmarkDetection.vue";
+import HandLandmarkDetection from "@/hand_landmark/Detector.vue";
 </script>
 
 <style scoped>
