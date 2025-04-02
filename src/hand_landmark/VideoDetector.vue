@@ -31,7 +31,15 @@
 <script setup>
 import { Detector, HandGesture } from "@/hand_landmark/detector";
 import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useAppStore } from "@/store/app";
 
+// 常量定义
+const appStore = useAppStore();
+const VIDEO_WIDTH = 640;
+const VIDEO_HEIGHT = 480;
+const GESTURE_DEBOUNCE_TIME = 500; // 手势防抖时间（毫秒）
+
+// 组件状态
 const videoElement = ref(null);
 const canvasElement = ref(null);
 const detector = ref(new Detector());
@@ -39,15 +47,14 @@ const lastVideoTime = ref(-1);
 const cameras = ref([]);
 const selectedCameraId = ref("1");
 const currentStream = ref(null);
+const fps = ref(0);
+const lastFpsTime = ref(0);
 const lastGestureTime = ref(0);
-const GESTURE_DEBOUNCE_TIME = 500; // 手势防抖时间（毫秒）
 
+// 摄像头相关方法
 const getCameras = async () => {
   try {
-    // 先请求摄像头权限
     await navigator.mediaDevices.getUserMedia({ video: true });
-
-    // 获取设备列表
     const devices = await navigator.mediaDevices.enumerateDevices();
     cameras.value = devices.filter((device) => device.kind === "videoinput");
     if (cameras.value.length > 0) {
@@ -58,10 +65,6 @@ const getCameras = async () => {
   }
 };
 
-const initializeDetector = async () => {
-  await detector.value.initialize();
-};
-
 const initializeCamera = async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -69,8 +72,8 @@ const initializeCamera = async () => {
         deviceId: selectedCameraId.value
           ? { exact: selectedCameraId.value }
           : undefined,
-        width: 640,
-        height: 480,
+        width: VIDEO_WIDTH,
+        height: VIDEO_HEIGHT,
       },
       audio: false,
     });
@@ -82,16 +85,13 @@ const initializeCamera = async () => {
   }
 };
 
-const switchCamera = async () => {
-  stopCamera();
-  await initializeCamera();
+const stopCamera = () => {
+  if (videoElement.value?.srcObject) {
+    videoElement.value.srcObject.getTracks().forEach((track) => track.stop());
+  }
 };
 
-// 记录 fps 的变量
-const fps = ref(0);
-const lastFpsTime = ref(0);
-
-// 手势处理函数
+// 手势处理相关方法
 const handleGesture = (gesture) => {
   const now = Date.now();
   if (now - lastGestureTime.value < GESTURE_DEBOUNCE_TIME) {
@@ -99,6 +99,7 @@ const handleGesture = (gesture) => {
   }
   lastGestureTime.value = now;
 
+  // 手势动作映射
   const gestureActions = {
     [HandGesture.ONLY_INDEX_UP]: () => console.log("食指举起"),
     [HandGesture.INDEX_AND_MIDDLE_UP]: () => console.log("食指和中指同时竖起"),
@@ -119,7 +120,6 @@ const handleGesture = (gesture) => {
   }
 };
 
-// 获取有效手势
 const getEffectiveGesture = (rightHandGesture, leftHandGesture) => {
   // 如果左右手都是暂停手势，才执行暂停手势
   if (
@@ -147,6 +147,36 @@ const getEffectiveGesture = (rightHandGesture, leftHandGesture) => {
   return HandGesture.OTHER;
 };
 
+// 绘制相关方法
+const drawFPS = (ctx) => {
+  const now = performance.now();
+  if (lastFpsTime.value) {
+    const delta = now - lastFpsTime.value;
+    fps.value = Math.round(1000 / delta);
+  }
+  lastFpsTime.value = now;
+
+  ctx.font = "20px Arial";
+  ctx.fillStyle = "white";
+  ctx.fillText(`FPS: ${fps.value}`, 10, 30);
+};
+
+const drawHandLandmarks = (ctx, hand, color) => {
+  hand.landmarks.forEach((landmark) => {
+    ctx.beginPath();
+    ctx.arc(
+      landmark.x * VIDEO_WIDTH,
+      landmark.y * VIDEO_HEIGHT,
+      5,
+      0,
+      2 * Math.PI
+    );
+    ctx.fillStyle = color;
+    ctx.fill();
+  });
+};
+
+// 主要检测逻辑
 const predictWebcam = async () => {
   const video = videoElement.value;
   const canvas = canvasElement.value;
@@ -156,56 +186,22 @@ const predictWebcam = async () => {
     lastVideoTime.value = video.currentTime;
     const detection = await detector.value.detect(video);
 
-    // 清除画布
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     // 绘制视频帧
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // 计算 FPS
-    const now = performance.now();
-    if (lastFpsTime.value) {
-      const delta = now - lastFpsTime.value;
-      fps.value = Math.round(1000 / delta);
-    }
-    lastFpsTime.value = now;
+    // 绘制FPS
+    drawFPS(ctx);
 
-    // 绘制 FPS
-    ctx.font = "20px Arial";
-    ctx.fillStyle = "white";
-    ctx.fillText(`FPS: ${fps.value}`, 10, 30);
-
-    // 绘制所有手势点
+    // 绘制手势点
     if (detection.leftHand) {
-      detection.leftHand.landmarks.forEach((landmark) => {
-        ctx.beginPath();
-        ctx.arc(
-          landmark.x * canvas.width,
-          landmark.y * canvas.height,
-          5,
-          0,
-          2 * Math.PI
-        );
-        ctx.fillStyle = "red";
-        ctx.fill();
-      });
+      drawHandLandmarks(ctx, detection.leftHand, "red");
     }
     if (detection.rightHand) {
-      detection.rightHand.landmarks.forEach((landmark) => {
-        ctx.beginPath();
-        ctx.arc(
-          landmark.x * canvas.width,
-          landmark.y * canvas.height,
-          5,
-          0,
-          2 * Math.PI
-        );
-        ctx.fillStyle = "blue";
-        ctx.fill();
-      });
+      drawHandLandmarks(ctx, detection.rightHand, "blue");
     }
 
-    // 获取左右手手势
+    // 手势识别和处理
     const rightHandGesture = detection.rightHand
       ? Detector.getSingleHandGesture(detection.rightHand)
       : HandGesture.OTHER;
@@ -213,7 +209,6 @@ const predictWebcam = async () => {
       ? Detector.getSingleHandGesture(detection.leftHand)
       : HandGesture.OTHER;
 
-    // 获取有效手势并处理
     const effectiveGesture = getEffectiveGesture(
       rightHandGesture,
       leftHandGesture
@@ -223,19 +218,18 @@ const predictWebcam = async () => {
     }
   }
 
-  // 继续下一帧检测
   requestAnimationFrame(predictWebcam);
 };
 
-const stopCamera = () => {
-  if (videoElement.value?.srcObject) {
-    videoElement.value.srcObject.getTracks().forEach((track) => track.stop());
-  }
+const switchCamera = async () => {
+  stopCamera();
+  await initializeCamera();
 };
 
+// 生命周期钩子
 onMounted(async () => {
   await getCameras();
-  await initializeDetector();
+  await detector.value.initialize();
   await initializeCamera();
 });
 
