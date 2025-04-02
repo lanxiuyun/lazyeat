@@ -1,16 +1,5 @@
 <template>
   <div class="hand-detection">
-    <div class="camera-select">
-      <select v-model="selectedCameraId" @change="switchCamera">
-        <option
-          v-for="camera in cameras"
-          :key="camera.deviceId"
-          :value="camera.deviceId"
-        >
-          {{ camera.label || `摄像头 ${camera.deviceId.slice(0, 4)}` }}
-        </option>
-      </select>
-    </div>
     <video
       ref="videoElement"
       class="input-video"
@@ -34,9 +23,11 @@ import {
   HandGesture,
   gestureTrigger,
 } from "@/hand_landmark/detector";
+import { use_app_store } from "@/store/app";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
 // 常量定义
+const app_store = use_app_store();
 const VIDEO_WIDTH = 640;
 const VIDEO_HEIGHT = 480;
 
@@ -45,32 +36,16 @@ const videoElement = ref(null);
 const canvasElement = ref(null);
 const detector = ref(new Detector());
 const lastVideoTime = ref(-1);
-const cameras = ref([]);
-const selectedCameraId = ref("1");
 const currentStream = ref(null);
 const FPS = ref(0);
 const lastFpsTime = ref(0);
-
-// 摄像头相关方法
-const getCameras = async () => {
-  try {
-    await navigator.mediaDevices.getUserMedia({ video: true });
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    cameras.value = devices.filter((device) => device.kind === "videoinput");
-    if (cameras.value.length > 0) {
-      selectedCameraId.value = cameras.value[0].deviceId;
-    }
-  } catch (error) {
-    console.error("获取摄像头列表失败:", error);
-  }
-};
 
 const initializeCamera = async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        deviceId: selectedCameraId.value
-          ? { exact: selectedCameraId.value }
+        deviceId: app_store.selected_camera_id
+          ? { exact: app_store.selected_camera_id }
           : undefined,
         width: VIDEO_WIDTH,
         height: VIDEO_HEIGHT,
@@ -207,14 +182,13 @@ const predictWebcam = async () => {
   requestAnimationFrame(predictWebcam);
 };
 
-const switchCamera = async () => {
+watch(app_store.selected_camera_id, async () => {
   stopCamera();
   await initializeCamera();
-};
+});
 
 // 生命周期钩子
 onMounted(async () => {
-  await getCameras();
   await detector.value.initialize();
   await initializeCamera();
 });
@@ -229,22 +203,6 @@ onBeforeUnmount(() => {
   position: relative;
   width: 640px;
   height: 480px;
-}
-
-.camera-select {
-  top: 10px;
-  left: 10px;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 5px;
-  border-radius: 4px;
-}
-
-.camera-select select {
-  padding: 5px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background: white;
 }
 
 .output-canvas {
