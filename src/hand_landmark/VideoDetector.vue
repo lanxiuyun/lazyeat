@@ -44,8 +44,8 @@ const initializeCamera = async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        deviceId: app_store.selected_camera_id
-          ? { exact: app_store.selected_camera_id }
+        deviceId: app_store.config.selected_camera_id
+          ? { exact: app_store.config.selected_camera_id }
           : undefined,
         width: VIDEO_WIDTH,
         height: VIDEO_HEIGHT,
@@ -149,19 +149,21 @@ const predictWebcam = async () => {
     lastVideoTime.value = video.currentTime;
     const detection = await detector.value.detect(video);
 
-    // 绘制视频帧
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    if (app_store.config.show_window) {
+      // 绘制视频帧
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // 绘制FPS
-    drawFPS(ctx);
+      // 绘制FPS
+      drawFPS(ctx);
 
-    // 绘制手势点
-    if (detection.leftHand) {
-      drawHandLandmarks(ctx, detection.leftHand, "red");
-    }
-    if (detection.rightHand) {
-      drawHandLandmarks(ctx, detection.rightHand, "blue");
+      // 绘制手势点
+      if (detection.leftHand) {
+        drawHandLandmarks(ctx, detection.leftHand, "red");
+      }
+      if (detection.rightHand) {
+        drawHandLandmarks(ctx, detection.rightHand, "blue");
+      }
     }
 
     // 手势识别和处理
@@ -182,7 +184,7 @@ const predictWebcam = async () => {
   requestAnimationFrame(predictWebcam);
 };
 
-watch(app_store.selected_camera_id, async () => {
+watch(app_store.config.selected_camera_id, async () => {
   stopCamera();
 });
 

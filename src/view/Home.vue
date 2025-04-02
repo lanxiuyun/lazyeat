@@ -1,9 +1,7 @@
 <template>
-  <VideoDetector />
-
   <div class="home-container">
-    <!-- <n-card class="control-panel" hoverable>
-      <n-card class="performance-card" hoverable>
+    <n-card class="control-panel" hoverable>
+      <!-- <n-card class="performance-card" hoverable>
         <template #header>
           <n-space align="center">
             <n-icon size="20">
@@ -30,8 +28,9 @@
             <span>{{ avg_cost_time }}ms</span>
           </n-space>
         </n-space>
-      </n-card>
-    </n-card> -->
+      </n-card> -->
+      <VideoDetector v-show="app_store.config.show_window" />
+    </n-card>
 
     <!-- 顶部控制区域 -->
     <n-card class="control-panel" hoverable>
@@ -67,7 +66,7 @@
               <span>摄像头选择</span>
             </span>
             <n-select
-              v-model:value="app_store.selected_camera_id"
+              v-model:value="app_store.config.selected_camera_id"
               :options="camera_options"
               :disabled="app_store.flag_detecting"
               style="width: 250px"
@@ -206,9 +205,6 @@ const getCameras = async () => {
     app_store.cameras = devices.filter(
       (device) => device.kind === "videoinput"
     );
-    if (app_store.cameras.length > 0) {
-      app_store.selected_camera_id = app_store.cameras[0].deviceId;
-    }
   } catch (error) {
     console.error("获取摄像头列表失败:", error);
   }

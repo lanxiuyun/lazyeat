@@ -12,10 +12,10 @@ export const use_app_store = defineStore("app-store", {
       auto_start: false,
       show_window: false,
       four_fingers_up_send: "f",
+      selected_camera_id: "",
     },
 
     cameras: [] as Camera[],
-    selected_camera_id: "",
     VIDEO_WIDTH: 640,
     VIDEO_HEIGHT: 480,
     flag_detecting: false,
