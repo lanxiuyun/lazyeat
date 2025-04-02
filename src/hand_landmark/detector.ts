@@ -287,7 +287,7 @@ class GestureTrigger {
   private screen_width: number = window.screen.width;
   private screen_height: number = window.screen.height;
 
-  private smoothening = 7; // 平滑系数
+  private smoothening = 10; // 平滑系数
   private prev_loc_x: number = 0;
   private prev_loc_y: number = 0;
   // 食指举起，移动鼠标
@@ -337,7 +337,7 @@ class GestureTrigger {
       screenX =
         this.prev_loc_x + (screenX - this.prev_loc_x) / this.smoothening;
       screenY =
-        this.prev_loc_y + (screenY - this.prev_loc_y) / this.smoothening;
+        this.prev_loc_y + (screenY - this.prev_loc_y) / this.smoothening; // 消除抖动
 
       this.prev_loc_x = screenX;
       this.prev_loc_y = screenY;
