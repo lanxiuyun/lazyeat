@@ -142,6 +142,15 @@
           </template>
         </GestureCard>
 
+        <GestureCard title="删除" description="发送删除键">
+          <template #icon>
+            <GestureIcon
+              style="transform: rotate(90deg) scaleX(-1)"
+              :icon="BadTwo"
+            />
+          </template>
+        </GestureCard>
+
         <GestureCard title="开始语音识别" description="六指手势开始语音识别">
           <template #icon>
             <GestureIcon :icon="Six" />
@@ -186,6 +195,7 @@ import {
   Six,
   ThreeThree,
   TwoTwo,
+  BadTwo,
 } from "@icon-park/vue-next";
 import { computed, onMounted, ref } from "vue";
 
