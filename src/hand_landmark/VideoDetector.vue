@@ -3,16 +3,16 @@
     <video
       ref="videoElement"
       class="input-video"
-      width="640"
-      height="480"
+      :width="app_store.VIDEO_WIDTH"
+      :height="app_store.VIDEO_HEIGHT"
       autoplay
       style="display: none"
     ></video>
     <canvas
       ref="canvasElement"
       class="output-canvas"
-      width="640"
-      height="480"
+      :width="app_store.VIDEO_WIDTH"
+      :height="app_store.VIDEO_HEIGHT"
     ></canvas>
   </div>
 </template>
@@ -28,8 +28,6 @@ import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 // 常量定义
 const app_store = use_app_store();
-const VIDEO_WIDTH = 640;
-const VIDEO_HEIGHT = 480;
 
 // 组件状态
 const videoElement = ref(null);
@@ -47,8 +45,8 @@ const initializeCamera = async () => {
         deviceId: app_store.config.selected_camera_id
           ? { exact: app_store.config.selected_camera_id }
           : undefined,
-        width: VIDEO_WIDTH,
-        height: VIDEO_HEIGHT,
+        width: app_store.VIDEO_WIDTH,
+        height: app_store.VIDEO_HEIGHT,
       },
       audio: false,
     });
@@ -217,8 +215,8 @@ onBeforeUnmount(() => {
 <style scoped>
 .hand-detection {
   position: relative;
-  width: 640px;
-  height: 480px;
+  width: v-bind('app_store.VIDEO_WIDTH + "px"');
+  height: v-bind('app_store.VIDEO_HEIGHT + "px"');
 }
 
 .output-canvas {
