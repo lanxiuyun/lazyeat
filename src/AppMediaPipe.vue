@@ -1,10 +1,12 @@
 <template>
-  <div class="app-container">
-    <h1>MediaPipe 手部关键点检测测试</h1>
-    <div class="detection-container">
-      <hand-landmark-detection />
+  <n-message-provider>
+    <div class="app-container">
+      <h1>MediaPipe</h1>
+      <div class="detection-container">
+        <hand-landmark-detection />
+      </div>
     </div>
-  </div>
+  </n-message-provider>
 </template>
 
 <script setup lang="ts">
