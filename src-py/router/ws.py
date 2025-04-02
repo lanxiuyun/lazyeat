@@ -73,15 +73,15 @@ class GestureSender:
         try:
             for key in keys:
                 if isinstance(key, str):  # 单字符键
-                    self.controller.press(key)
+                    self.keyboard.press(key)
                 else:  # 特殊键
-                    self.controller.press(key)
+                    self.keyboard.press(key)
                 pressed_keys.append(key)
             for key in reversed(pressed_keys):
                 if isinstance(key, str):
-                    self.controller.release(key)
+                    self.keyboard.release(key)
                 else:
-                    self.controller.release(key)
+                    self.keyboard.release(key)
         except Exception as e:
             print(f"Error sending keys: {e}")
 

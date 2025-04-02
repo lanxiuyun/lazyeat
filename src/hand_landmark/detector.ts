@@ -287,6 +287,15 @@ class TriggerAction {
     this.ws?.send(JSON.stringify({ type: WsDataType.MouseScrollDown }));
   }
 
+  fourFingersUp(key_str: string) {
+    this.ws?.send(
+      JSON.stringify({
+        type: WsDataType.FourFingersUp,
+        data: { key_str },
+      })
+    );
+  }
+
   voiceRecord() {
     this.ws?.send(JSON.stringify({ type: WsDataType.VoiceRecord }));
   }
@@ -432,27 +441,15 @@ class GestureTrigger {
 
   // 四根手指同时竖起 - 视频全屏
   _four_fingers_up(hand: HandInfo) {
-    const indexTip = Detector.getFingerTip(hand, 1);
-    const middleTip = Detector.getFingerTip(hand, 2);
-    const ringTip = Detector.getFingerTip(hand, 3);
-    const pinkyTip = Detector.getFingerTip(hand, 4);
-    if (indexTip && middleTip && ringTip && pinkyTip) {
-      const now = Date.now();
-      if (now - this.lastFullScreenTime < this.FULL_SCREEN_INTERVAL) {
-        return;
-      }
-      this.lastFullScreenTime = now;
-
-      // 计算手指移动方向
-      const deltaY = (indexTip.y + middleTip.y + ringTip.y + pinkyTip.y) / 4;
-      if (deltaY < 0.3) {
-        // 向上滑动
-        document.documentElement.requestFullscreen();
-      } else if (deltaY > 0.7) {
-        // 向下滑动
-        document.exitFullscreen();
-      }
+    const app_store = use_app_store();
+    const key_str = app_store.config.four_fingers_up_send;
+    const now = Date.now();
+    if (now - this.lastFullScreenTime < this.FULL_SCREEN_INTERVAL) {
+      return;
     }
+    this.lastFullScreenTime = now;
+
+    triggerAction.fourFingersUp(key_str);
   }
 
   // 五根手指同时竖起 - 暂停/开始 识别
