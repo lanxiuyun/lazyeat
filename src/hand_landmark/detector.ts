@@ -306,7 +306,7 @@ class GestureTrigger {
   // 鼠标移动参数
   private screen_width: number = window.screen.width;
   private screen_height: number = window.screen.height;
-  private smoothening = 8; // 平滑系数
+  private smoothening = 7; // 平滑系数
   private prev_loc_x: number = 0;
   private prev_loc_y: number = 0;
 
@@ -314,10 +314,11 @@ class GestureTrigger {
   private lastClickTime: number = 0;
   private lastScrollTime: number = 0;
   private lastFullScreenTime: number = 0;
+  private prev_three_fingers_y: number = 0; // 添加三根手指上一次的 Y 坐标
 
   // 时间间隔常量（毫秒）
   private readonly CLICK_INTERVAL = 500; // 点击间隔
-  private readonly SCROLL_INTERVAL = 300; // 滚动间隔
+  private readonly SCROLL_INTERVAL = 100; // 滚动间隔
   private readonly FULL_SCREEN_INTERVAL = 1500; // 全屏切换间隔
 
   // 食指举起，移动鼠标
@@ -399,10 +400,33 @@ class GestureTrigger {
       }
       this.lastScrollTime = now;
 
-      // 计算手指移动方向
-      const deltaY = (indexTip.y + middleTip.y + ringTip.y) / 3;
-      // 根据移动方向滚动屏幕
-      window.scrollBy(0, deltaY * 100);
+      // 计算三根手指的平均 Y 坐标
+      const currentY = (indexTip.y + middleTip.y + ringTip.y) / 3;
+
+      // 如果是第一次检测到手势，记录当前 Y 坐标
+      if (this.prev_three_fingers_y === 0) {
+        this.prev_three_fingers_y = currentY;
+        return;
+      }
+
+      // 计算 Y 坐标的变化
+      const deltaY = currentY - this.prev_three_fingers_y;
+
+      // 如果变化超过阈值，则触发滚动
+      if (Math.abs(deltaY) > 0.008) {
+        if (deltaY < 0) {
+          // 手指向上移动，向上滚动
+          triggerAction.scrollUp();
+        } else {
+          // 手指向下移动，向下滚动
+          triggerAction.scrollDown();
+        }
+        // 更新上一次的 Y 坐标
+        this.prev_three_fingers_y = currentY;
+      }
+    } else {
+      // 如果没有检测到手指，重置上一次的 Y 坐标
+      this.prev_three_fingers_y = 0;
     }
   }
 
