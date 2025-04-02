@@ -476,6 +476,7 @@ class GestureTrigger {
       // 其他手势需要连续10次以上才执行
       if (this.previousGestureCount >= this.minGestureCount) {
         switch (gesture) {
+          case HandGesture.CLICK_GESTURE_SECOND:
           case HandGesture.INDEX_AND_MIDDLE_UP:
             this._index_and_middle_up(hand);
             break;
