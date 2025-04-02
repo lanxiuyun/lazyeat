@@ -18,7 +18,7 @@ class GestureSender:
         self.mouse = Controller()
 
     def mouse_move(self, x: int, y: int):
-        self.mouse.move(x, y)
+        self.mouse.position = (x, y)
 
     def mouse_click(self):
         self.mouse.click(Button.left)
