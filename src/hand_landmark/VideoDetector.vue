@@ -29,8 +29,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
 import { Detector, HandGesture } from "@/hand_landmark/detector";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const videoElement = ref(null);
 const canvasElement = ref(null);
@@ -39,6 +39,8 @@ const lastVideoTime = ref(-1);
 const cameras = ref([]);
 const selectedCameraId = ref("1");
 const currentStream = ref(null);
+const lastGestureTime = ref(0);
+const GESTURE_DEBOUNCE_TIME = 500; // 手势防抖时间（毫秒）
 
 const getCameras = async () => {
   try {
@@ -88,6 +90,62 @@ const switchCamera = async () => {
 // 记录 fps 的变量
 const fps = ref(0);
 const lastFpsTime = ref(0);
+
+// 手势处理函数
+const handleGesture = (gesture) => {
+  const now = Date.now();
+  if (now - lastGestureTime.value < GESTURE_DEBOUNCE_TIME) {
+    return;
+  }
+  lastGestureTime.value = now;
+
+  const gestureActions = {
+    [HandGesture.ONLY_INDEX_UP]: () => console.log("食指举起"),
+    [HandGesture.INDEX_AND_MIDDLE_UP]: () => console.log("食指和中指同时竖起"),
+    [HandGesture.CLICK_GESTURE_SECOND]: () => console.log("点击"),
+    [HandGesture.THREE_FINGERS_UP]: () => console.log("三根手指同时竖起"),
+    [HandGesture.FOUR_FINGERS_UP]: () => console.log("四根手指同时竖起"),
+    [HandGesture.STOP_GESTURE]: () => console.log("暂停/开始 识别"),
+    [HandGesture.VOICE_GESTURE_START]: () => console.log("开始语音识别"),
+    [HandGesture.VOICE_GESTURE_STOP]: () => console.log("结束语音识别"),
+    [HandGesture.DELETE_GESTURE]: () => console.log("删除"),
+  };
+
+  const action = gestureActions[gesture];
+  if (action) {
+    action();
+  } else {
+    console.log("其他手势");
+  }
+};
+
+// 获取有效手势
+const getEffectiveGesture = (rightHandGesture, leftHandGesture) => {
+  // 如果左右手都是暂停手势，才执行暂停手势
+  if (
+    rightHandGesture === HandGesture.STOP_GESTURE &&
+    leftHandGesture === HandGesture.STOP_GESTURE
+  ) {
+    return HandGesture.STOP_GESTURE;
+  }
+
+  // 单手手势识别 优先识别右手
+  if (
+    rightHandGesture !== HandGesture.OTHER &&
+    rightHandGesture !== HandGesture.STOP_GESTURE
+  ) {
+    return rightHandGesture;
+  }
+
+  if (
+    leftHandGesture !== HandGesture.OTHER &&
+    leftHandGesture !== HandGesture.STOP_GESTURE
+  ) {
+    return leftHandGesture;
+  }
+
+  return HandGesture.OTHER;
+};
 
 const predictWebcam = async () => {
   const video = videoElement.value;
@@ -147,37 +205,21 @@ const predictWebcam = async () => {
       });
     }
 
-    // 输出当前手势
-    const handGesture = Detector.getHandGesture(detection);
+    // 获取左右手手势
+    const rightHandGesture = detection.rightHand
+      ? Detector.getSingleHandGesture(detection.rightHand)
+      : HandGesture.OTHER;
+    const leftHandGesture = detection.leftHand
+      ? Detector.getSingleHandGesture(detection.leftHand)
+      : HandGesture.OTHER;
 
-    // 根据手势执行相应操作
-    switch (handGesture) {
-      case HandGesture.ONLY_INDEX_UP:
-        console.log("食指举起");
-        break;
-      case HandGesture.INDEX_AND_MIDDLE_UP:
-        console.log("食指和中指同时竖起");
-        break;
-      case HandGesture.THREE_FINGERS_UP:
-        console.log("三根手指同时竖起");
-        break;
-      case HandGesture.FOUR_FINGERS_UP:
-        console.log("四根手指同时竖起");
-        break;
-      case HandGesture.STOP_GESTURE:
-        console.log("暂停/开始 识别");
-        break;
-      case HandGesture.VOICE_GESTURE_START:
-        console.log("开始语音识别");
-        break;
-      case HandGesture.VOICE_GESTURE_STOP:
-        console.log("结束语音识别");
-        break;
-      case HandGesture.DELETE_GESTURE:
-        console.log("删除");
-        break;
-      default:
-        console.log("其他手势");
+    // 获取有效手势并处理
+    const effectiveGesture = getEffectiveGesture(
+      rightHandGesture,
+      leftHandGesture
+    );
+    if (effectiveGesture !== HandGesture.OTHER) {
+      handleGesture(effectiveGesture);
     }
   }
 

@@ -155,37 +155,8 @@ export class Detector {
     return fingers;
   }
 
-  // 获取手势类型
-  static getHandGesture(result: DetectionResult): HandGestureType {
-    // 没有检测到手
-    if (!result.leftHand && !result.rightHand) {
-      return HandGesture.OTHER;
-    }
-
-    // 处理双手暂停手势
-    if (result.leftHand && result.rightHand) {
-      const leftGesture = this._getSingleHandGesture(result.leftHand);
-      const rightGesture = this._getSingleHandGesture(result.rightHand);
-
-      if (
-        leftGesture === HandGesture.STOP_GESTURE &&
-        rightGesture === HandGesture.STOP_GESTURE
-      ) {
-        return HandGesture.STOP_GESTURE;
-      }
-    }
-
-    // 处理单手手势
-    const rightHand = result.rightHand;
-    if (rightHand) {
-      return this._getSingleHandGesture(rightHand);
-    }
-
-    return HandGesture.OTHER;
-  }
-
   // 获取单个手的手势类型
-  private static _getSingleHandGesture(hand: HandInfo): HandGestureType {
+  private static getSingleHandGesture(hand: HandInfo): HandGestureType {
     const fingers = this._fingersUp(hand);
 
     // 0,1,2,3,4 分别代表 大拇指，食指，中指，无名指，小拇指
