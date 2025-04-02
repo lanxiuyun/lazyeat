@@ -2,39 +2,6 @@ const port = 62334;
 const base_url = `http://localhost:${port}`;
 
 class PyApi {
-  async toggle_detect() {
-    const response = await fetch(`${base_url}/toggle_work`, {
-      method: "GET",
-    });
-    return response.text();
-  }
-
-  async get_detect_status() {
-    const response = await fetch(`${base_url}/status`);
-    return response.json();
-  }
-
-  async get_performance() {
-    const response = await fetch(`${base_url}/get_performance`);
-    return response.json();
-  }
-
-  async get_all_cameras(): Promise<Record<number, string>> {
-    const response = await fetch(`${base_url}/get_all_cameras`);
-    return response.json();
-  }
-
-  async update_config(config: any) {
-    const response = await fetch(`${base_url}/update_config`, {
-      method: "POST",
-      body: JSON.stringify(config),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return response.json();
-  }
-
   async ready(): Promise<boolean> {
     try {
       await fetch(`${base_url}/`, {

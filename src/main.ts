@@ -23,6 +23,7 @@ import {
   NForm,
   NFormItem,
   NCheckbox,
+  NMessageProvider,
 } from "naive-ui";
 
 // 引入element-plus
@@ -48,6 +49,7 @@ const naive = create({
     NFormItem,
     NCheckbox,
     NCard,
+    NMessageProvider,
   ],
 });
 

@@ -2,7 +2,7 @@
 import { Power } from "@icon-park/vue-next";
 import { disable, enable } from "@tauri-apps/plugin-autostart";
 import { watch } from "vue";
-import { use_app_store } from "../store/app";
+import { use_app_store } from "@/store/app";
 
 const app_store = use_app_store();
 

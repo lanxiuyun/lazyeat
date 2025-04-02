@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <n-card class="control-panel" hoverable>
-      <n-card class="performance-card" hoverable>
+      <!-- <n-card class="performance-card" hoverable>
         <template #header>
           <n-space align="center">
             <n-icon size="20">
@@ -28,7 +28,8 @@
             <span>{{ avg_cost_time }}ms</span>
           </n-space>
         </n-space>
-      </n-card>
+      </n-card> -->
+      <VideoDetector v-show="app_store.config.show_window" />
     </n-card>
 
     <!-- 顶部控制区域 -->
@@ -36,7 +37,7 @@
       <n-space vertical>
         <n-space justify="space-between" align="center">
           <h2 class="section-title">手势识别控制</h2>
-          <n-switch v-model:value="start" size="large">
+          <n-switch v-model:value="app_store.mission_running" size="large">
             <template #checked>运行中</template>
             <template #unchecked>已停止</template>
           </n-switch>
@@ -65,9 +66,9 @@
               <span>摄像头选择</span>
             </span>
             <n-select
-              v-model:value="app_store.config.camera_index"
+              v-model:value="app_store.config.selected_camera_id"
               :options="camera_options"
-              :disabled="start"
+              :disabled="app_store.mission_running"
               style="width: 250px"
             />
           </n-space>
@@ -141,6 +142,15 @@
           </template>
         </GestureCard>
 
+        <GestureCard title="删除" description="发送删除键">
+          <template #icon>
+            <GestureIcon
+              style="transform: rotate(90deg) scaleX(-1)"
+              :icon="BadTwo"
+            />
+          </template>
+        </GestureCard>
+
         <GestureCard title="开始语音识别" description="六指手势开始语音识别">
           <template #icon>
             <GestureIcon :icon="Six" />
@@ -169,6 +179,11 @@
 </template>
 
 <script setup lang="ts">
+import AutoStart from "@/components/AutoStart.vue";
+import GestureCard from "@/components/GestureCard.vue";
+import GestureIcon from "@/components/GestureIcon.vue";
+import VideoDetector from "@/hand_landmark/VideoDetector.vue";
+import { use_app_store } from "@/store/app";
 import {
   Boxing,
   Browser,
@@ -176,49 +191,37 @@ import {
   FiveFive,
   FourFour,
   OneOne,
+  Rock,
   Six,
   ThreeThree,
   TwoTwo,
-  Rock,
-  Speed,
+  BadTwo,
 } from "@icon-park/vue-next";
-import { onMounted, ref, watch } from "vue";
-import AutoStart from "../components/AutoStart.vue";
-import pyApi from "../py_api";
-import { use_app_store } from "../store/app";
-import GestureCard from "../components/GestureCard.vue";
-import GestureIcon from "../components/GestureIcon.vue";
+import { computed, onMounted, ref } from "vue";
 
-const start = ref(false);
 const app_store = use_app_store();
-const fps = ref("0");
-const avg_catch_time = ref("0");
-const avg_predict_time = ref("0");
-const avg_cost_time = ref("0");
 
-let timer: number | undefined;
-const updatePerformance = () => {
-  if (timer) clearInterval(timer);
-  timer = window.setInterval(async () => {
-    const res = await pyApi.get_performance();
-    fps.value = res.fps;
-    avg_catch_time.value = res.avg_catch_time;
-    avg_predict_time.value = res.avg_predict_time;
-    avg_cost_time.value = res.avg_cost_time;
-  }, 1000);
+// 计算属性：摄像头选项
+const camera_options = computed(() => {
+  return app_store.cameras.map((camera) => ({
+    label: camera.label || `摄像头 ${camera.deviceId.slice(0, 4)}`,
+    value: camera.deviceId,
+  }));
+});
+
+const getCameras = async () => {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    app_store.cameras = devices.filter(
+      (device) => device.kind === "videoinput"
+    );
+  } catch (error) {
+    console.error("获取摄像头列表失败:", error);
+  }
 };
 
-updatePerformance();
-
-// 定义 camera_options
-const camera_options = ref([{ label: "0", value: 0 }]);
 onMounted(async () => {
-  pyApi.get_all_cameras().then((res) => {
-    camera_options.value = Object.entries(res).map(([key, value]) => ({
-      label: value,
-      value: Number(key),
-    }));
-  });
+  await getCameras();
 });
 
 // 监听 四指发送按键
@@ -254,20 +257,6 @@ const listenForKey = () => {
 
   window.addEventListener("keydown", handleKeyDown);
 };
-
-watch(start, async () => {
-  await pyApi.toggle_detect();
-});
-
-watch(
-  () => app_store.config,
-  async (newVal) => {
-    await pyApi.update_config(newVal);
-  },
-  {
-    deep: true,
-  }
-);
 </script>
 
 <style scoped lang="scss">
