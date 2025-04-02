@@ -1,23 +1,18 @@
 <script setup lang="ts">
-import { ElContainer, ElMain, ElAside } from "element-plus";
-import AppMenu from "../../components/Menu.vue";
-import Home from "../Home.vue";
-import pyApi from "../../py_api";
-import { onMounted, ref, watch } from "vue";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import use_app_store from "../../store/app";
-import {
-  saveWindowState,
-  StateFlags,
-  restoreStateCurrent,
-} from "@tauri-apps/plugin-window-state";
 import { getVersion } from "@tauri-apps/api/app";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import {
-  isPermissionGranted,
-  requestPermission,
-  sendNotification,
-} from "@tauri-apps/plugin-notification";
+  restoreStateCurrent,
+  saveWindowState,
+  StateFlags,
+} from "@tauri-apps/plugin-window-state";
+import { ElAside, ElContainer, ElMain } from "element-plus";
+import { onMounted, ref, watch } from "vue";
+import AppMenu from "@/components/Menu.vue";
+import pyApi from "@/py_api";
+import use_app_store from "@/store/app";
+import Home from "@/view/Home.vue";
 
 const appVersion = ref("");
 const ready = ref(false);
@@ -66,20 +61,10 @@ watch(
 );
 
 // 通知
-enum WsDataType {
-  INFO = "info",
-  SUCCESS = "success",
-  WARNING = "warning",
-  ERROR = "error",
-}
-
-interface WsData {
-  type: WsDataType;
-  msg: string;
-  duration?: number;
-  title?: string;
-  data?: any;
-}
+import {
+  isPermissionGranted,
+  requestPermission,
+} from "@tauri-apps/plugin-notification";
 
 onMounted(async () => {
   let permissionGranted = await isPermissionGranted();
@@ -87,41 +72,6 @@ onMounted(async () => {
     const permission = await requestPermission();
     permissionGranted = permission === "granted";
   }
-});
-
-let ws: WebSocket | null = null;
-const connectWebSocket = () => {
-  try {
-    ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
-    ws.onmessage = (event: MessageEvent) => {
-      const response: WsData = JSON.parse(event.data);
-      sendNotification({
-        title: response.title || "Lazyeat",
-        body: response.msg,
-      });
-    };
-    ws.onopen = () => {
-      console.log("ws_lazyeat connected");
-      ws?.send("ws_lazyeat start");
-    };
-    ws.onclose = () => {
-      console.log("ws_lazyeat closed, retrying...");
-      ws = null;
-      setTimeout(connectWebSocket, 3000);
-    };
-    ws.onerror = (error) => {
-      console.error("ws_lazyeat error:", error);
-      ws?.close();
-    };
-  } catch (error) {
-    console.error("Failed to create WebSocket instance:", error);
-    ws = null;
-    setTimeout(connectWebSocket, 1000);
-  }
-};
-
-onMounted(() => {
-  connectWebSocket();
 });
 </script>
 
@@ -220,4 +170,4 @@ onMounted(() => {
     padding-top: 0 !important;
   }
 }
-</style> 
+</style>

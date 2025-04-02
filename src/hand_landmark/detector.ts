@@ -194,6 +194,76 @@ export class Detector {
   }
 }
 
+// 添加WebSocket数据类型定义
+enum WsDataType {
+  INFO = "info",
+  SUCCESS = "success",
+  WARNING = "warning",
+  ERROR = "error",
+}
+
+interface WsData {
+  type: WsDataType;
+  msg: string;
+  duration?: number;
+  title?: string;
+  data?: any;
+}
+
+class TriggerAction {
+  private ws: WebSocket | null = null;
+
+  constructor() {
+    this.connectWebSocket();
+  }
+
+  private connectWebSocket() {
+    try {
+      this.ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
+      this.ws.onmessage = (event: MessageEvent) => {
+        const response: WsData = JSON.parse(event.data);
+        this.sendNotification({
+          title: response.title || "Lazyeat",
+          body: response.msg,
+        });
+      };
+      this.ws.onopen = () => {
+        console.log("ws_lazyeat connected");
+      };
+      this.ws.onclose = () => {
+        console.log("ws_lazyeat closed, retrying...");
+        this.ws = null;
+        setTimeout(() => this.connectWebSocket(), 3000);
+      };
+      this.ws.onerror = (error) => {
+        console.error("ws_lazyeat error:", error);
+        this.ws?.close();
+      };
+    } catch (error) {
+      console.error("Failed to create WebSocket instance:", error);
+      this.ws = null;
+      setTimeout(() => this.connectWebSocket(), 1000);
+    }
+  }
+
+  private async sendNotification({
+    title,
+    body,
+  }: {
+    title: string;
+    body: string;
+  }) {
+    try {
+      const { sendNotification } = await import(
+        "@tauri-apps/plugin-notification"
+      );
+      await sendNotification({ title, body });
+    } catch (error) {
+      console.error("Failed to send notification:", error);
+    }
+  }
+}
+
 class GestureTrigger {
   private previousGesture: HandGestureType | null = null;
   private previousGestureCount: number = 0;
