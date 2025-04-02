@@ -37,6 +37,7 @@ const lastVideoTime = ref(-1);
 const currentStream = ref(null);
 const FPS = ref(0);
 const lastFpsTime = ref(0);
+const lastStopGestureTime = ref(0);
 
 const initializeCamera = async () => {
   try {
@@ -190,7 +191,27 @@ const predictWebcam = async () => {
       rightHandGesture,
       leftHandGesture
     );
-    handleGesture(effectiveGesture, detection);
+
+    if (effectiveGesture === HandGesture.STOP_GESTURE) {
+      const now = Date.now();
+      // 如果距离上次暂停手势触发时间小于1.5秒，则忽略当前暂停手势
+      if (now - lastStopGestureTime.value > 1500) {
+        lastStopGestureTime.value = now;
+        app_store.flag_detecting = !app_store.flag_detecting;
+        const { sendNotification } = await import(
+          "@tauri-apps/plugin-notification"
+        );
+
+        await sendNotification({
+          title: "手势识别",
+          body: app_store.flag_detecting ? "继续手势识别" : "暂停手势识别",
+        });
+      }
+    }
+
+    if (app_store.flag_detecting) {
+      handleGesture(effectiveGesture, detection);
+    }
   }
 
   requestAnimationFrame(predictWebcam);
@@ -209,6 +230,7 @@ watch(
   async (newValue) => {
     if (newValue) {
       await initializeCamera();
+      app_store.flag_detecting = true;
     } else {
       stopCamera();
     }
