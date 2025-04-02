@@ -29,13 +29,16 @@
 </template>
 
 <script setup>
-import { Detector, HandGesture } from "@/hand_landmark/detector";
+import {
+  Detector,
+  HandGesture,
+  gestureTrigger,
+} from "@/hand_landmark/detector";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
 // 常量定义
 const VIDEO_WIDTH = 640;
 const VIDEO_HEIGHT = 480;
-const GESTURE_DEBOUNCE_TIME = 500; // 手势防抖时间（毫秒）
 
 // 组件状态
 const videoElement = ref(null);
@@ -47,7 +50,6 @@ const selectedCameraId = ref("1");
 const currentStream = ref(null);
 const FPS = ref(0);
 const lastFpsTime = ref(0);
-const lastGestureTime = ref(0);
 
 // 摄像头相关方法
 const getCameras = async () => {
@@ -90,31 +92,11 @@ const stopCamera = () => {
 };
 
 // 手势处理相关方法
-const handleGesture = (gesture) => {
-  const now = Date.now();
-  if (now - lastGestureTime.value < GESTURE_DEBOUNCE_TIME) {
-    return;
-  }
-  lastGestureTime.value = now;
-
-  // 手势动作映射
-  const gestureActions = {
-    [HandGesture.ONLY_INDEX_UP]: () => console.log("食指举起"),
-    [HandGesture.INDEX_AND_MIDDLE_UP]: () => console.log("食指和中指同时竖起"),
-    [HandGesture.CLICK_GESTURE_SECOND]: () => console.log("点击"),
-    [HandGesture.THREE_FINGERS_UP]: () => console.log("三根手指同时竖起"),
-    [HandGesture.FOUR_FINGERS_UP]: () => console.log("四根手指同时竖起"),
-    [HandGesture.STOP_GESTURE]: () => console.log("暂停/开始 识别"),
-    [HandGesture.VOICE_GESTURE_START]: () => console.log("开始语音识别"),
-    [HandGesture.VOICE_GESTURE_STOP]: () => console.log("结束语音识别"),
-    [HandGesture.DELETE_GESTURE]: () => console.log("删除"),
-  };
-
-  const action = gestureActions[gesture];
-  if (action) {
-    action();
-  } else {
-    console.log("其他手势");
+const handleGesture = (gesture, detection) => {
+  if (detection.rightHand) {
+    gestureTrigger.handleGesture(gesture, detection.rightHand);
+  } else if (detection.leftHand) {
+    gestureTrigger.handleGesture(gesture, detection.leftHand);
   }
 };
 
@@ -219,7 +201,7 @@ const predictWebcam = async () => {
       rightHandGesture,
       leftHandGesture
     );
-    handleGesture(effectiveGesture);
+    handleGesture(effectiveGesture, detection);
   }
 
   requestAnimationFrame(predictWebcam);

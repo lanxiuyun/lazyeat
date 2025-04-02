@@ -193,3 +193,157 @@ export class Detector {
     }
   }
 }
+
+class GestureTrigger {
+  private previousGesture: HandGestureType | null = null;
+  private previousGestureCount: number = 0;
+
+  // 食指举起，移动鼠标
+  _only_index_up(hand: HandInfo) {
+    const indexTip = Detector.getFingerTip(hand, 1); // 食指指尖
+    if (indexTip) {
+      // 将坐标转换为屏幕坐标
+      const screenX = indexTip.x * window.innerWidth;
+      const screenY = indexTip.y * window.innerHeight;
+      // 移动鼠标
+      window.dispatchEvent(
+        new MouseEvent("mousemove", {
+          clientX: screenX,
+          clientY: screenY,
+        })
+      );
+    }
+  }
+
+  // 食指和中指同时竖起 - 鼠标左键点击
+  _index_and_middle_up(hand: HandInfo) {
+    const indexTip = Detector.getFingerTip(hand, 1);
+    const middleTip = Detector.getFingerTip(hand, 2);
+    if (indexTip && middleTip) {
+      // 计算两指之间的距离
+      const distance = Math.sqrt(
+        Math.pow(indexTip.x - middleTip.x, 2) +
+          Math.pow(indexTip.y - middleTip.y, 2)
+      );
+      // 如果两指距离小于阈值，触发点击
+      if (distance < 0.1) {
+        window.dispatchEvent(
+          new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          })
+        );
+      }
+    }
+  }
+
+  // 三根手指同时竖起 - 滚动屏幕
+  _three_fingers_up(hand: HandInfo) {
+    const indexTip = Detector.getFingerTip(hand, 1);
+    const middleTip = Detector.getFingerTip(hand, 2);
+    const ringTip = Detector.getFingerTip(hand, 3);
+    if (indexTip && middleTip && ringTip) {
+      // 计算手指移动方向
+      const deltaY = (indexTip.y + middleTip.y + ringTip.y) / 3;
+      // 根据移动方向滚动屏幕
+      window.scrollBy(0, deltaY * 100);
+    }
+  }
+
+  // 四根手指同时竖起 - 视频全屏
+  _four_fingers_up(hand: HandInfo) {
+    const indexTip = Detector.getFingerTip(hand, 1);
+    const middleTip = Detector.getFingerTip(hand, 2);
+    const ringTip = Detector.getFingerTip(hand, 3);
+    const pinkyTip = Detector.getFingerTip(hand, 4);
+    if (indexTip && middleTip && ringTip && pinkyTip) {
+      // 计算手指移动方向
+      const deltaY = (indexTip.y + middleTip.y + ringTip.y + pinkyTip.y) / 4;
+      if (deltaY < 0.3) {
+        // 向上滑动
+        document.documentElement.requestFullscreen();
+      } else if (deltaY > 0.7) {
+        // 向下滑动
+        document.exitFullscreen();
+      }
+    }
+  }
+
+  // 五根手指同时竖起 - 暂停/开始 识别
+  _stop_gesture(hand: HandInfo) {
+    // 这个手势的处理逻辑应该在外部实现
+    console.log("暂停/开始手势");
+  }
+
+  // 拇指和食指同时竖起 - 语音识别
+  _voice_gesture_start(hand: HandInfo) {
+    console.log("开始语音识别");
+  }
+
+  _voice_gesture_stop(hand: HandInfo) {
+    console.log("结束语音识别");
+  }
+
+  // 删除手势
+  _delete_gesture(hand: HandInfo) {
+    // 模拟按下删除键
+    window.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Backspace",
+        code: "Backspace",
+        keyCode: 8,
+        which: 8,
+        bubbles: true,
+      })
+    );
+  }
+
+  // 处理手势
+  handleGesture(gesture: HandGestureType, hand: HandInfo) {
+    if (gesture === this.previousGesture) {
+      this.previousGestureCount++;
+    } else {
+      this.previousGesture = gesture;
+      this.previousGestureCount = 1;
+    }
+
+    // 如果是 ONLY_INDEX_UP 手势，则直接执行
+    if (gesture === HandGesture.ONLY_INDEX_UP) {
+      this._only_index_up(hand);
+    } else {
+      // 其他手势需要连续10次以上才执行
+      if (this.previousGestureCount >= 10) {
+        switch (gesture) {
+          case HandGesture.INDEX_AND_MIDDLE_UP:
+            this._index_and_middle_up(hand);
+            break;
+          case HandGesture.THREE_FINGERS_UP:
+            this._three_fingers_up(hand);
+            break;
+          case HandGesture.FOUR_FINGERS_UP:
+            this._four_fingers_up(hand);
+            break;
+          case HandGesture.STOP_GESTURE:
+            this._stop_gesture(hand);
+            break;
+          case HandGesture.VOICE_GESTURE_START:
+            this._voice_gesture_start(hand);
+            break;
+          case HandGesture.VOICE_GESTURE_STOP:
+            this._voice_gesture_stop(hand);
+            break;
+          case HandGesture.DELETE_GESTURE:
+            this._delete_gesture(hand);
+            break;
+        }
+      }
+    }
+  }
+}
+
+// 导出 GestureTrigger 类
+export { GestureTrigger };
+
+// 导出 GestureTrigger 实例
+export const gestureTrigger = new GestureTrigger();
