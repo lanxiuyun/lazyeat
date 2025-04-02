@@ -47,7 +47,7 @@ const lastVideoTime = ref(-1);
 const cameras = ref([]);
 const selectedCameraId = ref("1");
 const currentStream = ref(null);
-const fps = ref(0);
+const FPS = ref(0);
 const lastFpsTime = ref(0);
 const lastGestureTime = ref(0);
 
@@ -152,13 +152,13 @@ const drawFPS = (ctx) => {
   const now = performance.now();
   if (lastFpsTime.value) {
     const delta = now - lastFpsTime.value;
-    fps.value = Math.round(1000 / delta);
+    FPS.value = Math.round(1000 / delta);
   }
   lastFpsTime.value = now;
 
   ctx.font = "20px Arial";
   ctx.fillStyle = "white";
-  ctx.fillText(`FPS: ${fps.value}`, 10, 30);
+  ctx.fillText(`FPS: ${FPS.value}`, 10, 30);
 };
 
 const drawHandLandmarks = (ctx, hand, color) => {
