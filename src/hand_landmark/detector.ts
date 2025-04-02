@@ -452,12 +452,6 @@ class GestureTrigger {
     triggerAction.fourFingersUp(key_str);
   }
 
-  // 五根手指同时竖起 - 暂停/开始 识别
-  _stop_gesture(hand: HandInfo) {
-    // 这个手势的处理逻辑应该在外部实现
-    console.log("暂停/开始手势");
-  }
-
   // 拇指和食指同时竖起 - 语音识别
   _voice_gesture_start(hand: HandInfo) {
     triggerAction.voiceRecord();
@@ -502,9 +496,6 @@ class GestureTrigger {
             break;
           case HandGesture.FOUR_FINGERS_UP:
             this._four_fingers_up(hand);
-            break;
-          case HandGesture.STOP_GESTURE:
-            this._stop_gesture(hand);
             break;
           case HandGesture.VOICE_GESTURE_START:
             this._voice_gesture_start(hand);
