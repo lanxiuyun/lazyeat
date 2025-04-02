@@ -7,16 +7,10 @@ a = Analysis(
     binaries=[],
         datas=[
         ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\vosk\\*', 'vosk'),
-        ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\mediapipe\\*', 'mediapipe'),
-        ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\mediapipe\\modules\\*', 'mediapipe/modules'),
-        ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\mediapipe\\modules\\palm_detection\\*', 'mediapipe/modules/palm_detection'),
-        ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\mediapipe\\modules\\hand_landmark\\*', 'mediapipe/modules/hand_landmark'),
-        ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\mediapipe\\python\\*', 'mediapipe/python'),
         ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\uvicorn\\*', 'uvicorn'),
     ],
     hiddenimports=[
         'vosk',
-        'mediapipe',
         'uvicorn',
         'uvicorn.logging',
         'uvicorn.protocols',

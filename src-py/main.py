@@ -1,7 +1,6 @@
 import os
 import sys
 
-import cv2
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,11 +33,6 @@ def read_root():
 
 @app.get("/shutdown")
 def shutdown():
-    try:
-        cv2.destroyAllWindows()
-    except:
-        pass
-
     import signal
     import os
     os.kill(os.getpid(), signal.SIGINT)
