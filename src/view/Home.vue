@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <n-card class="control-panel" hoverable>
+    <!-- <n-card class="control-panel" hoverable>
       <n-card class="performance-card" hoverable>
         <template #header>
           <n-space align="center">
@@ -29,7 +29,7 @@
           </n-space>
         </n-space>
       </n-card>
-    </n-card>
+    </n-card> -->
 
     <!-- 顶部控制区域 -->
     <n-card class="control-panel" hoverable>

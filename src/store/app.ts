@@ -1,5 +1,11 @@
 import { defineStore } from "pinia";
 
+interface Camera {
+  deviceId: string;
+  label: string;
+  kind: string;
+}
+
 export const use_app_store = defineStore("app-store", {
   state: () => ({
     config: {
@@ -8,6 +14,12 @@ export const use_app_store = defineStore("app-store", {
       camera_index: 0,
       four_fingers_up_send: "f",
     },
+
+    cameras: [] as Camera[],
+    selected_camera_id: "",
+    VIDEO_WIDTH: 640,
+    VIDEO_HEIGHT: 480,
+    flag_detecting: false,
   }),
 });
 
