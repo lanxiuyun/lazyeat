@@ -196,16 +196,13 @@ export class Detector {
 
 // 添加WebSocket数据类型定义
 enum WsDataType {
-  INFO = "info",
-  SUCCESS = "success",
-  WARNING = "warning",
-  ERROR = "error",
   MouseMove = "mouse_move",
   MouseClick = "mouse_click",
   MouseScrollUp = "mouse_scroll_up",
   MouseScrollDown = "mouse_scroll_down",
   FourFingersUp = "four_fingers_up",
   VoiceRecord = "voice_record",
+  VoiceStop = "voice_stop",
 }
 
 interface WsData {
