@@ -287,7 +287,7 @@ class GestureTrigger {
   private screen_width: number = window.screen.width;
   private screen_height: number = window.screen.height;
 
-  private smoothening = 10; // 平滑系数
+  private smoothening = 8; // 平滑系数
   private prev_loc_x: number = 0;
   private prev_loc_y: number = 0;
   // 食指举起，移动鼠标
