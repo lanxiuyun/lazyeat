@@ -196,9 +196,12 @@ const predictWebcam = async () => {
   requestAnimationFrame(predictWebcam);
 };
 
-watch(app_store.config.selected_camera_id, async () => {
-  stopCamera();
-});
+watch(
+  () => app_store.config.selected_camera_id,
+  async () => {
+    stopCamera();
+  }
+);
 
 // 监听 flag_detecting 的变化
 watch(
