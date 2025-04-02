@@ -126,8 +126,8 @@ const drawHandLandmarks = (ctx, hand, color) => {
   hand.landmarks.forEach((landmark) => {
     ctx.beginPath();
     ctx.arc(
-      landmark.x * VIDEO_WIDTH,
-      landmark.y * VIDEO_HEIGHT,
+      landmark.x * app_store.VIDEO_WIDTH,
+      landmark.y * app_store.VIDEO_HEIGHT,
       5,
       0,
       2 * Math.PI
