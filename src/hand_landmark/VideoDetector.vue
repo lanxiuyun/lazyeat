@@ -31,10 +31,8 @@
 <script setup>
 import { Detector, HandGesture } from "@/hand_landmark/detector";
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import { useAppStore } from "@/store/app";
 
 // 常量定义
-const appStore = useAppStore();
 const VIDEO_WIDTH = 640;
 const VIDEO_HEIGHT = 480;
 const GESTURE_DEBOUNCE_TIME = 500; // 手势防抖时间（毫秒）
@@ -129,21 +127,29 @@ const getEffectiveGesture = (rightHandGesture, leftHandGesture) => {
     return HandGesture.STOP_GESTURE;
   }
 
-  // 单手手势识别 优先识别右手
+  // 如果右手手势不是 OTHER 且不是 STOP_GESTURE，则返回右手手势
   if (
     rightHandGesture !== HandGesture.OTHER &&
     rightHandGesture !== HandGesture.STOP_GESTURE
   ) {
     return rightHandGesture;
   }
-
+  // 如果右手手势是 STOP_GESTURE，则返回 OTHER
+  if (rightHandGesture === HandGesture.STOP_GESTURE) {
+    return HandGesture.OTHER;
+  }
+  // 如果右手手势是 OTHER，再检查左手手势
   if (
     leftHandGesture !== HandGesture.OTHER &&
     leftHandGesture !== HandGesture.STOP_GESTURE
   ) {
     return leftHandGesture;
   }
-
+  // 如果左手手势是 STOP_GESTURE，则返回 OTHER
+  if (leftHandGesture === HandGesture.STOP_GESTURE) {
+    return HandGesture.OTHER;
+  }
+  // 如果左右手都没有有效手势，则返回 OTHER
   return HandGesture.OTHER;
 };
 
@@ -213,9 +219,7 @@ const predictWebcam = async () => {
       rightHandGesture,
       leftHandGesture
     );
-    if (effectiveGesture !== HandGesture.OTHER) {
-      handleGesture(effectiveGesture);
-    }
+    handleGesture(effectiveGesture);
   }
 
   requestAnimationFrame(predictWebcam);
