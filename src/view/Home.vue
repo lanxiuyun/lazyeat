@@ -258,16 +258,6 @@ const listenForKey = () => {
 watch(start, async () => {
   await pyApi.toggle_detect();
 });
-
-watch(
-  () => app_store.config,
-  async (newVal) => {
-    await pyApi.update_config(newVal);
-  },
-  {
-    deep: true,
-  }
-);
 </script>
 
 <style scoped lang="scss">
