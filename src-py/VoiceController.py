@@ -11,22 +11,9 @@ small_model_path = "model"
 
 class VoiceController:
     def __init__(self, model_type='small'):
-        from MyDetector import show_toast
-
         if model_type == 'small':
-            if not os.path.exists(small_model_path):
-                show_toast(
-                    title='语音识别模块初始化失败',
-                    msg='请确保目录下存在 model 文件夹',
-                    duration=3
-                )
             self.model = Model(small_model_path)
         else:
-            if not os.path.exists(big_model_path):
-                show_toast(
-                    title='语音识别模块初始化失败',
-                    msg='请确保目录下存在 big-model 文件夹',
-                    duration=3)
             self.model = Model(big_model_path)
 
         self.zh_text = None
