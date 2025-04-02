@@ -24,7 +24,7 @@ import {
   gestureTrigger,
 } from "@/hand_landmark/detector";
 import { use_app_store } from "@/store/app";
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 // 常量定义
 const app_store = use_app_store();
@@ -184,13 +184,27 @@ const predictWebcam = async () => {
 
 watch(app_store.selected_camera_id, async () => {
   stopCamera();
-  await initializeCamera();
 });
+
+// 监听 flag_detecting 的变化
+watch(
+  () => app_store.flag_detecting,
+  async (newValue) => {
+    if (newValue) {
+      await initializeCamera();
+    } else {
+      stopCamera();
+    }
+  }
+);
 
 // 生命周期钩子
 onMounted(async () => {
   await detector.value.initialize();
-  await initializeCamera();
+  // 如果 flag_detecting 为 true，则初始化摄像头
+  if (app_store.flag_detecting) {
+    await initializeCamera();
+  }
 });
 
 onBeforeUnmount(() => {

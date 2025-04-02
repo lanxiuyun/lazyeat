@@ -1,4 +1,6 @@
 <template>
+  <VideoDetector />
+
   <div class="home-container">
     <!-- <n-card class="control-panel" hoverable>
       <n-card class="performance-card" hoverable>
@@ -65,7 +67,7 @@
               <span>摄像头选择</span>
             </span>
             <n-select
-              v-model:value="app_store.config.camera_index"
+              v-model:value="app_store.selected_camera_id"
               :options="camera_options"
               :disabled="app_store.flag_detecting"
               style="width: 250px"
@@ -172,6 +174,7 @@
 import AutoStart from "@/components/AutoStart.vue";
 import GestureCard from "@/components/GestureCard.vue";
 import GestureIcon from "@/components/GestureIcon.vue";
+import VideoDetector from "@/hand_landmark/VideoDetector.vue";
 import { use_app_store } from "@/store/app";
 import {
   Boxing,
