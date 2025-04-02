@@ -37,7 +37,7 @@ const canvasElement = ref(null);
 const detector = ref(new Detector());
 const lastVideoTime = ref(-1);
 const cameras = ref([]);
-const selectedCameraId = ref("");
+const selectedCameraId = ref("1");
 const currentStream = ref(null);
 
 const getCameras = async () => {
