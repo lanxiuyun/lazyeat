@@ -85,6 +85,10 @@ const switchCamera = async () => {
   await initializeCamera();
 };
 
+// 记录 fps 的变量
+const fps = ref(0);
+const lastFpsTime = ref(0);
+
 const predictWebcam = async () => {
   const video = videoElement.value;
   const canvas = canvasElement.value;
@@ -99,6 +103,19 @@ const predictWebcam = async () => {
 
     // 绘制视频帧
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // 计算 FPS
+    const now = performance.now();
+    if (lastFpsTime.value) {
+      const delta = now - lastFpsTime.value;
+      fps.value = Math.round(1000 / delta);
+    }
+    lastFpsTime.value = now;
+
+    // 绘制 FPS
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText(`FPS: ${fps.value}`, 10, 30);
 
     // 绘制左手拇指尖（红色）
     const leftThumbTip = Detector.getFingerTip(detection.leftHand, 0);
@@ -164,8 +181,6 @@ const predictWebcam = async () => {
     }
   }
 
-  //
-
   // 继续下一帧检测
   requestAnimationFrame(predictWebcam);
 };
@@ -195,7 +210,6 @@ onBeforeUnmount(() => {
 }
 
 .camera-select {
-  position: absolute;
   top: 10px;
   left: 10px;
   z-index: 10;
@@ -213,6 +227,5 @@ onBeforeUnmount(() => {
 
 .output-canvas {
   position: absolute;
-  transform: scaleX(-1);
 }
 </style>
