@@ -49,7 +49,7 @@ const getCameras = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
     cameras.value = devices.filter((device) => device.kind === "videoinput");
     if (cameras.value.length > 0) {
-      selectedCameraId.value = cameras.value[1].deviceId;
+      selectedCameraId.value = cameras.value[0].deviceId;
     }
   } catch (error) {
     console.error("获取摄像头列表失败:", error);
@@ -117,34 +117,34 @@ const predictWebcam = async () => {
     ctx.fillStyle = "white";
     ctx.fillText(`FPS: ${fps.value}`, 10, 30);
 
-    // 绘制左手拇指尖（红色）
-    const leftThumbTip = Detector.getFingerTip(detection.leftHand, 0);
-    if (leftThumbTip) {
-      ctx.beginPath();
-      ctx.arc(
-        leftThumbTip.x * canvas.width,
-        leftThumbTip.y * canvas.height,
-        5,
-        0,
-        2 * Math.PI
-      );
-      ctx.fillStyle = "red";
-      ctx.fill();
+    // 绘制所有手势点
+    if (detection.leftHand) {
+      detection.leftHand.landmarks.forEach((landmark) => {
+        ctx.beginPath();
+        ctx.arc(
+          landmark.x * canvas.width,
+          landmark.y * canvas.height,
+          5,
+          0,
+          2 * Math.PI
+        );
+        ctx.fillStyle = "red";
+        ctx.fill();
+      });
     }
-
-    // 绘制右手拇指尖（蓝色）
-    const rightThumbTip = Detector.getFingerTip(detection.rightHand, 0);
-    if (rightThumbTip) {
-      ctx.beginPath();
-      ctx.arc(
-        rightThumbTip.x * canvas.width,
-        rightThumbTip.y * canvas.height,
-        5,
-        0,
-        2 * Math.PI
-      );
-      ctx.fillStyle = "blue";
-      ctx.fill();
+    if (detection.rightHand) {
+      detection.rightHand.landmarks.forEach((landmark) => {
+        ctx.beginPath();
+        ctx.arc(
+          landmark.x * canvas.width,
+          landmark.y * canvas.height,
+          5,
+          0,
+          2 * Math.PI
+        );
+        ctx.fillStyle = "blue";
+        ctx.fill();
+      });
     }
 
     // 输出当前手势
