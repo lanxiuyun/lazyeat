@@ -200,6 +200,12 @@ enum WsDataType {
   SUCCESS = "success",
   WARNING = "warning",
   ERROR = "error",
+  MouseMove = "mouse_move",
+  MouseClick = "mouse_click",
+  MouseScrollUp = "mouse_scroll_up",
+  MouseScrollDown = "mouse_scroll_down",
+  FourFingersUp = "four_fingers_up",
+  VoiceRecord = "voice_record",
 }
 
 interface WsData {
@@ -262,26 +268,72 @@ class TriggerAction {
       console.error("Failed to send notification:", error);
     }
   }
+
+  moveMouse(x: number, y: number) {
+    this.ws?.send(
+      JSON.stringify({
+        type: WsDataType.MouseMove,
+        data: { x, y },
+      })
+    );
+  }
 }
 
+import use_app_store from "@/store/app";
+const triggerAction = new TriggerAction();
 class GestureTrigger {
   private previousGesture: HandGestureType | null = null;
   private previousGestureCount: number = 0;
+  private screen_width: number = window.screen.width;
+  private screen_height: number = window.screen.height;
 
+  private smoothening = 7; // 平滑系数
   // 食指举起，移动鼠标
   _only_index_up(hand: HandInfo) {
+    const app_store = use_app_store();
+
     const indexTip = Detector.getFingerTip(hand, 1); // 食指指尖
     if (indexTip) {
-      // 将坐标转换为屏幕坐标
-      const screenX = indexTip.x * window.innerWidth;
-      const screenY = indexTip.y * window.innerHeight;
-      // 移动鼠标
-      window.dispatchEvent(
-        new MouseEvent("mousemove", {
-          clientX: screenX,
-          clientY: screenY,
-        })
+      // 将坐标转换为显示器分辨率
+      const video_x = indexTip.x * app_store.VIDEO_WIDTH;
+      const video_y = indexTip.y * app_store.VIDEO_HEIGHT;
+
+      // 定义视频帧的边界
+      const mouse_move_boundary = app_store.config.mouse_move_boundary; // 鼠标移动有效区域边界
+      const wCam = app_store.VIDEO_WIDTH;
+      const hCam = app_store.VIDEO_HEIGHT;
+
+      // 辅助方法：将值从一个范围映射到另一个范围
+      function mapRange(
+        value: number,
+        fromMin: number,
+        fromMax: number,
+        toMin: number,
+        toMax: number
+      ): number {
+        return (
+          ((value - fromMin) * (toMax - toMin)) / (fromMax - fromMin) + toMin
+        );
+      }
+
+      // 将视频坐标映射到屏幕坐标
+      const screenX = mapRange(
+        video_x,
+        mouse_move_boundary,
+        wCam - mouse_move_boundary,
+        0,
+        this.screen_width
       );
+      const screenY = mapRange(
+        video_y,
+        mouse_move_boundary,
+        hCam - mouse_move_boundary,
+        0,
+        this.screen_height
+      );
+
+      // 移动鼠标
+      triggerAction.moveMouse(this.screen_width - screenX, screenY);
     }
   }
 
