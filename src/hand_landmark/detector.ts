@@ -288,6 +288,8 @@ class GestureTrigger {
   private screen_height: number = window.screen.height;
 
   private smoothening = 7; // 平滑系数
+  private prev_loc_x: number = 0;
+  private prev_loc_y: number = 0;
   // 食指举起，移动鼠标
   _only_index_up(hand: HandInfo) {
     const app_store = use_app_store();
@@ -317,14 +319,14 @@ class GestureTrigger {
       }
 
       // 将视频坐标映射到屏幕坐标
-      const screenX = mapRange(
+      let screenX = mapRange(
         video_x,
         mouse_move_boundary,
         wCam - mouse_move_boundary,
         0,
         this.screen_width
       );
-      const screenY = mapRange(
+      let screenY = mapRange(
         video_y,
         mouse_move_boundary,
         hCam - mouse_move_boundary,
@@ -332,6 +334,13 @@ class GestureTrigger {
         this.screen_height
       );
 
+      screenX =
+        this.prev_loc_x + (screenX - this.prev_loc_x) / this.smoothening;
+      screenY =
+        this.prev_loc_y + (screenY - this.prev_loc_y) / this.smoothening;
+
+      this.prev_loc_x = screenX;
+      this.prev_loc_y = screenY;
       // 移动鼠标
       triggerAction.moveMouse(this.screen_width - screenX, screenY);
     }
