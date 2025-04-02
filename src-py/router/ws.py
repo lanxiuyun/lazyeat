@@ -1,5 +1,6 @@
 import json
 
+from VoiceController import VoiceController
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pynput.keyboard import Controller as KeyboardController
 from pynput.keyboard import Key
@@ -9,6 +10,31 @@ router = APIRouter()
 
 # 存储活跃的WebSocket连接
 active_connection: WebSocket | None = None
+
+
+async def send_message(
+    ws_data_type: str, msg: str, title: str = "提示", duration: int = 1
+):
+    """
+    发送消息到WebSocket客户端
+
+    :param ws_data_type: 消息类型
+    :param msg: 消息内容
+    :param title: 消息标题
+    :param duration: 显示持续时间
+    """
+    if active_connection:
+        try:
+            await active_connection.send_json(
+                {
+                    "type": ws_data_type,
+                    "msg": msg,
+                    "title": title,
+                    "duration": duration,
+                }
+            )
+        except Exception as e:
+            print(f"Error sending message: {e}")
 
 
 class GestureSender:
@@ -32,12 +58,6 @@ class GestureSender:
     def send_four_fingers_up(self, key_str: str):
         keys = self._parse_keys(key_str)
         self._send_keys(keys)
-
-    def voice_record(self):
-        self.keyboard.press(Key.space)
-
-    def voice_stop(self):
-        self.keyboard.release(Key.space)
 
     def _parse_keys(self, key_str: str):
         """
@@ -86,16 +106,27 @@ class GestureSender:
             print(f"Error sending keys: {e}")
 
 
-gesture_sender = GestureSender()
-
-
 @router.websocket("/ws_lazyeat")
 async def websocket_endpoint(websocket: WebSocket):
     global active_connection
-    await websocket.accept()
 
+    await websocket.accept()
     # 存储当前连接
     active_connection = websocket
+
+    gesture_sender = GestureSender()
+    voice_controller = None
+    try:
+        voice_controller = VoiceController()
+    except Exception as e:
+        await websocket.send_json(
+            {
+                "type": WsDataType.ERROR,
+                "msg": f"语音识别模块初始化失败: {str(e)}",
+                "title": "错误",
+                "duration": 2,
+            }
+        )
 
     while True:
         try:
@@ -116,9 +147,30 @@ async def websocket_endpoint(websocket: WebSocket):
                 elif ws_data_type == WsDataType.MouseScrollDown:
                     gesture_sender.mouse_scroll_down()
                 elif ws_data_type == WsDataType.VoiceRecord:
-                    gesture_sender.voice_record()
+                    if voice_controller and not voice_controller.is_recording:
+                        voice_controller.start_record_thread()
+                        await send_message(
+                            ws_data_type=WsDataType.INFO,
+                            msg="开始语音识别",
+                            title="提示",
+                            duration=1,
+                        )
                 elif ws_data_type == WsDataType.VoiceStop:
-                    gesture_sender.voice_stop()
+                    if voice_controller and voice_controller.is_recording:
+                        voice_controller.stop_record()
+
+                        await send_message(
+                            ws_data_type=WsDataType.INFO,
+                            msg="停止语音识别",
+                            title="提示",
+                            duration=1,
+                        )
+
+                        # 获取识别结果并输入
+                        text = voice_controller.transcribe_audio()
+                        if text:
+                            gesture_sender.keyboard.type(text)
+                            gesture_sender.keyboard.tap(Key.enter)
                 elif ws_data_type == WsDataType.FourFingersUp:
                     gesture_sender.send_four_fingers_up(data["key_str"])
             except Exception as e:

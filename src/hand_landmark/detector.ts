@@ -249,13 +249,7 @@ class TriggerAction {
     }
   }
 
-  private async sendNotification({
-    title,
-    body,
-  }: {
-    title: string;
-    body: string;
-  }) {
+  async sendNotification({ title, body }: { title: string; body: string }) {
     try {
       const { sendNotification } = await import(
         "@tauri-apps/plugin-notification"
@@ -460,11 +454,11 @@ class GestureTrigger {
 
   // 拇指和食指同时竖起 - 语音识别
   _voice_gesture_start(hand: HandInfo) {
-    console.log("开始语音识别");
+    triggerAction.voiceRecord();
   }
 
   _voice_gesture_stop(hand: HandInfo) {
-    console.log("结束语音识别");
+    triggerAction.voiceStop();
   }
 
   // 删除手势
