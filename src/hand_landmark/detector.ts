@@ -1,5 +1,35 @@
 import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 
+// 手势枚举
+export const HandGesture = {
+  // 食指举起，移动鼠标
+  ONLY_INDEX_UP: "only_index_up",
+
+  // 食指和中指同时竖起 - 鼠标左键点击
+  INDEX_AND_MIDDLE_UP: "index_and_middle_up",
+  CLICK_GESTURE_SECOND: "click_gesture_second",
+
+  // 三根手指同时竖起 - 滚动屏幕
+  THREE_FINGERS_UP: "three_fingers_up",
+
+  // 四根手指同时竖起 - 视频全屏
+  FOUR_FINGERS_UP: "four_fingers_up",
+
+  // 五根手指同时竖起 - 暂停/开始 识别
+  STOP_GESTURE: "stop_gesture",
+
+  // 拇指和食指同时竖起 - 语音识别
+  VOICE_GESTURE_START: "voice_gesture_start",
+  VOICE_GESTURE_STOP: "voice_gesture_stop",
+
+  // 其他手势
+  DELETE_GESTURE: "delete_gesture",
+
+  OTHER: null,
+} as const;
+
+export type HandGestureType = (typeof HandGesture)[keyof typeof HandGesture];
+
 export interface HandLandmark {
   x: number;
   y: number;
@@ -91,5 +121,104 @@ export class Detector {
 
     const tipIndices = [4, 8, 12, 16, 20];
     return hand.landmarks[tipIndices[fingerIndex]];
+  }
+
+  // 检测手指是否竖起
+  static _fingersUp(hand: HandInfo): number[] {
+    const fingers: number[] = [];
+    const tipIds = [4, 8, 12, 16, 20]; // 从大拇指开始，依次为每个手指指尖
+
+    // 检测大拇指
+    if (hand.handedness === "Right") {
+      if (hand.landmarks[tipIds[0]].x < hand.landmarks[tipIds[0] - 1].x) {
+        fingers.push(0);
+      } else {
+        fingers.push(1);
+      }
+    } else {
+      if (hand.landmarks[tipIds[0]].x > hand.landmarks[tipIds[0] - 1].x) {
+        fingers.push(0);
+      } else {
+        fingers.push(1);
+      }
+    }
+
+    // 检测其他四个手指
+    for (let id = 1; id < 5; id++) {
+      if (hand.landmarks[tipIds[id]].y < hand.landmarks[tipIds[id] - 2].y) {
+        fingers.push(1);
+      } else {
+        fingers.push(0);
+      }
+    }
+
+    return fingers;
+  }
+
+  // 获取手势类型
+  static getHandGesture(result: DetectionResult): HandGestureType {
+    // 没有检测到手
+    if (!result.leftHand && !result.rightHand) {
+      return HandGesture.OTHER;
+    }
+
+    // 处理双手暂停手势
+    if (result.leftHand && result.rightHand) {
+      const leftGesture = this._getSingleHandGesture(result.leftHand);
+      const rightGesture = this._getSingleHandGesture(result.rightHand);
+
+      if (
+        leftGesture === HandGesture.STOP_GESTURE &&
+        rightGesture === HandGesture.STOP_GESTURE
+      ) {
+        return HandGesture.STOP_GESTURE;
+      }
+    }
+
+    // 处理单手手势
+    const rightHand = result.rightHand;
+    if (rightHand) {
+      return this._getSingleHandGesture(rightHand);
+    }
+
+    return HandGesture.OTHER;
+  }
+
+  // 获取单个手的手势类型
+  private static _getSingleHandGesture(hand: HandInfo): HandGestureType {
+    const fingers = this._fingersUp(hand);
+
+    // 0,1,2,3,4 分别代表 大拇指，食指，中指，无名指，小拇指
+    if (fingers.toString() === [0, 1, 0, 0, 0].toString()) {
+      return HandGesture.ONLY_INDEX_UP;
+    } else if (fingers.toString() === [0, 1, 1, 0, 0].toString()) {
+      return HandGesture.INDEX_AND_MIDDLE_UP;
+    } else if (
+      fingers.toString() === [0, 1, 0, 0, 1].toString() ||
+      fingers.toString() === [1, 1, 0, 0, 1].toString()
+    ) {
+      return HandGesture.CLICK_GESTURE_SECOND;
+    } else if (fingers.toString() === [0, 1, 1, 1, 0].toString()) {
+      return HandGesture.THREE_FINGERS_UP;
+    } else if (fingers.toString() === [0, 1, 1, 1, 1].toString()) {
+      return HandGesture.FOUR_FINGERS_UP;
+    } else if (fingers.toString() === [1, 1, 1, 1, 1].toString()) {
+      return HandGesture.STOP_GESTURE;
+    } else if (fingers.toString() === [1, 0, 0, 0, 1].toString()) {
+      return HandGesture.VOICE_GESTURE_START;
+    } else if (fingers.toString() === [0, 0, 0, 0, 0].toString()) {
+      return HandGesture.VOICE_GESTURE_STOP;
+    } else if (
+      // 拇指在左边，其他全收起 手势判断
+      hand.landmarks[4].x > hand.landmarks[8].x + 20 &&
+      hand.landmarks[4].x > hand.landmarks[12].x + 20 &&
+      hand.landmarks[4].x > hand.landmarks[16].x + 20 &&
+      hand.landmarks[4].x > hand.landmarks[20].x + 20 &&
+      fingers.toString() === [1, 0, 0, 0, 0].toString()
+    ) {
+      return HandGesture.DELETE_GESTURE;
+    } else {
+      return HandGesture.OTHER;
+    }
   }
 }

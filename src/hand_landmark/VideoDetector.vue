@@ -30,7 +30,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { Detector } from "@/hand_landmark/detector";
+import { Detector, HandGesture } from "@/hand_landmark/detector";
 
 const videoElement = ref(null);
 const canvasElement = ref(null);
@@ -130,20 +130,41 @@ const predictWebcam = async () => {
       ctx.fill();
     }
 
-    // 输出位置信息
-    if (leftThumbTip) {
-      console.log("左手拇指尖位置:", {
-        x: canvas.width - leftThumbTip.x * canvas.width,
-        y: leftThumbTip.y * canvas.height,
-      });
-    }
-    if (rightThumbTip) {
-      console.log("右手拇指尖位置:", {
-        x: canvas.width - rightThumbTip.x * canvas.width,
-        y: rightThumbTip.y * canvas.height,
-      });
+    // 输出当前手势
+    const handGesture = Detector.getHandGesture(detection);
+
+    // 根据手势执行相应操作
+    switch (handGesture) {
+      case HandGesture.ONLY_INDEX_UP:
+        console.log("食指举起");
+        break;
+      case HandGesture.INDEX_AND_MIDDLE_UP:
+        console.log("食指和中指同时竖起");
+        break;
+      case HandGesture.THREE_FINGERS_UP:
+        console.log("三根手指同时竖起");
+        break;
+      case HandGesture.FOUR_FINGERS_UP:
+        console.log("四根手指同时竖起");
+        break;
+      case HandGesture.STOP_GESTURE:
+        console.log("暂停/开始 识别");
+        break;
+      case HandGesture.VOICE_GESTURE_START:
+        console.log("开始语音识别");
+        break;
+      case HandGesture.VOICE_GESTURE_STOP:
+        console.log("结束语音识别");
+        break;
+      case HandGesture.DELETE_GESTURE:
+        console.log("删除");
+        break;
+      default:
+        console.log("其他手势");
     }
   }
+
+  //
 
   // 继续下一帧检测
   requestAnimationFrame(predictWebcam);
