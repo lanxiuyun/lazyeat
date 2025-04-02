@@ -37,7 +37,7 @@
       <n-space vertical>
         <n-space justify="space-between" align="center">
           <h2 class="section-title">手势识别控制</h2>
-          <n-switch v-model:value="app_store.flag_detecting" size="large">
+          <n-switch v-model:value="app_store.mission_running" size="large">
             <template #checked>运行中</template>
             <template #unchecked>已停止</template>
           </n-switch>
@@ -68,7 +68,7 @@
             <n-select
               v-model:value="app_store.config.selected_camera_id"
               :options="camera_options"
-              :disabled="app_store.flag_detecting"
+              :disabled="app_store.mission_running"
               style="width: 250px"
             />
           </n-space>

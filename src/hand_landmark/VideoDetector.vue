@@ -203,9 +203,9 @@ watch(
   }
 );
 
-// 监听 flag_detecting 的变化
+// 监听 mission_running 的变化
 watch(
-  () => app_store.flag_detecting,
+  () => app_store.mission_running,
   async (newValue) => {
     if (newValue) {
       await initializeCamera();
@@ -218,8 +218,8 @@ watch(
 // 生命周期钩子
 onMounted(async () => {
   await detector.value.initialize();
-  // 如果 flag_detecting 为 true，则初始化摄像头
-  if (app_store.flag_detecting) {
+  // 如果 mission_running 为 true，则初始化摄像头
+  if (app_store.mission_running) {
     await initializeCamera();
   }
 });
