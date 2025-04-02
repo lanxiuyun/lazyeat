@@ -17,6 +17,7 @@
       width="640"
       height="480"
       autoplay
+      style="display: none"
     ></video>
     <canvas
       ref="canvasElement"
@@ -44,7 +45,7 @@ const getCameras = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
     cameras.value = devices.filter((device) => device.kind === "videoinput");
     if (cameras.value.length > 0) {
-      selectedCameraId.value = cameras.value[0].deviceId;
+      selectedCameraId.value = cameras.value[1].deviceId;
     }
   } catch (error) {
     console.error("获取摄像头列表失败:", error);
@@ -108,20 +109,55 @@ const predictWebcam = async () => {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     // 绘制检测到的手部关键点
-    if (predictions.landmarks) {
-      predictions.landmarks.forEach((landmarks) => {
-        landmarks.forEach((landmark) => {
-          ctx.beginPath();
-          ctx.arc(
-            landmark.x * canvas.width,
-            landmark.y * canvas.height,
-            3,
-            0,
-            2 * Math.PI
-          );
-          ctx.fillStyle = "red";
-          ctx.fill();
-        });
+    // if (predictions.landmarks) {
+    //   predictions.landmarks.forEach((landmarks) => {
+    //     landmarks.forEach((landmark) => {
+    //       ctx.beginPath();
+    //       ctx.arc(
+    //         landmark.x * canvas.width,
+    //         landmark.y * canvas.height,
+    //         3,
+    //         0,
+    //         2 * Math.PI
+    //       );
+    //       ctx.fillStyle = "red";
+    //       ctx.fill();
+    //     });
+    //   });
+    // }
+
+    if (predictions.landmarks?.[0]) {
+      const [
+        wrist,
+        thumb1,
+        thumb2,
+        thumb3,
+        thumbTip,
+        index1,
+        index2,
+        index3,
+        indexTip,
+        middle1,
+        middle2,
+        middle3,
+        middleTip,
+      ] = predictions.landmarks[0];
+
+      // 拇指尖 - 绘制红点
+      ctx.beginPath();
+      ctx.arc(
+        thumbTip.x * canvas.width,
+        thumbTip.y * canvas.height,
+        5, // 点的大小
+        0,
+        2 * Math.PI
+      );
+      ctx.fillStyle = "red";
+      ctx.fill();
+
+      console.log("拇指尖位置:", {
+        x: canvas.width - thumbTip.x * canvas.width, // 水平翻转
+        y: thumbTip.y * canvas.height,
       });
     }
   }
@@ -169,11 +205,6 @@ onBeforeUnmount(() => {
   border-radius: 4px;
   border: 1px solid #ccc;
   background: white;
-}
-
-.input-video {
-  position: absolute;
-  transform: scaleX(-1);
 }
 
 .output-canvas {
