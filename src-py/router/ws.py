@@ -173,6 +173,8 @@ async def websocket_endpoint(websocket: WebSocket):
                             gesture_sender.keyboard.tap(Key.enter)
                 elif ws_data_type == WsDataType.FourFingersUp:
                     gesture_sender.send_four_fingers_up(data["key_str"])
+                elif ws_data_type == WsDataType.Backspace:
+                    gesture_sender.keyboard.tap(Key.backspace)
             except Exception as e:
                 print(f"Error processing message: {e}")
 
@@ -195,3 +197,4 @@ class WsDataType:
     FourFingersUp = "four_fingers_up"
     VoiceRecord = "voice_record"
     VoiceStop = "voice_stop"
+    Backspace = "backspace"

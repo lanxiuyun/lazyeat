@@ -181,10 +181,10 @@ export class Detector {
       return HandGesture.VOICE_GESTURE_STOP;
     } else if (
       // 拇指在左边，其他全收起 手势判断
-      hand.landmarks[4].x > hand.landmarks[8].x + 20 &&
-      hand.landmarks[4].x > hand.landmarks[12].x + 20 &&
-      hand.landmarks[4].x > hand.landmarks[16].x + 20 &&
-      hand.landmarks[4].x > hand.landmarks[20].x + 20 &&
+      hand.landmarks[4].x > hand.landmarks[8].x + 0.05 &&
+      hand.landmarks[4].x > hand.landmarks[12].x + 0.05 &&
+      hand.landmarks[4].x > hand.landmarks[16].x + 0.05 &&
+      hand.landmarks[4].x > hand.landmarks[20].x + 0.05 &&
       fingers.toString() === [1, 0, 0, 0, 0].toString()
     ) {
       return HandGesture.DELETE_GESTURE;
@@ -203,6 +203,7 @@ enum WsDataType {
   FourFingersUp = "four_fingers_up",
   VoiceRecord = "voice_record",
   VoiceStop = "voice_stop",
+  Backspace = "backspace",
 }
 
 interface WsData {
@@ -290,6 +291,10 @@ class TriggerAction {
     );
   }
 
+  sendBackspace() {
+    this.ws?.send(JSON.stringify({ type: WsDataType.Backspace }));
+  }
+
   voiceRecord() {
     this.ws?.send(JSON.stringify({ type: WsDataType.VoiceRecord }));
   }
@@ -318,6 +323,7 @@ class GestureTrigger {
   private lastScrollTime: number = 0;
   private lastFullScreenTime: number = 0;
   private prev_three_fingers_y: number = 0; // 添加三根手指上一次的 Y 坐标
+  private lastDeleteTime: number = 0;
 
   // 时间间隔常量（毫秒）
   private readonly CLICK_INTERVAL = 500; // 点击间隔
@@ -463,16 +469,12 @@ class GestureTrigger {
 
   // 删除手势
   _delete_gesture(hand: HandInfo) {
-    // 模拟按下删除键
-    window.dispatchEvent(
-      new KeyboardEvent("keydown", {
-        key: "Backspace",
-        code: "Backspace",
-        keyCode: 8,
-        which: 8,
-        bubbles: true,
-      })
-    );
+    const now = Date.now();
+    if (now - this.lastDeleteTime < 1500) {
+      return;
+    }
+    this.lastDeleteTime = now;
+    triggerAction.sendBackspace();
   }
 
   // 处理手势
