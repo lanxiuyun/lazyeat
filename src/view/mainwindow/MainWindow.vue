@@ -31,7 +31,10 @@ onMounted(async () => {
 
   await getCurrentWindow().onCloseRequested(async () => {
     await saveWindowState(StateFlags.ALL);
-    await pyApi.shutdown();
+
+    if (!is_dev) {
+      await pyApi.shutdown();
+    }
   });
 });
 
