@@ -13,6 +13,7 @@ export const use_app_store = defineStore("app-store", {
       show_window: false,
       four_fingers_up_send: "f",
       selected_camera_id: "",
+      mouse_move_boundary: 10,  // 鼠标移动的有效区域边界
     },
 
     cameras: [] as Camera[],

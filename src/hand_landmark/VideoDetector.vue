@@ -109,6 +109,17 @@ const getEffectiveGesture = (rightHandGesture, leftHandGesture) => {
 };
 
 // 绘制相关方法
+const drawMouseMoveBox = (ctx) => {
+  ctx.strokeStyle = "rgb(255, 0, 255)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(
+    app_store.config.mouse_move_boundary,
+    app_store.config.mouse_move_boundary,
+    app_store.VIDEO_WIDTH - 2 * app_store.config.mouse_move_boundary,
+    app_store.VIDEO_HEIGHT - 2 * app_store.config.mouse_move_boundary
+  );
+};
+
 const drawFPS = (ctx) => {
   const now = performance.now();
   if (lastFpsTime.value) {
@@ -154,6 +165,9 @@ const predictWebcam = async () => {
 
       // 绘制FPS
       drawFPS(ctx);
+
+      // 绘制鼠标移动框
+      drawMouseMoveBox(ctx);
 
       // 绘制手势点
       if (detection.leftHand) {

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import AppMenu from "@/components/Menu.vue";
+import pyApi from "@/py_api";
+import use_app_store from "@/store/app";
+import Home from "@/view/Home.vue";
 import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { LazyStore } from "@tauri-apps/plugin-store";
@@ -9,10 +13,6 @@ import {
 } from "@tauri-apps/plugin-window-state";
 import { ElAside, ElContainer, ElMain } from "element-plus";
 import { onMounted, ref, watch } from "vue";
-import AppMenu from "@/components/Menu.vue";
-import pyApi from "@/py_api";
-import use_app_store from "@/store/app";
-import Home from "@/view/Home.vue";
 
 const appVersion = ref("");
 const ready = ref(false);
@@ -50,7 +50,7 @@ onMounted(async () => {
   const config_data = await app_store_json.get("config");
   console.log("config_data", config_data);
   if (config_data) {
-    app_store.config = JSON.parse(JSON.stringify(config_data));
+    Object.assign(app_store.config, JSON.parse(JSON.stringify(config_data)));
   }
 });
 
