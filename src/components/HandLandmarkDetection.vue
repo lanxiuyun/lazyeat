@@ -30,11 +30,11 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
+import { Detector } from "../hand_landmark/detector";
 
 const videoElement = ref(null);
 const canvasElement = ref(null);
-const detector = ref(null);
+const detector = ref(new Detector());
 const lastVideoTime = ref(-1);
 const cameras = ref([]);
 const selectedCameraId = ref("");
@@ -53,20 +53,8 @@ const getCameras = async () => {
 };
 
 const initializeDetector = async () => {
-  const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
-  );
-  detector.value = await HandLandmarker.createFromOptions(vision, {
-    baseOptions: {
-      modelAssetPath:
-        "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-      delegate: "GPU",
-    },
-    runningMode: "VIDEO",
-    numHands: 2,
-  });
+  await detector.value.initialize();
 };
-// ... existing code ...
 
 const initializeCamera = async () => {
   try {
@@ -100,7 +88,7 @@ const predictWebcam = async () => {
 
   if (video.currentTime !== lastVideoTime.value) {
     lastVideoTime.value = video.currentTime;
-    const predictions = await detector.value.detect(video);
+    const detection = await detector.value.detect(video);
 
     // 清除画布
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -108,56 +96,47 @@ const predictWebcam = async () => {
     // 绘制视频帧
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // 绘制检测到的手部关键点
-    // if (predictions.landmarks) {
-    //   predictions.landmarks.forEach((landmarks) => {
-    //     landmarks.forEach((landmark) => {
-    //       ctx.beginPath();
-    //       ctx.arc(
-    //         landmark.x * canvas.width,
-    //         landmark.y * canvas.height,
-    //         3,
-    //         0,
-    //         2 * Math.PI
-    //       );
-    //       ctx.fillStyle = "red";
-    //       ctx.fill();
-    //     });
-    //   });
-    // }
-
-    if (predictions.landmarks?.[0]) {
-      const [
-        wrist,
-        thumb1,
-        thumb2,
-        thumb3,
-        thumbTip,
-        index1,
-        index2,
-        index3,
-        indexTip,
-        middle1,
-        middle2,
-        middle3,
-        middleTip,
-      ] = predictions.landmarks[0];
-
-      // 拇指尖 - 绘制红点
+    // 绘制左手拇指尖（红色）
+    const leftThumbTip = Detector.getFingerTip(detection.leftHand, 0);
+    if (leftThumbTip) {
       ctx.beginPath();
       ctx.arc(
-        thumbTip.x * canvas.width,
-        thumbTip.y * canvas.height,
-        5, // 点的大小
+        leftThumbTip.x * canvas.width,
+        leftThumbTip.y * canvas.height,
+        5,
         0,
         2 * Math.PI
       );
       ctx.fillStyle = "red";
       ctx.fill();
+    }
 
-      console.log("拇指尖位置:", {
-        x: canvas.width - thumbTip.x * canvas.width, // 水平翻转
-        y: thumbTip.y * canvas.height,
+    // 绘制右手拇指尖（蓝色）
+    const rightThumbTip = Detector.getFingerTip(detection.rightHand, 0);
+    if (rightThumbTip) {
+      ctx.beginPath();
+      ctx.arc(
+        rightThumbTip.x * canvas.width,
+        rightThumbTip.y * canvas.height,
+        5,
+        0,
+        2 * Math.PI
+      );
+      ctx.fillStyle = "blue";
+      ctx.fill();
+    }
+
+    // 输出位置信息
+    if (leftThumbTip) {
+      console.log("左手拇指尖位置:", {
+        x: canvas.width - leftThumbTip.x * canvas.width,
+        y: leftThumbTip.y * canvas.height,
+      });
+    }
+    if (rightThumbTip) {
+      console.log("右手拇指尖位置:", {
+        x: canvas.width - rightThumbTip.x * canvas.width,
+        y: rightThumbTip.y * canvas.height,
       });
     }
   }
