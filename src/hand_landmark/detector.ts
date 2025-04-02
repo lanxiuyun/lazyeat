@@ -274,6 +274,26 @@ class TriggerAction {
       })
     );
   }
+
+  clickMouse() {
+    this.ws?.send(JSON.stringify({ type: WsDataType.MouseClick }));
+  }
+
+  scrollUp() {
+    this.ws?.send(JSON.stringify({ type: WsDataType.MouseScrollUp }));
+  }
+
+  scrollDown() {
+    this.ws?.send(JSON.stringify({ type: WsDataType.MouseScrollDown }));
+  }
+
+  voiceRecord() {
+    this.ws?.send(JSON.stringify({ type: WsDataType.VoiceRecord }));
+  }
+
+  voiceStop() {
+    this.ws?.send(JSON.stringify({ type: WsDataType.VoiceStop }));
+  }
 }
 
 import use_app_store from "@/store/app";
@@ -281,12 +301,26 @@ const triggerAction = new TriggerAction();
 class GestureTrigger {
   private previousGesture: HandGestureType | null = null;
   private previousGestureCount: number = 0;
+  private minGestureCount: number = 5;
+
+  // 鼠标移动参数
   private screen_width: number = window.screen.width;
   private screen_height: number = window.screen.height;
 
   private smoothening = 8; // 平滑系数
   private prev_loc_x: number = 0;
   private prev_loc_y: number = 0;
+
+  // 时间间隔参数
+  private lastClickTime: number = 0;
+  private lastScrollTime: number = 0;
+  private lastFullScreenTime: number = 0;
+
+  // 时间间隔常量（毫秒）
+  private readonly CLICK_INTERVAL = 500; // 点击间隔
+  private readonly SCROLL_INTERVAL = 300; // 滚动间隔
+  private readonly FULL_SCREEN_INTERVAL = 1500; // 全屏切换间隔
+
   // 食指举起，移动鼠标
   _only_index_up(hand: HandInfo) {
     const app_store = use_app_store();
@@ -345,25 +379,13 @@ class GestureTrigger {
 
   // 食指和中指同时竖起 - 鼠标左键点击
   _index_and_middle_up(hand: HandInfo) {
-    const indexTip = Detector.getFingerTip(hand, 1);
-    const middleTip = Detector.getFingerTip(hand, 2);
-    if (indexTip && middleTip) {
-      // 计算两指之间的距离
-      const distance = Math.sqrt(
-        Math.pow(indexTip.x - middleTip.x, 2) +
-          Math.pow(indexTip.y - middleTip.y, 2)
-      );
-      // 如果两指距离小于阈值，触发点击
-      if (distance < 0.1) {
-        window.dispatchEvent(
-          new MouseEvent("click", {
-            bubbles: true,
-            cancelable: true,
-            view: window,
-          })
-        );
-      }
+    const now = Date.now();
+    if (now - this.lastClickTime < this.CLICK_INTERVAL) {
+      return;
     }
+    this.lastClickTime = now;
+
+    triggerAction.clickMouse();
   }
 
   // 三根手指同时竖起 - 滚动屏幕
@@ -372,6 +394,12 @@ class GestureTrigger {
     const middleTip = Detector.getFingerTip(hand, 2);
     const ringTip = Detector.getFingerTip(hand, 3);
     if (indexTip && middleTip && ringTip) {
+      const now = Date.now();
+      if (now - this.lastScrollTime < this.SCROLL_INTERVAL) {
+        return;
+      }
+      this.lastScrollTime = now;
+
       // 计算手指移动方向
       const deltaY = (indexTip.y + middleTip.y + ringTip.y) / 3;
       // 根据移动方向滚动屏幕
@@ -386,6 +414,12 @@ class GestureTrigger {
     const ringTip = Detector.getFingerTip(hand, 3);
     const pinkyTip = Detector.getFingerTip(hand, 4);
     if (indexTip && middleTip && ringTip && pinkyTip) {
+      const now = Date.now();
+      if (now - this.lastFullScreenTime < this.FULL_SCREEN_INTERVAL) {
+        return;
+      }
+      this.lastFullScreenTime = now;
+
       // 计算手指移动方向
       const deltaY = (indexTip.y + middleTip.y + ringTip.y + pinkyTip.y) / 4;
       if (deltaY < 0.3) {
@@ -441,7 +475,7 @@ class GestureTrigger {
       this._only_index_up(hand);
     } else {
       // 其他手势需要连续10次以上才执行
-      if (this.previousGestureCount >= 10) {
+      if (this.previousGestureCount >= this.minGestureCount) {
         switch (gesture) {
           case HandGesture.INDEX_AND_MIDDLE_UP:
             this._index_and_middle_up(hand);
