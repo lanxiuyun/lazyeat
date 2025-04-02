@@ -42,6 +42,10 @@ const currentStream = ref(null);
 
 const getCameras = async () => {
   try {
+    // 先请求摄像头权限
+    await navigator.mediaDevices.getUserMedia({ video: true });
+
+    // 获取设备列表
     const devices = await navigator.mediaDevices.enumerateDevices();
     cameras.value = devices.filter((device) => device.kind === "videoinput");
     if (cameras.value.length > 0) {
