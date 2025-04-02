@@ -105,7 +105,7 @@ async def websocket_endpoint(websocket: WebSocket):
             try:
                 ws_data = json.loads(data_str)
                 ws_data_type = ws_data["type"]
-                data = ws_data["data"]
+                data = ws_data.get("data", {})
 
                 if ws_data_type == WsDataType.MouseMove:
                     gesture_sender.mouse_move(data["x"], data["y"])
