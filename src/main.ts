@@ -27,6 +27,7 @@ import {
 
 // 引入element-plus
 import "element-plus/dist/index.css";
+import AppMediaPipe from "./AppMediaPipe.vue";
 
 const naive = create({
   components: [
@@ -51,7 +52,7 @@ const naive = create({
   ],
 });
 
-const app = createApp(App);
+const app = createApp(AppMediaPipe);
 const pinia = createPinia();
 
 app.use(naive);

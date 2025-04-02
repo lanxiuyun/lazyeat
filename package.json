@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@icon-park/vue-next": "^1.4.2",
+    "@mediapipe/tasks-vision": "^0.10.22-rc.20250304",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-autostart": "^2.2.0",
     "@tauri-apps/plugin-notification": "^2.2.2",
