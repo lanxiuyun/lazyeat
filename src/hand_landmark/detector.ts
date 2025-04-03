@@ -309,12 +309,12 @@ const triggerAction = new TriggerAction();
 class GestureTrigger {
   private previousGesture: HandGestureType | null = null;
   private previousGestureCount: number = 0;
-  private minGestureCount: number = 5;
+  private minGestureCount: number;
 
   // 鼠标移动参数
   private screen_width: number = window.screen.width;
   private screen_height: number = window.screen.height;
-  private smoothening = 7; // 平滑系数
+  private smoothening: number; // 平滑系数
   private prev_loc_x: number = 0;
   private prev_loc_y: number = 0;
 
@@ -325,15 +325,12 @@ class GestureTrigger {
   private prev_three_fingers_y: number = 0; // 添加三根手指上一次的 Y 坐标
   private lastDeleteTime: number = 0;
 
-  // 时间间隔常量（毫秒）
-  private readonly CLICK_INTERVAL = 500; // 点击间隔
-  private readonly SCROLL_INTERVAL = 100; // 滚动间隔
-  private readonly FULL_SCREEN_INTERVAL = 1500; // 全屏切换间隔
-
   private app_store;
 
   constructor() {
     this.app_store = use_app_store();
+    this.minGestureCount = this.app_store.config.min_gesture_count;
+    this.smoothening = this.app_store.config.mouse_smoothening;
   }
 
   // 食指举起，移动鼠标
@@ -395,7 +392,7 @@ class GestureTrigger {
   // 食指和中指同时竖起 - 鼠标左键点击
   _index_and_middle_up(hand: HandInfo) {
     const now = Date.now();
-    if (now - this.lastClickTime < this.CLICK_INTERVAL) {
+    if (now - this.lastClickTime < this.app_store.config.click_interval) {
       return;
     }
     this.lastClickTime = now;
@@ -410,7 +407,7 @@ class GestureTrigger {
     const ringTip = Detector.getFingerTip(hand, 3);
     if (indexTip && middleTip && ringTip) {
       const now = Date.now();
-      if (now - this.lastScrollTime < this.SCROLL_INTERVAL) {
+      if (now - this.lastScrollTime < this.app_store.config.scroll_interval) {
         return;
       }
       this.lastScrollTime = now;
@@ -450,7 +447,7 @@ class GestureTrigger {
     const app_store = this.app_store;
     const key_str = app_store.config.four_fingers_up_send;
     const now = Date.now();
-    if (now - this.lastFullScreenTime < this.FULL_SCREEN_INTERVAL) {
+    if (now - this.lastFullScreenTime < this.app_store.config.full_screen_interval) {
       return;
     }
     this.lastFullScreenTime = now;
@@ -470,7 +467,7 @@ class GestureTrigger {
   // 删除手势
   _delete_gesture(hand: HandInfo) {
     const now = Date.now();
-    if (now - this.lastDeleteTime < 1500) {
+    if (now - this.lastDeleteTime < this.app_store.config.delete_interval) {
       return;
     }
     this.lastDeleteTime = now;
