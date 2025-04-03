@@ -309,12 +309,10 @@ const triggerAction = new TriggerAction();
 class GestureTrigger {
   private previousGesture: HandGestureType | null = null;
   private previousGestureCount: number = 0;
-  private minGestureCount: number;
 
   // 鼠标移动参数
   private screen_width: number = window.screen.width;
   private screen_height: number = window.screen.height;
-  private smoothening: number; // 平滑系数
   private prev_loc_x: number = 0;
   private prev_loc_y: number = 0;
 
@@ -329,8 +327,6 @@ class GestureTrigger {
 
   constructor() {
     this.app_store = use_app_store();
-    this.minGestureCount = this.app_store.config.min_gesture_count;
-    this.smoothening = this.app_store.config.mouse_smoothening;
   }
 
   // 食指举起，移动鼠标
@@ -378,9 +374,9 @@ class GestureTrigger {
       );
 
       screenX =
-        this.prev_loc_x + (screenX - this.prev_loc_x) / this.smoothening;
+        this.prev_loc_x + (screenX - this.prev_loc_x) / app_store.config.mouse_smoothening;
       screenY =
-        this.prev_loc_y + (screenY - this.prev_loc_y) / this.smoothening; // 消除抖动
+        this.prev_loc_y + (screenY - this.prev_loc_y) / app_store.config.mouse_smoothening; // 消除抖动
 
       this.prev_loc_x = screenX;
       this.prev_loc_y = screenY;
@@ -487,8 +483,8 @@ class GestureTrigger {
     if (gesture === HandGesture.ONLY_INDEX_UP) {
       this._only_index_up(hand);
     } else {
-      // 其他手势需要连续10次以上才执行
-      if (this.previousGestureCount >= this.minGestureCount) {
+      // 其他手势需要连续多次以上才执行
+      if (this.previousGestureCount >= this.app_store.config.min_gesture_count) {
         switch (gesture) {
           case HandGesture.CLICK_GESTURE_SECOND:
           case HandGesture.INDEX_AND_MIDDLE_UP:
