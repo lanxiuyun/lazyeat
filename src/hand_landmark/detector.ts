@@ -330,9 +330,15 @@ class GestureTrigger {
   private readonly SCROLL_INTERVAL = 100; // 滚动间隔
   private readonly FULL_SCREEN_INTERVAL = 1500; // 全屏切换间隔
 
+  private app_store;
+
+  constructor() {
+    this.app_store = use_app_store();
+  }
+
   // 食指举起，移动鼠标
   _only_index_up(hand: HandInfo) {
-    const app_store = use_app_store();
+    const app_store = this.app_store;
 
     const indexTip = Detector.getFingerTip(hand, 1); // 食指指尖
     if (indexTip) {
@@ -441,7 +447,7 @@ class GestureTrigger {
 
   // 四根手指同时竖起 - 视频全屏
   _four_fingers_up(hand: HandInfo) {
-    const app_store = use_app_store();
+    const app_store = this.app_store;
     const key_str = app_store.config.four_fingers_up_send;
     const now = Date.now();
     if (now - this.lastFullScreenTime < this.FULL_SCREEN_INTERVAL) {
@@ -512,8 +518,4 @@ class GestureTrigger {
   }
 }
 
-// 导出 GestureTrigger 类
 export { GestureTrigger };
-
-// 导出 GestureTrigger 实例
-export const gestureTrigger = new GestureTrigger();

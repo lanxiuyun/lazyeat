@@ -21,7 +21,7 @@
 import {
   Detector,
   HandGesture,
-  gestureTrigger,
+  GestureTrigger,
 } from "@/hand_landmark/detector";
 import { use_app_store } from "@/store/app";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
@@ -38,6 +38,7 @@ const currentStream = ref(null);
 const FPS = ref(0);
 const lastFpsTime = ref(0);
 const lastStopGestureTime = ref(0);
+const gestureTrigger = new GestureTrigger();
 
 const initializeCamera = async () => {
   try {
