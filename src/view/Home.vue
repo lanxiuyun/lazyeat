@@ -115,7 +115,10 @@
           </template>
         </GestureCard>
 
-        <GestureCard title="滚动控制" description="三指上下滑动控制页面滚动">
+        <GestureCard
+          title="滚动控制"
+          description="三指竖起，手掌上下滑动控制页面滚动"
+        >
           <template #icon>
             <GestureIcon :icon="ThreeThree" />
           </template>
