@@ -32,7 +32,17 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 ![img.png](.readme/img.png)
 
 # 快速开始
+```
+# 版本号声明
+\Desktop\lazyeat> python --version
+Python 3.11.11
 
+Desktop\lazyeat> rustc --version
+rustc 1.85.1 (4eb161250 2025-03-15)
+
+\Desktop\lazyeat> node --version
+v22.14.0
+```
 1. 安装 [rust](https://www.rust-lang.org/zh-CN/tools/install)
 2. 安装 [nodejs](https://nodejs.org/zh-cn/)
 3. 执行下面命令
