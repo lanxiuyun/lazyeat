@@ -7,8 +7,6 @@
 ![GitHub stars](https://img.shields.io/github/stars/maplelost/lazyeat)
 ![GitHub forks](https://img.shields.io/github/forks/maplelost/lazyeat?style=flat)
 
-[![Discord](https://img.shields.io/discord/1357641609176551566?label=Join%20Discord&logo=discord&style=for-the-badge)](https://discord.gg/nTH6qRng)
-
 [English README](README_EN.md)
 
 </div>
@@ -22,7 +20,8 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
 如果你觉得对你有用的话，不妨给我一个 star⭐ 吧~
 
-如果有任何的想法或者建议，都可以在 [Discussions](https://github.com/maplelost/lazyeat/discussions) 中讨论喔！
+如果有任何的想法或者建议，都可以在 [![Discord](https://img.shields.io/discord/1357641609176551566?label=Join%20Discord&logo=discord)](https://discord.gg/nTH6qRng)
+中讨论喔！
 
 # 🌠 截图
 
