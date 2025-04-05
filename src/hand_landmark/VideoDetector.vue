@@ -25,7 +25,6 @@ import {
 } from "@/hand_landmark/detector";
 import { use_app_store } from "@/store/app";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { useMessage } from "naive-ui";
 
 // 常量定义
 const app_store = use_app_store();
@@ -39,16 +38,6 @@ const currentStream = ref(null);
 const FPS = ref(0);
 const lastFpsTime = ref(0);
 const lastStopGestureTime = ref(0);
-
-onMounted(() => {
-  // 请求摄像头权限，如果拒绝，则提示用户
-  navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-    console.log("摄像头权限请求成功");
-  }).catch((error) => {
-    console.error("尝试获取摄像头权限失败:", error);
-  });
-  
-});
 
 const initializeCamera = async () => {
   try {
