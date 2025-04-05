@@ -6,10 +6,8 @@ a = Analysis(
     binaries=[],
     datas=[
         ('/Users/cjd/miniconda3/lib/python3.12/site-packages/vosk/*', 'vosk'),
-        ('/Users/cjd/miniconda3/lib/python3.12/site-packages/mediapipe/*', 'mediapipe'),
         # Update paths for other `datas` entries
     ],
-    hiddenimports=['vosk', 'mediapipe', 'uvicorn', 'uvicorn.logging', 'uvicorn.protocols'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -23,7 +21,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='Lazyeat Backend-macos',
+    name='Lazyeat Backend-aarch64-apple-darwin',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
