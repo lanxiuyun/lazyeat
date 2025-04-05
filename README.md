@@ -57,10 +57,13 @@ npm run build:icons
 # 3. pyinstaller 打包
 npm run py-build
 
-# 4. tauri 开发模式
+# 4. 下载语音识别模型并解压到项目目录 model 文件夹下
+https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
+
+# 5. tauri 开发模式
 npm run tauri dev
 
-# 5. tauri 生产构建
+# 6. tauri 生产构建
 # npm run tauri build
 ```
 
