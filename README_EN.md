@@ -14,11 +14,16 @@
 
 # 🍕 Lazyeat
 
-Lazyeat is a touch-free controller for eating! Don't want to get your hands greasy while watching videos or browsing the web while eating?
+Lazyeat is a touch-free controller for eating! Don't want to get your hands greasy while watching videos or browsing the
+web while eating?
 
 Just make hand gestures in front of your camera to pause videos, toggle fullscreen, or switch videos!
 
 If you find this useful, please give it a star!
+
+Feel free to join
+our [![Discord](https://img.shields.io/discord/1357641609176551566?label=Join%20Discord&logo=discord)](https://discord.gg/nTH6qRng)
+community to share your ideas and suggestions!
 
 # 🌠 Screenshots
 
@@ -27,6 +32,18 @@ Video Demo: https://www.bilibili.com/video/BV11SXTYTEJi/?spm_id_from=333.1387.ho
 ![img.png](.readme/img.png)
 
 # Quick Start
+
+```
+# Version Information
+\Desktop\lazyeat> python --version
+Python 3.11.11
+
+Desktop\lazyeat> rustc --version
+rustc 1.85.1 (4eb161250 2025-03-15)
+
+\Desktop\lazyeat> node --version
+v22.14.0
+```
 
 ```bash
 # 1. Install npm and python environment
@@ -66,11 +83,21 @@ After downloading, extract to the `model` folder at the same level as the `exe` 
 
 # Development Issues
 
-tauri build failure: [tauri build failure](https://github.com/tauri-apps/tauri/issues/7338)
+## Tauri Build Issues
 
-cargo blocked: [cargo blocked, change source](https://www.chenreal.com/post/599)
+If you encounter build failures with Tauri, check out this
+issue: [tauri build failure](https://github.com/tauri-apps/tauri/issues/7338)
 
-```
-# May or may not be useful
+## Cargo Network Issues
+
+If you're experiencing network issues with Cargo (common in some regions), you can try changing the
+source: [cargo blocked, change source](https://www.chenreal.com/post/599)
+
+```bash
+# Clear cargo cache (may help with some issues)
 rm -rf ~/.cargo/.package-cache
 ```
+
+# Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=maplelost/lazyeat&type=Date)](https://www.star-history.com/#maplelost/lazyeat&Date)

@@ -5,7 +5,6 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "opener:default",
     "shell:default",
     "shell:allow-execute",
     "shell:allow-spawn",
@@ -24,6 +23,11 @@
     "notification:allow-is-permission-granted",
     "notification:allow-notify",
     "notification:allow-show",
-    "notification:allow-request-permission"
+    "notification:allow-request-permission",
+
+    "opener:allow-open-path",
+    "opener:allow-reveal-item-in-dir",
+    "opener:allow-default-urls",
+    "opener:allow-open-url"
   ]
 }

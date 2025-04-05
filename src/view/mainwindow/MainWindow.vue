@@ -76,6 +76,19 @@ onMounted(async () => {
     permissionGranted = permission === "granted";
   }
 });
+
+// 使用默认浏览器打开 iframe 中的 <a> 标签
+import { openUrl } from "@tauri-apps/plugin-opener";
+function setupIframeListener(event: Event) {
+  const iframe = event.target as HTMLIFrameElement;
+  iframe.contentWindow?.addEventListener("click", async (e) => {
+    const link = (e.target as HTMLElement).closest("a");
+    if (link && link.href) {
+      e.preventDefault();
+      await openUrl(link.href);
+    }
+  });
+}
 </script>
 
 <template>
@@ -101,11 +114,12 @@ onMounted(async () => {
             <iframe
               :src="
                 is_dev
-                  ? '/lazyeat_ad/html/index.html'
+                  ? '/lazyeat-ad/html/index.html'
                   : 'https://lazyeat-ad.pages.dev/'
               "
               width="100%"
               height="100%"
+              @load="setupIframeListener"
             ></iframe>
           </n-card>
           <Home />

@@ -20,7 +20,8 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
 如果你觉得对你有用的话，不妨给我一个 star⭐ 吧~
 
-如果有任何的想法或者建议，都可以在 [Discussions](https://github.com/maplelost/lazyeat/discussions) 中讨论喔！
+如果有任何的想法或者建议，都可以在 [![Discord](https://img.shields.io/discord/1357641609176551566?label=Join%20Discord&logo=discord)](https://discord.gg/nTH6qRng)
+中讨论喔！
 
 # 🌠 截图
 
@@ -29,6 +30,18 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 ![img.png](.readme/img.png)
 
 # 快速开始
+
+```
+# 版本号声明
+\Desktop\lazyeat> python --version
+Python 3.11.11
+
+Desktop\lazyeat> rustc --version
+rustc 1.85.1 (4eb161250 2025-03-15)
+
+\Desktop\lazyeat> node --version
+v22.14.0
+```
 
 1. 安装 [rust](https://www.rust-lang.org/zh-CN/tools/install)
 2. 安装 [nodejs](https://nodejs.org/zh-cn/)
