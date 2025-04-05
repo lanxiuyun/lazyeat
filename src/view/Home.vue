@@ -201,6 +201,18 @@ import { computed, onMounted, ref } from "vue";
 
 const app_store = use_app_store();
 
+onMounted(() => {
+  // 请求摄像头权限，如果拒绝，则提示用户
+  navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .then((stream) => {
+      console.log("摄像头权限请求成功");
+    })
+    .catch((error) => {
+      console.error("尝试获取摄像头权限失败:", error);
+    });
+});
+
 // 计算属性：摄像头选项
 const camera_options = computed(() => {
   return app_store.cameras.map((camera) => ({
