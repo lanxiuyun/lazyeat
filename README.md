@@ -22,6 +22,7 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
 如果有任何的想法或者建议，都可以在 [![Discord](https://img.shields.io/discord/1357641609176551566?label=Join%20Discord&logo=discord)](https://discord.gg/nTH6qRng)
 中讨论喔！
+
 ![demo.gif](.readme/demo.gif)
 
 # 🌠 截图
