@@ -156,7 +156,7 @@ export class Detector {
   }
 
   // 获取单个手的手势类型
-  private static getSingleHandGesture(hand: HandInfo): HandGestureType {
+  public static getSingleHandGesture(hand: HandInfo): HandGestureType {
     const fingers = this._fingersUp(hand);
 
     // 0,1,2,3,4 分别代表 大拇指，食指，中指，无名指，小拇指
