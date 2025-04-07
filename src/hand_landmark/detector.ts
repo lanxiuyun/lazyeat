@@ -196,14 +196,24 @@ export class Detector {
 
 // 添加WebSocket数据类型定义
 enum WsDataType {
-  MouseMove = "mouse_move",
-  MouseClick = "mouse_click",
-  MouseScrollUp = "mouse_scroll_up",
-  MouseScrollDown = "mouse_scroll_down",
-  FourFingersUp = "four_fingers_up",
-  VoiceRecord = "voice_record",
-  VoiceStop = "voice_stop",
-  Backspace = "backspace",
+  // 系统消息类型
+  INFO = "info",
+  SUCCESS = "success",
+  WARNING = "warning",
+  ERROR = "error",
+
+  // 鼠标操作类型
+  MOUSE_MOVE = "mouse_move",
+  MOUSE_CLICK = "mouse_click",
+  MOUSE_SCROLL_UP = "mouse_scroll_up",
+  MOUSE_SCROLL_DOWN = "mouse_scroll_down",
+
+  // 键盘操作类型
+  SEND_KEYS = "send_keys",
+
+  // 语音操作类型
+  VOICE_RECORD = "voice_record",
+  VOICE_STOP = "voice_stop",
 }
 
 interface WsData {
@@ -211,7 +221,11 @@ interface WsData {
   msg: string;
   duration?: number;
   title?: string;
-  data?: any;
+  data?: {
+    x?: number;
+    y?: number;
+    key_str?: string;
+  };
 }
 
 class TriggerAction {
@@ -264,43 +278,59 @@ class TriggerAction {
   moveMouse(x: number, y: number) {
     this.ws?.send(
       JSON.stringify({
-        type: WsDataType.MouseMove,
+        type: WsDataType.MOUSE_MOVE,
         data: { x, y },
       })
     );
   }
 
   clickMouse() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.MouseClick }));
+    this.ws?.send(
+      JSON.stringify({
+        type: WsDataType.MOUSE_CLICK,
+      })
+    );
   }
 
   scrollUp() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.MouseScrollUp }));
+    this.ws?.send(
+      JSON.stringify({
+        type: WsDataType.MOUSE_SCROLL_UP,
+      })
+    );
   }
 
   scrollDown() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.MouseScrollDown }));
-  }
-
-  fourFingersUp(key_str: string) {
     this.ws?.send(
       JSON.stringify({
-        type: WsDataType.FourFingersUp,
+        type: WsDataType.MOUSE_SCROLL_DOWN,
+      })
+    );
+  }
+
+  sendKeys(key_str: string) {
+    this.ws?.send(
+      JSON.stringify({
+        type: WsDataType.SEND_KEYS,
         data: { key_str },
       })
     );
   }
 
-  sendBackspace() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.Backspace }));
-  }
-
   voiceRecord() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.VoiceRecord }));
+    this.ws?.send(
+      JSON.stringify({
+        type: WsDataType.VOICE_RECORD,
+      })
+    );
   }
 
   voiceStop() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.VoiceStop }));
+    this.ws?.send(
+      JSON.stringify({
+        type: WsDataType.VOICE_STOP,
+      })
+    );
   }
 }
 
@@ -454,7 +484,7 @@ class GestureTrigger {
     }
     this.lastFullScreenTime = now;
 
-    this.triggerAction.fourFingersUp(key_str);
+    this.triggerAction.sendKeys(key_str);
   }
 
   // 拇指和食指同时竖起 - 语音识别
@@ -473,7 +503,7 @@ class GestureTrigger {
       return;
     }
     this.lastDeleteTime = now;
-    this.triggerAction.sendBackspace();
+    this.triggerAction.sendKeys("backspace");
   }
 
   // 处理手势
