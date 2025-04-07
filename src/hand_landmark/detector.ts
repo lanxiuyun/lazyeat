@@ -218,7 +218,7 @@ enum WsDataType {
 
 interface WsData {
   type: WsDataType;
-  msg: string;
+  msg?: string;
   duration?: number;
   title?: string;
   data?: {
@@ -242,7 +242,7 @@ class TriggerAction {
         const response: WsData = JSON.parse(event.data);
         this.notification({
           title: response.title || "Lazyeat",
-          body: response.msg,
+          body: response.msg || "",
         });
       };
       this.ws.onopen = () => {
@@ -275,62 +275,59 @@ class TriggerAction {
     }
   }
 
+  private send(data: { type: WsDataType } & Partial<Omit<WsData, "type">>) {
+    const message: WsData = {
+      type: data.type,
+      msg: data.msg || "",
+      title: data.title || "Lazyeat",
+      duration: data.duration || 1,
+      data: data.data || {},
+    };
+    this.ws?.send(JSON.stringify(message));
+  }
+
   moveMouse(x: number, y: number) {
-    this.ws?.send(
-      JSON.stringify({
-        type: WsDataType.MOUSE_MOVE,
-        data: { x, y },
-      })
-    );
+    this.send({
+      type: WsDataType.MOUSE_MOVE,
+      data: { x, y },
+    });
   }
 
   clickMouse() {
-    this.ws?.send(
-      JSON.stringify({
-        type: WsDataType.MOUSE_CLICK,
-      })
-    );
+    this.send({
+      type: WsDataType.MOUSE_CLICK,
+    });
   }
 
   scrollUp() {
-    this.ws?.send(
-      JSON.stringify({
-        type: WsDataType.MOUSE_SCROLL_UP,
-      })
-    );
+    this.send({
+      type: WsDataType.MOUSE_SCROLL_UP,
+    });
   }
 
   scrollDown() {
-    this.ws?.send(
-      JSON.stringify({
-        type: WsDataType.MOUSE_SCROLL_DOWN,
-      })
-    );
+    this.send({
+      type: WsDataType.MOUSE_SCROLL_DOWN,
+    });
   }
 
   sendKeys(key_str: string) {
-    this.ws?.send(
-      JSON.stringify({
-        type: WsDataType.SEND_KEYS,
-        data: { key_str },
-      })
-    );
+    this.send({
+      type: WsDataType.SEND_KEYS,
+      data: { key_str },
+    });
   }
 
   voiceRecord() {
-    this.ws?.send(
-      JSON.stringify({
-        type: WsDataType.VOICE_RECORD,
-      })
-    );
+    this.send({
+      type: WsDataType.VOICE_RECORD,
+    });
   }
 
   voiceStop() {
-    this.ws?.send(
-      JSON.stringify({
-        type: WsDataType.VOICE_STOP,
-      })
-    );
+    this.send({
+      type: WsDataType.VOICE_STOP,
+    });
   }
 }
 
