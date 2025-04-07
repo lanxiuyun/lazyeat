@@ -7,7 +7,7 @@ export const HandGesture = {
 
   // 食指和中指同时竖起 - 鼠标左键点击
   INDEX_AND_MIDDLE_UP: "index_and_middle_up",
-  CLICK_GESTURE_SECOND: "click_gesture_second",
+  ROCK_GESTURE: "rock_gesture",
 
   // 三根手指同时竖起 - 滚动屏幕
   THREE_FINGERS_UP: "three_fingers_up",
@@ -168,7 +168,7 @@ export class Detector {
       fingers.toString() === [0, 1, 0, 0, 1].toString() ||
       fingers.toString() === [1, 1, 0, 0, 1].toString()
     ) {
-      return HandGesture.CLICK_GESTURE_SECOND;
+      return HandGesture.ROCK_GESTURE;
     } else if (fingers.toString() === [0, 1, 1, 1, 0].toString()) {
       return HandGesture.THREE_FINGERS_UP;
     } else if (fingers.toString() === [0, 1, 1, 1, 1].toString()) {
@@ -487,7 +487,7 @@ class GestureTrigger {
       // 其他手势需要连续10次以上才执行
       if (this.previousGestureCount >= this.minGestureCount) {
         switch (gesture) {
-          case HandGesture.CLICK_GESTURE_SECOND:
+          case HandGesture.ROCK_GESTURE:
           case HandGesture.INDEX_AND_MIDDLE_UP:
             this._index_and_middle_up(hand);
             break;
