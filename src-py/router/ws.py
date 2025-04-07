@@ -1,6 +1,7 @@
 import json
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Union
 
-from VoiceController import VoiceController
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pynput.keyboard import Controller as KeyboardController
 from pynput.keyboard import Key
@@ -9,228 +10,25 @@ from pynput.mouse import Button, Controller
 router = APIRouter()
 
 # 存储活跃的WebSocket连接
-active_connection: WebSocket | None = None
+active_connection: Optional[WebSocket] = None
 
 
-async def send_message(
-    ws_data_type: str, msg: str, title: str = "提示", duration: int = 1
-):
-    """
-    发送消息到WebSocket客户端
-
-    :param ws_data_type: 消息类型
-    :param msg: 消息内容
-    :param title: 消息标题
-    :param duration: 显示持续时间
-    """
-    if active_connection:
-        try:
-            await active_connection.send_json(
-                {
-                    "type": ws_data_type,
-                    "msg": msg,
-                    "title": title,
-                    "duration": duration,
-                }
-            )
-        except Exception as e:
-            print(f"Error sending message: {e}")
-
-
-class GestureSender:
-
-    def __init__(self):
-        self.keyboard = KeyboardController()
-        self.mouse = Controller()
-
-    def mouse_move(self, x: int, y: int):
-        self.mouse.position = (x, y)
-
-    def mouse_click(self):
-        self.mouse.click(Button.left)
-
-    def mouse_scroll_up(self):
-        self.mouse.scroll(0, 1)
-
-    def mouse_scroll_down(self):
-        self.mouse.scroll(0, -1)
-
-    def send_keys(self, key_str: str):
-        """
-        发送按键事件（支持组合键）
-
-        :param key_str: 按键字符串（如 'ctrl+r' 或 'F11'）
-        """
-
-        def _parse_keys(self, key_str: str):
-            """
-            解析按键字符串为实际的按键对象
-
-            :param key_str: 按键字符串（如 'ctrl+r' 或 'F11'）
-            :return: 按键列表（组合键）或单个按键
-            """
-            keys = key_str.split("+")
-            parsed_keys = []
-            for key in keys:
-                key = key.strip().lower()
-                if hasattr(Key, key):  # 如果是特殊键（如 ctrl, shift 等）
-                    parsed_keys.append(getattr(Key, key))
-                elif len(key) == 1:  # 如果是单字符键（如 a, b, c 等）
-                    parsed_keys.append(key)
-                elif key.startswith("f"):  # 如果是功能键（如 F1, F2 等）
-                    try:
-                        parsed_keys.append(getattr(Key, key))
-                    except AttributeError:
-                        raise ValueError(f"Invalid function key: {key}")
-                else:
-                    raise ValueError(f"Invalid key: {key}")
-            return parsed_keys
-
-        def _send_keys(self, keys):
-            """
-            发送按键事件（支持组合键）
-
-            :param keys: 按键列表
-            """
-            pressed_keys = []
-            try:
-                for key in keys:
-                    if isinstance(key, str):  # 单字符键
-                        self.keyboard.press(key)
-                    else:  # 特殊键
-                        self.keyboard.press(key)
-                    pressed_keys.append(key)
-                for key in reversed(pressed_keys):
-                    if isinstance(key, str):
-                        self.keyboard.release(key)
-                    else:
-                        self.keyboard.release(key)
-            except Exception as e:
-                print(f"Error sending keys: {e}")
-
-        keys = _parse_keys(key_str)
-        _send_keys(keys)
-
-
-@router.websocket("/ws_lazyeat")
-async def websocket_endpoint(websocket: WebSocket):
-    global active_connection
-
-    await websocket.accept()
-    # 存储当前连接
-    active_connection = websocket
-
-    gesture_sender = GestureSender()
-    voice_controller = None
-    try:
-        voice_controller = VoiceController()
-    except Exception as e:
-        error_msg = WsData(
-            type=WsDataType.ERROR,
-            msg=f"语音识别模块初始化失败: {str(e)}",
-            title="错误",
-            duration=2,
-        )
-        await websocket.send_json(error_msg.to_dict())
-
-    while True:
-        try:
-            # 接收客户端消息
-            data_str = await websocket.receive_text()
-
-            try:
-                ws_data = WsData(**json.loads(data_str))
-                data = ws_data.data
-
-                if ws_data.type == WsDataType.MouseMove:
-                    gesture_sender.mouse_move(data["x"], data["y"])
-                elif ws_data.type == WsDataType.MouseClick:
-                    gesture_sender.mouse_click()
-                elif ws_data.type == WsDataType.MouseScrollUp:
-                    gesture_sender.mouse_scroll_up()
-                elif ws_data.type == WsDataType.MouseScrollDown:
-                    gesture_sender.mouse_scroll_down()
-                elif ws_data.type == WsDataType.SendKeys:
-                    gesture_sender.send_keys(data["key_str"])
-
-                # 语音识别
-                elif ws_data.type == WsDataType.VoiceRecord:
-                    if voice_controller and not voice_controller.is_recording:
-                        voice_controller.start_record_thread()
-                        info_msg = WsData(
-                            type=WsDataType.INFO,
-                            msg="开始语音识别",
-                            title="提示",
-                            duration=1,
-                        )
-                        await websocket.send_json(info_msg.to_dict())
-                elif ws_data.type == WsDataType.VoiceStop:
-                    if voice_controller and voice_controller.is_recording:
-                        voice_controller.stop_record()
-
-                        info_msg = WsData(
-                            type=WsDataType.INFO,
-                            msg="停止语音识别",
-                            title="提示",
-                            duration=1,
-                        )
-                        await websocket.send_json(info_msg.to_dict())
-
-                        # 获取识别结果并输入
-                        text = voice_controller.transcribe_audio()
-                        if text:
-                            gesture_sender.keyboard.type(text)
-                            gesture_sender.keyboard.tap(Key.enter)
-            except Exception as e:
-                print(f"Error processing message: {e}")
-
-        except WebSocketDisconnect:
-            # 连接断开时，清除连接
-            active_connection = None
-            break
-
-
-class WsDataType:
-    INFO = "info"
-    SUCCESS = "success"
-    WARNING = "warning"
-    ERROR = "error"
-
-    MouseMove = "mouse_move"
-    MouseClick = "mouse_click"
-    MouseScrollUp = "mouse_scroll_up"
-    MouseScrollDown = "mouse_scroll_down"
-    SendKeys = "send_keys"
-
-    VoiceRecord = "voice_record"
-    VoiceStop = "voice_stop"
-
-
-class WsData:
-    """WebSocket 消息数据结构"""
+@dataclass
+class WebSocketMessage:
+    """WebSocket消息数据类"""
 
     type: str
     msg: str = ""
     title: str = "提示"
     duration: int = 1
-    data: dict = {"x": 0, "y": 0, "key_str": ""}
+    data: Dict = None
 
-    def __init__(
-        self,
-        type: str,
-        msg: str = "",
-        title: str = "提示",
-        duration: int = 1,
-        data: dict = None,
-    ):
-        self.type = type
-        self.msg = msg
-        self.title = title
-        self.duration = duration
-        self.data = data or {"x": 0, "y": 0, "key_str": ""}
+    def __post_init__(self):
+        if self.data is None:
+            self.data = {"x": 0, "y": 0, "key_str": ""}
 
-    def to_dict(self) -> dict:
-        """将数据转换为字典格式"""
+    def to_dict(self) -> Dict:
+        """将消息转换为字典格式"""
         return {
             "type": self.type,
             "msg": self.msg,
@@ -238,3 +36,234 @@ class WsData:
             "duration": self.duration,
             "data": self.data,
         }
+
+
+class WebSocketMessageType:
+    """WebSocket消息类型常量"""
+
+    # 系统消息类型
+    INFO = "info"
+    SUCCESS = "success"
+    WARNING = "warning"
+    ERROR = "error"
+
+    # 鼠标操作类型
+    MOUSE_MOVE = "mouse_move"
+    MOUSE_CLICK = "mouse_click"
+    MOUSE_SCROLL_UP = "mouse_scroll_up"
+    MOUSE_SCROLL_DOWN = "mouse_scroll_down"
+
+    # 键盘操作类型
+    SEND_KEYS = "send_keys"
+
+    # 语音操作类型
+    VOICE_RECORD = "voice_record"
+    VOICE_STOP = "voice_stop"
+
+
+class MessageSender:
+    """消息发送器,发送给前端"""
+
+    @staticmethod
+    async def send_message(
+            ws_data_type: str, msg: str, title: str = "提示", duration: int = 1
+    ) -> None:
+        """
+        发送消息到WebSocket客户端
+
+        Args:
+            ws_data_type: 消息类型
+            msg: 消息内容
+            title: 消息标题
+            duration: 显示持续时间
+        """
+        if not active_connection:
+            return
+
+        try:
+            message = WebSocketMessage(
+                type=ws_data_type, msg=msg, title=title, duration=duration
+            )
+            await active_connection.send_json(message.to_dict())
+        except Exception as e:
+            print(f"发送消息失败: {e}")
+
+
+class GestureController:
+    """手势控制器"""
+
+    def __init__(self):
+        self.keyboard = KeyboardController()
+        self.mouse = Controller()
+
+    def move_mouse(self, x: int, y: int) -> None:
+        """移动鼠标到指定位置"""
+        self.mouse.position = (x, y)
+
+    def click_mouse(self) -> None:
+        """点击鼠标左键"""
+        self.mouse.click(Button.left)
+
+    def scroll_up(self) -> None:
+        """向上滚动"""
+        self.mouse.scroll(0, 1)
+
+    def scroll_down(self) -> None:
+        """向下滚动"""
+        self.mouse.scroll(0, -1)
+
+    def send_keys(self, key_str: str) -> None:
+        """
+        发送按键事件（支持组合键）
+
+        Args:
+            key_str: 按键字符串（如 'ctrl+r' 或 'F11'）
+        """
+        try:
+            keys = [self.__parse_key(key) for key in key_str.split("+")]
+            self.__execute_keys(keys)
+        except Exception as e:
+            print(f"发送按键失败: {e}")
+
+    def __parse_key(self, key_str: str) -> Union[str, Key]:
+        """
+        解析单个按键
+
+        Args:
+            key_str: 按键字符串
+
+        Returns:
+            解析后的按键对象
+        """
+        key_str = key_str.strip().lower()
+
+        if hasattr(Key, key_str):
+            return getattr(Key, key_str)
+        elif len(key_str) == 1:
+            return key_str
+        elif key_str.startswith("f"):
+            try:
+                return getattr(Key, key_str)
+            except AttributeError:
+                raise ValueError(f"无效的功能键: {key_str}")
+        else:
+            raise ValueError(f"无效的按键: {key_str}")
+
+    def __execute_keys(self, keys: List[Union[str, Key]]) -> None:
+        """
+        执行按键序列
+
+        Args:
+            keys: 按键列表
+        """
+        pressed_keys = []
+        try:
+            # 按下所有键
+            for key in keys:
+                self.keyboard.press(key)
+                pressed_keys.append(key)
+
+            # 释放所有键（按相反顺序）
+            for key in reversed(pressed_keys):
+                self.keyboard.release(key)
+        except Exception as e:
+            print(f"执行按键失败: {e}")
+
+
+class VoiceHandler:
+    """语音处理控制器"""
+
+    def __init__(self):
+        from VoiceController import VoiceController
+
+        self.controller: Optional[VoiceController] = None
+        try:
+            self.controller = VoiceController()
+        except Exception as e:
+            print(f"语音控制器初始化失败: {e}")
+
+    async def start_recording(self, websocket: WebSocket) -> None:
+        """开始录音"""
+        if self.controller and not self.controller.is_recording:
+            self.controller.start_record_thread()
+            await MessageSender.send_message(
+                WebSocketMessageType.INFO, "开始语音识别", "提示", 1
+            )
+
+    async def stop_recording(
+            self, websocket: WebSocket, gesture_controller: GestureController
+    ) -> None:
+        """停止录音并处理结果"""
+        if self.controller and self.controller.is_recording:
+            self.controller.stop_record()
+
+            await MessageSender.send_message(
+                WebSocketMessageType.INFO, "停止语音识别", "提示", 1
+            )
+
+            # 获取识别结果并输入
+            text = self.controller.transcribe_audio()
+            if text:
+                gesture_controller.keyboard.type(text)
+                gesture_controller.keyboard.tap(Key.enter)
+
+
+@router.websocket("/ws_lazyeat")
+async def websocket_endpoint(websocket: WebSocket):
+    """WebSocket端点处理函数"""
+    global active_connection
+
+    await websocket.accept()
+    active_connection = websocket
+
+    gesture_controller = GestureController()
+    voice_handler = VoiceHandler()
+
+    try:
+        while True:
+            data_str = await websocket.receive_text()
+            await _handle_message(
+                data_str, websocket, gesture_controller, voice_handler
+            )
+    except WebSocketDisconnect:
+        active_connection = None
+    except Exception as e:
+        print(f"WebSocket处理错误: {e}")
+        active_connection = None
+
+
+async def _handle_message(
+        data_str: str,
+        websocket: WebSocket,
+        gesture_controller: GestureController,
+        voice_handler: VoiceHandler,
+) -> None:
+    """处理WebSocket消息"""
+    try:
+        message = WebSocketMessage(**json.loads(data_str))
+        data = message.data
+
+        # 处理鼠标操作
+        if message.type == WebSocketMessageType.MOUSE_MOVE:
+            gesture_controller.move_mouse(data["x"], data["y"])
+        elif message.type == WebSocketMessageType.MOUSE_CLICK:
+            gesture_controller.click_mouse()
+        elif message.type == WebSocketMessageType.MOUSE_SCROLL_UP:
+            gesture_controller.scroll_up()
+        elif message.type == WebSocketMessageType.MOUSE_SCROLL_DOWN:
+            gesture_controller.scroll_down()
+
+        # 处理键盘操作
+        elif message.type == WebSocketMessageType.SEND_KEYS:
+            gesture_controller.send_keys(data["key_str"])
+
+        # 处理语音操作
+        elif message.type == WebSocketMessageType.VOICE_RECORD:
+            await voice_handler.start_recording(websocket)
+        elif message.type == WebSocketMessageType.VOICE_STOP:
+            await voice_handler.stop_recording(websocket, gesture_controller)
+
+    except json.JSONDecodeError:
+        print("无效的JSON数据")
+    except Exception as e:
+        print(f"处理消息失败: {e}")
