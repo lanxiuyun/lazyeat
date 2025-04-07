@@ -305,8 +305,9 @@ class TriggerAction {
 }
 
 import use_app_store from "@/store/app";
-const triggerAction = new TriggerAction();
+
 class GestureTrigger {
+  private triggerAction: TriggerAction;
   private previousGesture: HandGestureType | null = null;
   private previousGestureCount: number = 0;
   private minGestureCount: number = 5;
@@ -330,7 +331,11 @@ class GestureTrigger {
   private readonly SCROLL_INTERVAL = 100; // 滚动间隔
   private readonly FULL_SCREEN_INTERVAL = 1500; // 全屏切换间隔
 
-  // 食指举起，移动鼠标
+  constructor() {
+    this.triggerAction = new TriggerAction();
+  }
+
+  // 鼠标移动参数
   _only_index_up(hand: HandInfo) {
     const app_store = use_app_store();
 
@@ -382,7 +387,7 @@ class GestureTrigger {
       this.prev_loc_x = screenX;
       this.prev_loc_y = screenY;
       // 移动鼠标
-      triggerAction.moveMouse(this.screen_width - screenX, screenY);
+      this.triggerAction.moveMouse(this.screen_width - screenX, screenY);
     }
   }
 
@@ -394,7 +399,7 @@ class GestureTrigger {
     }
     this.lastClickTime = now;
 
-    triggerAction.clickMouse();
+    this.triggerAction.clickMouse();
   }
 
   // 三根手指同时竖起 - 滚动屏幕
@@ -425,10 +430,10 @@ class GestureTrigger {
       if (Math.abs(deltaY) > 0.008) {
         if (deltaY < 0) {
           // 手指向上移动，向上滚动
-          triggerAction.scrollUp();
+          this.triggerAction.scrollUp();
         } else {
           // 手指向下移动，向下滚动
-          triggerAction.scrollDown();
+          this.triggerAction.scrollDown();
         }
         // 更新上一次的 Y 坐标
         this.prev_three_fingers_y = currentY;
@@ -449,16 +454,16 @@ class GestureTrigger {
     }
     this.lastFullScreenTime = now;
 
-    triggerAction.fourFingersUp(key_str);
+    this.triggerAction.fourFingersUp(key_str);
   }
 
   // 拇指和食指同时竖起 - 语音识别
   _voice_gesture_start(hand: HandInfo) {
-    triggerAction.voiceRecord();
+    this.triggerAction.voiceRecord();
   }
 
   _voice_gesture_stop(hand: HandInfo) {
-    triggerAction.voiceStop();
+    this.triggerAction.voiceStop();
   }
 
   // 删除手势
@@ -468,7 +473,7 @@ class GestureTrigger {
       return;
     }
     this.lastDeleteTime = now;
-    triggerAction.sendBackspace();
+    this.triggerAction.sendBackspace();
   }
 
   // 处理手势
