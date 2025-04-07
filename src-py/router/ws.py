@@ -55,7 +55,12 @@ class GestureSender:
     def mouse_scroll_down(self):
         self.mouse.scroll(0, -1)
 
-    def send_four_fingers_up(self, key_str: str):
+    def send_keys(self, key_str: str):
+        """
+        发送按键事件（支持组合键）
+
+        :param key_str: 按键字符串（如 'ctrl+r' 或 'F11'）
+        """
         keys = self._parse_keys(key_str)
         self._send_keys(keys)
 
@@ -172,7 +177,7 @@ async def websocket_endpoint(websocket: WebSocket):
                             gesture_sender.keyboard.type(text)
                             gesture_sender.keyboard.tap(Key.enter)
                 elif ws_data_type == WsDataType.FourFingersUp:
-                    gesture_sender.send_four_fingers_up(data["key_str"])
+                    gesture_sender.send_keys(data["key_str"])
                 elif ws_data_type == WsDataType.Backspace:
                     gesture_sender.keyboard.tap(Key.backspace)
             except Exception as e:
