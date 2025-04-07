@@ -240,7 +240,7 @@ class TriggerAction {
       this.ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
       this.ws.onmessage = (event: MessageEvent) => {
         const response: WsData = JSON.parse(event.data);
-        this.sendNotification({
+        this.notification({
           title: response.title || "Lazyeat",
           body: response.msg,
         });
@@ -264,7 +264,7 @@ class TriggerAction {
     }
   }
 
-  async sendNotification({ title, body }: { title: string; body: string }) {
+  async notification({ title, body }: { title: string; body: string }) {
     try {
       const { sendNotification } = await import(
         "@tauri-apps/plugin-notification"
