@@ -66,7 +66,7 @@ class MessageSender:
 
     @staticmethod
     async def send_message(
-            ws_data_type: str, msg: str, title: str = "提示", duration: int = 1
+        ws_data_type: str, msg: str, title: str = "提示", duration: int = 1
     ) -> None:
         """
         发送消息到WebSocket客户端
@@ -89,7 +89,7 @@ class MessageSender:
             print(f"发送消息失败: {e}")
 
 
-class GestureController:
+class GestureHandler:
     """手势控制器"""
 
     def __init__(self):
@@ -191,7 +191,7 @@ class VoiceHandler:
             )
 
     async def stop_recording(
-            self, websocket: WebSocket, gesture_controller: GestureController
+        self, websocket: WebSocket, gesture_handler: GestureHandler
     ) -> None:
         """停止录音并处理结果"""
         if self.controller and self.controller.is_recording:
@@ -204,8 +204,8 @@ class VoiceHandler:
             # 获取识别结果并输入
             text = self.controller.transcribe_audio()
             if text:
-                gesture_controller.keyboard.type(text)
-                gesture_controller.keyboard.tap(Key.enter)
+                gesture_handler.keyboard.type(text)
+                gesture_handler.keyboard.tap(Key.enter)
 
 
 @router.websocket("/ws_lazyeat")
@@ -216,15 +216,13 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     active_connection = websocket
 
-    gesture_controller = GestureController()
+    gesture_handler = GestureHandler()
     voice_handler = VoiceHandler()
 
     try:
         while True:
             data_str = await websocket.receive_text()
-            await _handle_message(
-                data_str, websocket, gesture_controller, voice_handler
-            )
+            await _handle_message(data_str, websocket, gesture_handler, voice_handler)
     except WebSocketDisconnect:
         active_connection = None
     except Exception as e:
@@ -233,10 +231,10 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 async def _handle_message(
-        data_str: str,
-        websocket: WebSocket,
-        gesture_controller: GestureController,
-        voice_handler: VoiceHandler,
+    data_str: str,
+    websocket: WebSocket,
+    gesture_handler: GestureHandler,
+    voice_handler: VoiceHandler,
 ) -> None:
     """处理WebSocket消息"""
     try:
@@ -245,23 +243,23 @@ async def _handle_message(
 
         # 处理鼠标操作
         if message.type == WebSocketMessageType.MOUSE_MOVE:
-            gesture_controller.move_mouse(data["x"], data["y"])
+            gesture_handler.move_mouse(data["x"], data["y"])
         elif message.type == WebSocketMessageType.MOUSE_CLICK:
-            gesture_controller.click_mouse()
+            gesture_handler.click_mouse()
         elif message.type == WebSocketMessageType.MOUSE_SCROLL_UP:
-            gesture_controller.scroll_up()
+            gesture_handler.scroll_up()
         elif message.type == WebSocketMessageType.MOUSE_SCROLL_DOWN:
-            gesture_controller.scroll_down()
+            gesture_handler.scroll_down()
 
         # 处理键盘操作
         elif message.type == WebSocketMessageType.SEND_KEYS:
-            gesture_controller.send_keys(data["key_str"])
+            gesture_handler.send_keys(data["key_str"])
 
         # 处理语音操作
         elif message.type == WebSocketMessageType.VOICE_RECORD:
             await voice_handler.start_recording(websocket)
         elif message.type == WebSocketMessageType.VOICE_STOP:
-            await voice_handler.stop_recording(websocket, gesture_controller)
+            await voice_handler.stop_recording(websocket, gesture_handler)
 
     except json.JSONDecodeError:
         print("无效的JSON数据")
