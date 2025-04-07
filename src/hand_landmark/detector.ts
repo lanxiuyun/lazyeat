@@ -7,7 +7,7 @@ export const HandGesture = {
 
   // 食指和中指同时竖起 - 鼠标左键点击
   INDEX_AND_MIDDLE_UP: "index_and_middle_up",
-  CLICK_GESTURE_SECOND: "click_gesture_second",
+  ROCK_GESTURE: "rock_gesture",
 
   // 三根手指同时竖起 - 滚动屏幕
   THREE_FINGERS_UP: "three_fingers_up",
@@ -156,7 +156,7 @@ export class Detector {
   }
 
   // 获取单个手的手势类型
-  private static getSingleHandGesture(hand: HandInfo): HandGestureType {
+  public static getSingleHandGesture(hand: HandInfo): HandGestureType {
     const fingers = this._fingersUp(hand);
 
     // 0,1,2,3,4 分别代表 大拇指，食指，中指，无名指，小拇指
@@ -168,7 +168,7 @@ export class Detector {
       fingers.toString() === [0, 1, 0, 0, 1].toString() ||
       fingers.toString() === [1, 1, 0, 0, 1].toString()
     ) {
-      return HandGesture.CLICK_GESTURE_SECOND;
+      return HandGesture.ROCK_GESTURE;
     } else if (fingers.toString() === [0, 1, 1, 1, 0].toString()) {
       return HandGesture.THREE_FINGERS_UP;
     } else if (fingers.toString() === [0, 1, 1, 1, 1].toString()) {
@@ -196,22 +196,36 @@ export class Detector {
 
 // 添加WebSocket数据类型定义
 enum WsDataType {
-  MouseMove = "mouse_move",
-  MouseClick = "mouse_click",
-  MouseScrollUp = "mouse_scroll_up",
-  MouseScrollDown = "mouse_scroll_down",
-  FourFingersUp = "four_fingers_up",
-  VoiceRecord = "voice_record",
-  VoiceStop = "voice_stop",
-  Backspace = "backspace",
+  // 系统消息类型
+  INFO = "info",
+  SUCCESS = "success",
+  WARNING = "warning",
+  ERROR = "error",
+
+  // 鼠标操作类型
+  MOUSE_MOVE = "mouse_move",
+  MOUSE_CLICK = "mouse_click",
+  MOUSE_SCROLL_UP = "mouse_scroll_up",
+  MOUSE_SCROLL_DOWN = "mouse_scroll_down",
+
+  // 键盘操作类型
+  SEND_KEYS = "send_keys",
+
+  // 语音操作类型
+  VOICE_RECORD = "voice_record",
+  VOICE_STOP = "voice_stop",
 }
 
 interface WsData {
   type: WsDataType;
-  msg: string;
+  msg?: string;
   duration?: number;
   title?: string;
-  data?: any;
+  data?: {
+    x?: number;
+    y?: number;
+    key_str?: string;
+  };
 }
 
 class TriggerAction {
@@ -226,9 +240,9 @@ class TriggerAction {
       this.ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
       this.ws.onmessage = (event: MessageEvent) => {
         const response: WsData = JSON.parse(event.data);
-        this.sendNotification({
+        this.notification({
           title: response.title || "Lazyeat",
-          body: response.msg,
+          body: response.msg || "",
         });
       };
       this.ws.onopen = () => {
@@ -250,7 +264,7 @@ class TriggerAction {
     }
   }
 
-  async sendNotification({ title, body }: { title: string; body: string }) {
+  async notification({ title, body }: { title: string; body: string }) {
     try {
       const { sendNotification } = await import(
         "@tauri-apps/plugin-notification"
@@ -261,52 +275,66 @@ class TriggerAction {
     }
   }
 
+  private send(data: { type: WsDataType } & Partial<Omit<WsData, "type">>) {
+    const message: WsData = {
+      type: data.type,
+      msg: data.msg || "",
+      title: data.title || "Lazyeat",
+      duration: data.duration || 1,
+      data: data.data || {},
+    };
+    this.ws?.send(JSON.stringify(message));
+  }
+
   moveMouse(x: number, y: number) {
-    this.ws?.send(
-      JSON.stringify({
-        type: WsDataType.MouseMove,
-        data: { x, y },
-      })
-    );
+    this.send({
+      type: WsDataType.MOUSE_MOVE,
+      data: { x, y },
+    });
   }
 
   clickMouse() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.MouseClick }));
+    this.send({
+      type: WsDataType.MOUSE_CLICK,
+    });
   }
 
   scrollUp() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.MouseScrollUp }));
+    this.send({
+      type: WsDataType.MOUSE_SCROLL_UP,
+    });
   }
 
   scrollDown() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.MouseScrollDown }));
+    this.send({
+      type: WsDataType.MOUSE_SCROLL_DOWN,
+    });
   }
 
-  fourFingersUp(key_str: string) {
-    this.ws?.send(
-      JSON.stringify({
-        type: WsDataType.FourFingersUp,
-        data: { key_str },
-      })
-    );
-  }
-
-  sendBackspace() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.Backspace }));
+  sendKeys(key_str: string) {
+    this.send({
+      type: WsDataType.SEND_KEYS,
+      data: { key_str },
+    });
   }
 
   voiceRecord() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.VoiceRecord }));
+    this.send({
+      type: WsDataType.VOICE_RECORD,
+    });
   }
 
   voiceStop() {
-    this.ws?.send(JSON.stringify({ type: WsDataType.VoiceStop }));
+    this.send({
+      type: WsDataType.VOICE_STOP,
+    });
   }
 }
 
 import use_app_store from "@/store/app";
-const triggerAction = new TriggerAction();
+
 class GestureTrigger {
+  private triggerAction: TriggerAction;
   private previousGesture: HandGestureType | null = null;
   private previousGestureCount: number = 0;
   private minGestureCount: number = 5;
@@ -330,7 +358,11 @@ class GestureTrigger {
   private readonly SCROLL_INTERVAL = 100; // 滚动间隔
   private readonly FULL_SCREEN_INTERVAL = 1500; // 全屏切换间隔
 
-  // 食指举起，移动鼠标
+  constructor() {
+    this.triggerAction = new TriggerAction();
+  }
+
+  // 鼠标移动参数
   _only_index_up(hand: HandInfo) {
     const app_store = use_app_store();
 
@@ -382,7 +414,7 @@ class GestureTrigger {
       this.prev_loc_x = screenX;
       this.prev_loc_y = screenY;
       // 移动鼠标
-      triggerAction.moveMouse(this.screen_width - screenX, screenY);
+      this.triggerAction.moveMouse(this.screen_width - screenX, screenY);
     }
   }
 
@@ -394,7 +426,7 @@ class GestureTrigger {
     }
     this.lastClickTime = now;
 
-    triggerAction.clickMouse();
+    this.triggerAction.clickMouse();
   }
 
   // 三根手指同时竖起 - 滚动屏幕
@@ -425,10 +457,10 @@ class GestureTrigger {
       if (Math.abs(deltaY) > 0.008) {
         if (deltaY < 0) {
           // 手指向上移动，向上滚动
-          triggerAction.scrollUp();
+          this.triggerAction.scrollUp();
         } else {
           // 手指向下移动，向下滚动
-          triggerAction.scrollDown();
+          this.triggerAction.scrollDown();
         }
         // 更新上一次的 Y 坐标
         this.prev_three_fingers_y = currentY;
@@ -449,16 +481,16 @@ class GestureTrigger {
     }
     this.lastFullScreenTime = now;
 
-    triggerAction.fourFingersUp(key_str);
+    this.triggerAction.sendKeys(key_str);
   }
 
   // 拇指和食指同时竖起 - 语音识别
   _voice_gesture_start(hand: HandInfo) {
-    triggerAction.voiceRecord();
+    this.triggerAction.voiceRecord();
   }
 
   _voice_gesture_stop(hand: HandInfo) {
-    triggerAction.voiceStop();
+    this.triggerAction.voiceStop();
   }
 
   // 删除手势
@@ -468,7 +500,7 @@ class GestureTrigger {
       return;
     }
     this.lastDeleteTime = now;
-    triggerAction.sendBackspace();
+    this.triggerAction.sendKeys("backspace");
   }
 
   // 处理手势
@@ -487,7 +519,7 @@ class GestureTrigger {
       // 其他手势需要连续10次以上才执行
       if (this.previousGestureCount >= this.minGestureCount) {
         switch (gesture) {
-          case HandGesture.CLICK_GESTURE_SECOND:
+          case HandGesture.ROCK_GESTURE:
           case HandGesture.INDEX_AND_MIDDLE_UP:
             this._index_and_middle_up(hand);
             break;
