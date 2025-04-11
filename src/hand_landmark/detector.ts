@@ -1,7 +1,8 @@
+import use_app_store from "@/store/app";
 import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 
 // 手势枚举
-export const HandGesture = {
+const HandGesture = {
   // 食指举起，移动鼠标
   ONLY_INDEX_UP: "only_index_up",
 
@@ -28,29 +29,38 @@ export const HandGesture = {
   OTHER: null,
 } as const;
 
-export type HandGestureType = (typeof HandGesture)[keyof typeof HandGesture];
+type HandGestureType = (typeof HandGesture)[keyof typeof HandGesture];
 
-export interface HandLandmark {
+interface HandLandmark {
   x: number;
   y: number;
   z: number;
 }
 
-export interface HandInfo {
+interface HandInfo {
   landmarks: HandLandmark[];
   handedness: "Left" | "Right";
   score: number;
 }
 
-export interface DetectionResult {
+interface DetectionResult {
   leftHand?: HandInfo;
   rightHand?: HandInfo;
   // 原始检测结果，以防需要访问其他数据
   rawResult: any;
 }
 
+/**
+ * 检测器类 - 负责手势识别和手势分类
+ * 主要职责:
+ * 1. 初始化和管理MediaPipe HandLandmarker
+ * 2. 检测视频帧中的手部
+ * 3. 分析手势类型(手指竖起等)
+ * 4. 提供手部关键点查询方法
+ */
 export class Detector {
   private detector: HandLandmarker | null = null;
+  private gestureHandler: GestureHandler | null = null;
 
   async initialize() {
     const vision = await FilesetResolver.forVisionTasks("/mediapipe/wasm");
@@ -62,8 +72,12 @@ export class Detector {
       runningMode: "VIDEO",
       numHands: 2,
     });
+    this.gestureHandler = new GestureHandler();
   }
 
+  /**
+   * 从视频帧检测手部
+   */
   async detect(video: HTMLVideoElement): Promise<DetectionResult> {
     if (!this.detector) {
       throw new Error("检测器未初始化");
@@ -93,7 +107,9 @@ export class Detector {
     return detection;
   }
 
-  // 便捷方法：获取特定手指的关键点
+  /**
+   * 便捷方法：获取特定手指的关键点
+   */
   static getFingerLandmarks(
     hand: HandInfo | undefined,
     fingerIndex: number
@@ -112,7 +128,9 @@ export class Detector {
     return indices.map((i) => hand.landmarks[i]);
   }
 
-  // 获取手指尖点
+  /**
+   * 获取手指尖点
+   */
   static getFingerTip(
     hand: HandInfo | undefined,
     fingerIndex: number
@@ -123,7 +141,9 @@ export class Detector {
     return hand.landmarks[tipIndices[fingerIndex]];
   }
 
-  // 检测手指是否竖起
+  /**
+   * 检测手指是否竖起
+   */
   static _fingersUp(hand: HandInfo): number[] {
     const fingers: number[] = [];
     const tipIds = [4, 8, 12, 16, 20]; // 从大拇指开始，依次为每个手指指尖
@@ -155,7 +175,9 @@ export class Detector {
     return fingers;
   }
 
-  // 获取单个手的手势类型
+  /**
+   * 获取单个手的手势类型
+   */
   public static getSingleHandGesture(hand: HandInfo): HandGestureType {
     const fingers = this._fingersUp(hand);
 
@@ -192,9 +214,74 @@ export class Detector {
       return HandGesture.OTHER;
     }
   }
+
+  /**
+   * 处理检测结果并执行相应动作
+   */
+  async process(detection: DetectionResult): Promise<void> {
+    const rightHandGesture = detection.rightHand
+      ? Detector.getSingleHandGesture(detection.rightHand)
+      : HandGesture.OTHER;
+    const leftHandGesture = detection.leftHand
+      ? Detector.getSingleHandGesture(detection.leftHand)
+      : HandGesture.OTHER;
+
+    const effectiveGesture = this.getEffectiveGesture(
+      rightHandGesture,
+      leftHandGesture
+    );
+
+    // 将手势处理交给GestureHandler
+    if (detection.rightHand) {
+      this.gestureHandler?.handleGesture(effectiveGesture, detection.rightHand);
+    } else if (detection.leftHand) {
+      this.gestureHandler?.handleGesture(effectiveGesture, detection.leftHand);
+    }
+  }
+
+  /**
+   * 获取有效手势
+   */
+  private getEffectiveGesture(
+    rightHandGesture: HandGestureType,
+    leftHandGesture: HandGestureType
+  ): HandGestureType {
+    // 如果左右手都是暂停手势，才执行暂停手势
+    if (
+      rightHandGesture === HandGesture.STOP_GESTURE &&
+      leftHandGesture === HandGesture.STOP_GESTURE
+    ) {
+      return HandGesture.STOP_GESTURE;
+    }
+
+    // 如果右手手势不是 OTHER 且不是 STOP_GESTURE，则返回右手手势
+    if (
+      rightHandGesture !== HandGesture.OTHER &&
+      rightHandGesture !== HandGesture.STOP_GESTURE
+    ) {
+      return rightHandGesture;
+    }
+    // 如果右手手势是 STOP_GESTURE，则返回 OTHER
+    if (rightHandGesture === HandGesture.STOP_GESTURE) {
+      return HandGesture.OTHER;
+    }
+    // 如果右手手势是 OTHER，再检查左手手势
+    if (
+      leftHandGesture !== HandGesture.OTHER &&
+      leftHandGesture !== HandGesture.STOP_GESTURE
+    ) {
+      return leftHandGesture;
+    }
+    // 如果左手手势是 STOP_GESTURE，则返回 OTHER
+    if (leftHandGesture === HandGesture.STOP_GESTURE) {
+      return HandGesture.OTHER;
+    }
+    // 如果左右手都没有有效手势，则返回 OTHER
+    return HandGesture.OTHER;
+  }
 }
 
-// 添加WebSocket数据类型定义
+// WebSocket数据类型定义
 enum WsDataType {
   // 系统消息类型
   INFO = "info",
@@ -228,6 +315,13 @@ interface WsData {
   };
 }
 
+/**
+ * 动作触发器类 - 负责发送操作命令到系统
+ * 主要职责：
+ * 1. 维护WebSocket连接
+ * 2. 提供各种操作方法（移动鼠标、点击等）
+ * 3. 发送通知
+ */
 class TriggerAction {
   private ws: WebSocket | null = null;
 
@@ -266,10 +360,7 @@ class TriggerAction {
 
   async notification({ title, body }: { title: string; body: string }) {
     try {
-      const { sendNotification } = await import(
-        "@tauri-apps/plugin-notification"
-      );
-      await sendNotification({ title, body });
+      console.log("notification", title, body);
     } catch (error) {
       console.error("Failed to send notification:", error);
     }
@@ -331,13 +422,19 @@ class TriggerAction {
   }
 }
 
-import use_app_store from "@/store/app";
-
-class GestureTrigger {
+/**
+ * 手势处理器类 - 负责将手势转换为具体操作
+ * 主要职责:
+ * 1. 接收识别到的手势类型
+ * 2. 根据手势执行相应动作
+ * 3. 处理防抖和连续手势确认
+ */
+class GestureHandler {
   private triggerAction: TriggerAction;
   private previousGesture: HandGestureType | null = null;
   private previousGestureCount: number = 0;
   private minGestureCount: number = 5;
+  private lastStopGestureTime: number = 0;
 
   // 鼠标移动参数
   private screen_width: number = window.screen.width;
@@ -358,26 +455,34 @@ class GestureTrigger {
   private readonly SCROLL_INTERVAL = 100; // 滚动间隔
   private readonly FULL_SCREEN_INTERVAL = 1500; // 全屏切换间隔
 
+  private app_store: any;
+
   constructor() {
     this.triggerAction = new TriggerAction();
+    this.app_store = use_app_store();
   }
 
-  // 鼠标移动参数
-  _only_index_up(hand: HandInfo) {
-    const app_store = use_app_store();
-
+  /**
+   * 处理食指上举手势 - 鼠标移动
+   */
+  private handleIndexFingerUp(hand: HandInfo) {
     const indexTip = Detector.getFingerTip(hand, 1); // 食指指尖
-    if (indexTip) {
+    if (!indexTip) return;
+
+    try {
       // 将坐标转换为显示器分辨率
-      const video_x = indexTip.x * app_store.VIDEO_WIDTH;
-      const video_y = indexTip.y * app_store.VIDEO_HEIGHT;
+      const video_x = indexTip.x * this.app_store.VIDEO_WIDTH;
+      const video_y = indexTip.y * this.app_store.VIDEO_HEIGHT;
 
-      // 定义视频帧的边界
-      const mouse_move_boundary = app_store.config.mouse_move_boundary; // 鼠标移动有效区域边界
-      const wCam = app_store.VIDEO_WIDTH;
-      const hCam = app_store.VIDEO_HEIGHT;
+      // 获取鼠标移动边界配置
+      const mouse_move_boundary =
+        this.app_store.config.mouse_move_boundary || 50; // 默认值为50
+      const wCam = this.app_store.VIDEO_WIDTH;
+      const hCam = this.app_store.VIDEO_HEIGHT;
 
-      // 辅助方法：将值从一个范围映射到另一个范围
+      /**
+       * 辅助方法：将值从一个范围映射到另一个范围
+       */
       function mapRange(
         value: number,
         fromMin: number,
@@ -406,6 +511,7 @@ class GestureTrigger {
         this.screen_height
       );
 
+      // 应用平滑处理
       screenX =
         this.prev_loc_x + (screenX - this.prev_loc_x) / this.smoothening;
       screenY =
@@ -413,13 +519,18 @@ class GestureTrigger {
 
       this.prev_loc_x = screenX;
       this.prev_loc_y = screenY;
+
       // 移动鼠标
       this.triggerAction.moveMouse(this.screen_width - screenX, screenY);
+    } catch (error) {
+      console.error("处理鼠标移动失败:", error);
     }
   }
 
-  // 食指和中指同时竖起 - 鼠标左键点击
-  _index_and_middle_up(hand: HandInfo) {
+  /**
+   * 处理食指和中指同时竖起手势 - 鼠标左键点击
+   */
+  private handleMouseClick() {
     const now = Date.now();
     if (now - this.lastClickTime < this.CLICK_INTERVAL) {
       return;
@@ -429,72 +540,86 @@ class GestureTrigger {
     this.triggerAction.clickMouse();
   }
 
-  // 三根手指同时竖起 - 滚动屏幕
-  _three_fingers_up(hand: HandInfo) {
+  /**
+   * 处理三根手指同时竖起手势 - 滚动屏幕
+   */
+  private handleScroll(hand: HandInfo) {
     const indexTip = Detector.getFingerTip(hand, 1);
     const middleTip = Detector.getFingerTip(hand, 2);
     const ringTip = Detector.getFingerTip(hand, 3);
-    if (indexTip && middleTip && ringTip) {
-      const now = Date.now();
-      if (now - this.lastScrollTime < this.SCROLL_INTERVAL) {
-        return;
-      }
-      this.lastScrollTime = now;
-
-      // 计算三根手指的平均 Y 坐标
-      const currentY = (indexTip.y + middleTip.y + ringTip.y) / 3;
-
-      // 如果是第一次检测到手势，记录当前 Y 坐标
-      if (this.prev_three_fingers_y === 0) {
-        this.prev_three_fingers_y = currentY;
-        return;
-      }
-
-      // 计算 Y 坐标的变化
-      const deltaY = currentY - this.prev_three_fingers_y;
-
-      // 如果变化超过阈值，则触发滚动
-      if (Math.abs(deltaY) > 0.008) {
-        if (deltaY < 0) {
-          // 手指向上移动，向上滚动
-          this.triggerAction.scrollUp();
-        } else {
-          // 手指向下移动，向下滚动
-          this.triggerAction.scrollDown();
-        }
-        // 更新上一次的 Y 坐标
-        this.prev_three_fingers_y = currentY;
-      }
-    } else {
-      // 如果没有检测到手指，重置上一次的 Y 坐标
+    if (!indexTip || !middleTip || !ringTip) {
       this.prev_three_fingers_y = 0;
-    }
-  }
-
-  // 四根手指同时竖起 - 视频全屏
-  _four_fingers_up(hand: HandInfo) {
-    const app_store = use_app_store();
-    const key_str = app_store.config.four_fingers_up_send;
-    const now = Date.now();
-    if (now - this.lastFullScreenTime < this.FULL_SCREEN_INTERVAL) {
       return;
     }
-    this.lastFullScreenTime = now;
 
-    this.triggerAction.sendKeys(key_str);
+    const now = Date.now();
+    if (now - this.lastScrollTime < this.SCROLL_INTERVAL) {
+      return;
+    }
+    this.lastScrollTime = now;
+
+    // 计算三根手指的平均 Y 坐标
+    const currentY = (indexTip.y + middleTip.y + ringTip.y) / 3;
+
+    // 如果是第一次检测到手势，记录当前 Y 坐标
+    if (this.prev_three_fingers_y === 0) {
+      this.prev_three_fingers_y = currentY;
+      return;
+    }
+
+    // 计算 Y 坐标的变化
+    const deltaY = currentY - this.prev_three_fingers_y;
+
+    // 如果变化超过阈值，则触发滚动
+    if (Math.abs(deltaY) > 0.008) {
+      if (deltaY < 0) {
+        // 手指向上移动，向上滚动
+        this.triggerAction.scrollUp();
+      } else {
+        // 手指向下移动，向下滚动
+        this.triggerAction.scrollDown();
+      }
+      // 更新上一次的 Y 坐标
+      this.prev_three_fingers_y = currentY;
+    }
   }
 
-  // 拇指和食指同时竖起 - 语音识别
-  _voice_gesture_start(hand: HandInfo) {
+  /**
+   * 处理四根手指同时竖起手势 - 发送快捷键
+   */
+  private handleFourFingers() {
+    try {
+      const key_str = this.app_store.config.four_fingers_up_send || "f";
+      const now = Date.now();
+      if (now - this.lastFullScreenTime < this.FULL_SCREEN_INTERVAL) {
+        return;
+      }
+      this.lastFullScreenTime = now;
+
+      this.triggerAction.sendKeys(key_str);
+    } catch (error) {
+      console.error("处理四指手势失败:", error);
+    }
+  }
+
+  /**
+   * 处理拇指和小指同时竖起手势 - 开始语音识别
+   */
+  private handleVoiceStart() {
     this.triggerAction.voiceRecord();
   }
 
-  _voice_gesture_stop(hand: HandInfo) {
+  /**
+   * 处理拳头手势 - 停止语音识别
+   */
+  private handleVoiceStop() {
     this.triggerAction.voiceStop();
   }
 
-  // 删除手势
-  _delete_gesture(hand: HandInfo) {
+  /**
+   * 处理删除手势
+   */
+  private handleDelete() {
     const now = Date.now();
     if (now - this.lastDeleteTime < 1500) {
       return;
@@ -503,8 +628,38 @@ class GestureTrigger {
     this.triggerAction.sendKeys("backspace");
   }
 
-  // 处理手势
+  /**
+   * 处理停止手势
+   */
+  async handleStopGesture(): Promise<void> {
+    const now = Date.now();
+    // 如果距离上次暂停手势触发时间小于1.5秒，则忽略当前暂停手势
+    if (now - this.lastStopGestureTime > 1500) {
+      this.lastStopGestureTime = now;
+      this.app_store.flag_detecting = !this.app_store.flag_detecting;
+      this.triggerAction.notification({
+        title: "手势识别",
+        body: this.app_store.flag_detecting ? "继续手势识别" : "暂停手势识别",
+      });
+    }
+  }
+
+  /**
+   * 处理手势
+   */
   handleGesture(gesture: HandGestureType, hand: HandInfo) {
+    // 首先处理停止手势
+    if (gesture === HandGesture.STOP_GESTURE) {
+      this.handleStopGesture();
+      return;
+    }
+
+    // 如果手势识别已暂停，则不处理其他手势
+    if (!this.app_store.flag_detecting) {
+      return;
+    }
+
+    // 更新手势连续性计数
     if (gesture === this.previousGesture) {
       this.previousGestureCount++;
     } else {
@@ -512,40 +667,35 @@ class GestureTrigger {
       this.previousGestureCount = 1;
     }
 
-    // 如果是 ONLY_INDEX_UP 手势，则直接执行
+    // 鼠标移动手势直接执行，不需要连续确认
     if (gesture === HandGesture.ONLY_INDEX_UP) {
-      this._only_index_up(hand);
-    } else {
-      // 其他手势需要连续10次以上才执行
-      if (this.previousGestureCount >= this.minGestureCount) {
-        switch (gesture) {
-          case HandGesture.ROCK_GESTURE:
-          case HandGesture.INDEX_AND_MIDDLE_UP:
-            this._index_and_middle_up(hand);
-            break;
-          case HandGesture.THREE_FINGERS_UP:
-            this._three_fingers_up(hand);
-            break;
-          case HandGesture.FOUR_FINGERS_UP:
-            this._four_fingers_up(hand);
-            break;
-          case HandGesture.VOICE_GESTURE_START:
-            this._voice_gesture_start(hand);
-            break;
-          case HandGesture.VOICE_GESTURE_STOP:
-            this._voice_gesture_stop(hand);
-            break;
-          case HandGesture.DELETE_GESTURE:
-            this._delete_gesture(hand);
-            break;
-        }
+      this.handleIndexFingerUp(hand);
+      return;
+    }
+
+    // 其他手势需要连续确认才执行
+    if (this.previousGestureCount >= this.minGestureCount) {
+      switch (gesture) {
+        case HandGesture.ROCK_GESTURE:
+        case HandGesture.INDEX_AND_MIDDLE_UP:
+          this.handleMouseClick();
+          break;
+        case HandGesture.THREE_FINGERS_UP:
+          this.handleScroll(hand);
+          break;
+        case HandGesture.FOUR_FINGERS_UP:
+          this.handleFourFingers();
+          break;
+        case HandGesture.VOICE_GESTURE_START:
+          this.handleVoiceStart();
+          break;
+        case HandGesture.VOICE_GESTURE_STOP:
+          this.handleVoiceStop();
+          break;
+        case HandGesture.DELETE_GESTURE:
+          this.handleDelete();
+          break;
       }
     }
   }
 }
-
-// 导出 GestureTrigger 类
-export { GestureTrigger };
-
-// 导出 GestureTrigger 实例
-export const gestureTrigger = new GestureTrigger();
