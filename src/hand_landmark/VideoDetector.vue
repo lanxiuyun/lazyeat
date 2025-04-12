@@ -1,28 +1,52 @@
 <template>
-  <div class="hand-detection">
-    <video
-      ref="videoElement"
-      class="input-video"
-      :width="app_store.VIDEO_WIDTH"
-      :height="app_store.VIDEO_HEIGHT"
-      autoplay
-      style="display: none"
-    ></video>
-    <canvas
-      ref="canvasElement"
-      class="output-canvas"
-      :width="app_store.VIDEO_WIDTH"
-      :height="app_store.VIDEO_HEIGHT"
-    ></canvas>
+  <div v-if="!camera_premission">
+    <n-alert title="获取摄像头权限失败" type="error">
+      <p>请尝试以下步骤解决:</p>
+      <ol>
+        <!-- <li>
+          删除文件夹
+          <n-tag size="small">
+            %LOCALAPPDATA%\com.Lazyeat.maplelost\EBWebView
+          </n-tag>
+        </li> -->
+        <li>
+          进入<n-tag size="small">%LOCALAPPDATA%\com.Lazyeat.maplelost</n-tag>
+        </li>
+        <li>删除<n-tag size="small">EBWebView</n-tag>文件夹</li>
+        <li>重新启动程序</li>
+      </ol>
+      <p>
+        如果问题仍然存在,请加入QQ群询问:
+        <a href="https://jq.qq.com/?_wv=1027&k=452246065" target="_blank"
+          >452246065</a
+        >
+      </p>
+    </n-alert>
+  </div>
+
+  <div v-else>
+    <span>FPS: {{ FPS }}</span>
+    <div class="hand-detection">
+      <video
+        ref="videoElement"
+        class="input-video"
+        :width="app_store.VIDEO_WIDTH"
+        :height="app_store.VIDEO_HEIGHT"
+        autoplay
+        style="display: none"
+      ></video>
+      <canvas
+        ref="canvasElement"
+        class="output-canvas"
+        :width="app_store.VIDEO_WIDTH"
+        :height="app_store.VIDEO_HEIGHT"
+      ></canvas>
+    </div>
   </div>
 </template>
 
 <script setup>
-import {
-  Detector,
-  HandGesture,
-  gestureTrigger,
-} from "@/hand_landmark/detector";
+import { Detector } from "@/hand_landmark/detector";
 import { use_app_store } from "@/store/app";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
@@ -37,77 +61,14 @@ const lastVideoTime = ref(-1);
 const currentStream = ref(null);
 const FPS = ref(0);
 const lastFpsTime = ref(0);
-const lastStopGestureTime = ref(0);
+const camera_premission = ref(false);
 
-const initializeCamera = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        deviceId: app_store.config.selected_camera_id
-          ? { exact: app_store.config.selected_camera_id }
-          : undefined,
-        width: app_store.VIDEO_WIDTH,
-        height: app_store.VIDEO_HEIGHT,
-      },
-      audio: false,
-    });
-    currentStream.value = stream;
-    videoElement.value.srcObject = stream;
-    videoElement.value.addEventListener("loadeddata", predictWebcam);
-  } catch (error) {
-    console.error("无法访问摄像头:", error);
-  }
-};
-
-const stopCamera = () => {
-  if (videoElement.value?.srcObject) {
-    videoElement.value.srcObject.getTracks().forEach((track) => track.stop());
-  }
-};
-
-// 手势处理相关方法
-const handleGesture = (gesture, detection) => {
-  if (detection.rightHand) {
-    gestureTrigger.handleGesture(gesture, detection.rightHand);
-  } else if (detection.leftHand) {
-    gestureTrigger.handleGesture(gesture, detection.leftHand);
-  }
-};
-
-const getEffectiveGesture = (rightHandGesture, leftHandGesture) => {
-  // 如果左右手都是暂停手势，才执行暂停手势
-  if (
-    rightHandGesture === HandGesture.STOP_GESTURE &&
-    leftHandGesture === HandGesture.STOP_GESTURE
-  ) {
-    return HandGesture.STOP_GESTURE;
-  }
-
-  // 如果右手手势不是 OTHER 且不是 STOP_GESTURE，则返回右手手势
-  if (
-    rightHandGesture !== HandGesture.OTHER &&
-    rightHandGesture !== HandGesture.STOP_GESTURE
-  ) {
-    return rightHandGesture;
-  }
-  // 如果右手手势是 STOP_GESTURE，则返回 OTHER
-  if (rightHandGesture === HandGesture.STOP_GESTURE) {
-    return HandGesture.OTHER;
-  }
-  // 如果右手手势是 OTHER，再检查左手手势
-  if (
-    leftHandGesture !== HandGesture.OTHER &&
-    leftHandGesture !== HandGesture.STOP_GESTURE
-  ) {
-    return leftHandGesture;
-  }
-  // 如果左手手势是 STOP_GESTURE，则返回 OTHER
-  if (leftHandGesture === HandGesture.STOP_GESTURE) {
-    return HandGesture.OTHER;
-  }
-  // 如果左右手都没有有效手势，则返回 OTHER
-  return HandGesture.OTHER;
-};
+onMounted(() => {
+  navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+    camera_premission.value = true;
+    stream.getTracks().forEach((track) => track.stop());
+  });
+});
 
 // 绘制相关方法
 const drawMouseMoveBox = (ctx) => {
@@ -128,10 +89,6 @@ const drawFPS = (ctx) => {
     FPS.value = Math.round(1000 / delta);
   }
   lastFpsTime.value = now;
-
-  ctx.font = "20px Arial";
-  ctx.fillStyle = "white";
-  ctx.fillText(`FPS: ${FPS.value}`, 10, 30);
 };
 
 const drawHandLandmarks = (ctx, hand, color) => {
@@ -179,42 +136,37 @@ const predictWebcam = async () => {
       }
     }
 
-    // 手势识别和处理
-    const rightHandGesture = detection.rightHand
-      ? Detector.getSingleHandGesture(detection.rightHand)
-      : HandGesture.OTHER;
-    const leftHandGesture = detection.leftHand
-      ? Detector.getSingleHandGesture(detection.leftHand)
-      : HandGesture.OTHER;
-
-    const effectiveGesture = getEffectiveGesture(
-      rightHandGesture,
-      leftHandGesture
-    );
-
-    if (effectiveGesture === HandGesture.STOP_GESTURE) {
-      const now = Date.now();
-      // 如果距离上次暂停手势触发时间小于1.5秒，则忽略当前暂停手势
-      if (now - lastStopGestureTime.value > 1500) {
-        lastStopGestureTime.value = now;
-        app_store.flag_detecting = !app_store.flag_detecting;
-        const { sendNotification } = await import(
-          "@tauri-apps/plugin-notification"
-        );
-
-        await sendNotification({
-          title: "手势识别",
-          body: app_store.flag_detecting ? "继续手势识别" : "暂停手势识别",
-        });
-      }
-    }
-
-    if (app_store.flag_detecting) {
-      handleGesture(effectiveGesture, detection);
-    }
+    // 手势处理
+    await detector.value.process(detection);
   }
 
   requestAnimationFrame(predictWebcam);
+};
+
+const initializeCamera = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        deviceId: app_store.config.selected_camera_id
+          ? { exact: app_store.config.selected_camera_id }
+          : undefined,
+        width: app_store.VIDEO_WIDTH,
+        height: app_store.VIDEO_HEIGHT,
+      },
+      audio: false,
+    });
+    currentStream.value = stream;
+    videoElement.value.srcObject = stream;
+    videoElement.value.addEventListener("loadeddata", predictWebcam);
+  } catch (error) {
+    console.error("无法访问摄像头:", error);
+  }
+};
+
+const stopCamera = () => {
+  if (videoElement.value?.srcObject) {
+    videoElement.value.srcObject.getTracks().forEach((track) => track.stop());
+  }
 };
 
 watch(
@@ -260,5 +212,6 @@ onBeforeUnmount(() => {
 
 .output-canvas {
   position: absolute;
+  transform: scaleX(-1);
 }
 </style>

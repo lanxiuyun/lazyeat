@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <n-card class="control-panel" hoverable>
+    <n-card class="control-panel" hoverable v-show="app_store.config.show_window">
       <!-- <n-card class="performance-card" hoverable>
         <template #header>
           <n-space align="center">
@@ -29,7 +29,7 @@
           </n-space>
         </n-space>
       </n-card> -->
-      <VideoDetector v-show="app_store.config.show_window" />
+      <VideoDetector/>
     </n-card>
 
     <!-- 顶部控制区域 -->
