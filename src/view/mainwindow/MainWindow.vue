@@ -19,7 +19,6 @@ const ready = ref(false);
 const is_dev = import.meta.env.DEV;
 
 onMounted(async () => {
-  appVersion.value = await getVersion();
   ready.value = await pyApi.ready();
 
   const timer = setInterval(async () => {
@@ -39,7 +38,8 @@ onMounted(async () => {
 });
 
 // 窗口恢复上一次状态
-onMounted(() => {
+onMounted(async () => {
+  appVersion.value = await getVersion();
   restoreStateCurrent(StateFlags.ALL);
 });
 

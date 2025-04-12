@@ -1,20 +1,47 @@
 <template>
-  <span>FPS: {{ FPS }}</span>
-  <div class="hand-detection">
-    <video
-      ref="videoElement"
-      class="input-video"
-      :width="app_store.VIDEO_WIDTH"
-      :height="app_store.VIDEO_HEIGHT"
-      autoplay
-      style="display: none"
-    ></video>
-    <canvas
-      ref="canvasElement"
-      class="output-canvas"
-      :width="app_store.VIDEO_WIDTH"
-      :height="app_store.VIDEO_HEIGHT"
-    ></canvas>
+  <div v-if="!camera_premission">
+    <n-alert title="获取摄像头权限失败" type="error">
+      <p>请尝试以下步骤解决:</p>
+      <ol>
+        <!-- <li>
+          删除文件夹
+          <n-tag size="small">
+            %LOCALAPPDATA%\com.Lazyeat.maplelost\EBWebView
+          </n-tag>
+        </li> -->
+        <li>
+          进入<n-tag size="small">%LOCALAPPDATA%\com.Lazyeat.maplelost</n-tag>
+        </li>
+        <li>删除<n-tag size="small">EBWebView</n-tag>文件夹</li>
+        <li>重新启动程序</li>
+      </ol>
+      <p>
+        如果问题仍然存在,请加入QQ群询问:
+        <a href="https://jq.qq.com/?_wv=1027&k=452246065" target="_blank"
+          >452246065</a
+        >
+      </p>
+    </n-alert>
+  </div>
+
+  <div v-else>
+    <span>FPS: {{ FPS }}</span>
+    <div class="hand-detection">
+      <video
+        ref="videoElement"
+        class="input-video"
+        :width="app_store.VIDEO_WIDTH"
+        :height="app_store.VIDEO_HEIGHT"
+        autoplay
+        style="display: none"
+      ></video>
+      <canvas
+        ref="canvasElement"
+        class="output-canvas"
+        :width="app_store.VIDEO_WIDTH"
+        :height="app_store.VIDEO_HEIGHT"
+      ></canvas>
+    </div>
   </div>
 </template>
 
@@ -34,6 +61,14 @@ const lastVideoTime = ref(-1);
 const currentStream = ref(null);
 const FPS = ref(0);
 const lastFpsTime = ref(0);
+const camera_premission = ref(false);
+
+onMounted(() => {
+  navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+    camera_premission.value = true;
+    stream.getTracks().forEach((track) => track.stop());
+  });
+});
 
 // 绘制相关方法
 const drawMouseMoveBox = (ctx) => {
