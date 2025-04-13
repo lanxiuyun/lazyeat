@@ -1,3 +1,4 @@
+import i18n from "@/locales/i18n";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 import App from "./App.vue";
@@ -61,4 +62,5 @@ const pinia = createPinia();
 
 app.use(naive);
 app.use(pinia);
+app.use(i18n);
 app.mount("#app");
