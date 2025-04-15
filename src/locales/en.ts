@@ -26,7 +26,7 @@ export default {
   "结束语音识别": "End Voice Recognition",
   "拳头手势结束语音识别": "Fist gesture to end voice recognition",
   "暂停/继续": "Pause/Resume",
-  "双手张开暂停/继续 手势识别": "Open both hands to pause/resume gesture recognition",
+  "单手张开1.5秒 暂停/继续 手势识别": "Open one hand for 1.5 seconds to pause/resume gesture recognition",
 
   // 通知
   "Lazyeat": "Lazyeat",
