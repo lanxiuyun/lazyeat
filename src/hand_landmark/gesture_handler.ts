@@ -1,7 +1,6 @@
-import { HandInfo } from "@/hand_landmark/detector";
-import { HandGesture } from "@/hand_landmark/detector";
-import use_app_store from "@/store/app";
+import { HandGesture, HandInfo } from "@/hand_landmark/detector";
 import i18n from "@/locales/i18n"; // 导入 i18n 实例
+import use_app_store from "@/store/app";
 
 // WebSocket数据类型定义
 enum WsDataType {
@@ -360,15 +359,25 @@ export class GestureHandler {
    * 处理停止手势
    */
   async handleStopGesture(): Promise<void> {
-    const now = Date.now();
-    // 如果距离上次暂停手势触发时间小于1.5秒，则忽略当前暂停手势
-    if (now - this.lastStopGestureTime > 1500) {
-      this.lastStopGestureTime = now;
+    const toogle_detect = () => {
       this.app_store.flag_detecting = !this.app_store.flag_detecting;
       this.triggerAction.notification({
         title: "手势识别",
         body: this.app_store.flag_detecting ? "继续手势识别" : "暂停手势识别",
       });
+    };
+
+    if (this.previousGesture !== HandGesture.STOP_GESTURE) {
+      this.previousGestureCount = 0;
+      this.previousGesture = HandGesture.STOP_GESTURE;
+    }
+
+    if (this.previousGestureCount >= 45) {
+      toogle_detect();
+      this.previousGestureCount = 0;
+      this.previousGesture = HandGesture.STOP_GESTURE;
+    } else {
+      this.previousGestureCount++;
     }
   }
 

@@ -26,7 +26,7 @@ export enum HandGesture {
   // 其他手势
   DELETE_GESTURE = "delete_gesture",
 
-  OTHER = "other"
+  OTHER = "other",
 }
 
 interface HandLandmark {
@@ -65,7 +65,7 @@ export class Detector {
     this.detector = await HandLandmarker.createFromOptions(vision, {
       baseOptions: {
         modelAssetPath: "/mediapipe/hand_landmarker.task",
-        delegate: "CPU",
+        delegate: "GPU",
       },
       runningMode: "VIDEO",
       numHands: 1,
@@ -224,10 +224,13 @@ export class Detector {
       ? Detector.getSingleHandGesture(detection.leftHand)
       : HandGesture.OTHER;
 
-    const effectiveGesture = this.getEffectiveGesture(
-      rightHandGesture,
-      leftHandGesture
-    );
+    // 优先使用右手
+    let effectiveGesture = rightHandGesture;
+    if (detection.rightHand) {
+      effectiveGesture = rightHandGesture;
+    } else if (detection.leftHand) {
+      effectiveGesture = leftHandGesture;
+    }
 
     // 将手势处理交给GestureHandler
     if (detection.rightHand) {
@@ -235,46 +238,5 @@ export class Detector {
     } else if (detection.leftHand) {
       this.gestureHandler?.handleGesture(effectiveGesture, detection.leftHand);
     }
-  }
-
-  /**
-   * 获取有效手势
-   */
-  private getEffectiveGesture(
-    rightHandGesture: HandGesture,
-    leftHandGesture: HandGesture
-  ): HandGesture {
-    // 如果左右手都是暂停手势，才执行暂停手势
-    if (
-      rightHandGesture === HandGesture.STOP_GESTURE &&
-      leftHandGesture === HandGesture.STOP_GESTURE
-    ) {
-      return HandGesture.STOP_GESTURE;
-    }
-
-    // 如果右手手势不是 OTHER 且不是 STOP_GESTURE，则返回右手手势
-    if (
-      rightHandGesture !== HandGesture.OTHER &&
-      rightHandGesture !== HandGesture.STOP_GESTURE
-    ) {
-      return rightHandGesture;
-    }
-    // 如果右手手势是 STOP_GESTURE，则返回 OTHER
-    if (rightHandGesture === HandGesture.STOP_GESTURE) {
-      return HandGesture.OTHER;
-    }
-    // 如果右手手势是 OTHER，再检查左手手势
-    if (
-      leftHandGesture !== HandGesture.OTHER &&
-      leftHandGesture !== HandGesture.STOP_GESTURE
-    ) {
-      return leftHandGesture;
-    }
-    // 如果左手手势是 STOP_GESTURE，则返回 OTHER
-    if (leftHandGesture === HandGesture.STOP_GESTURE) {
-      return HandGesture.OTHER;
-    }
-    // 如果左右手都没有有效手势，则返回 OTHER
-    return HandGesture.OTHER;
   }
 }
