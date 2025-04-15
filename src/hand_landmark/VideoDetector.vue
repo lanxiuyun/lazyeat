@@ -125,9 +125,6 @@ const predictWebcam = async () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // 绘制FPS
-      drawFPS(ctx);
-
       // 绘制鼠标移动框
       drawMouseMoveBox(ctx);
 
@@ -142,6 +139,9 @@ const predictWebcam = async () => {
 
     // 手势处理
     await detector.value.process(detection);
+
+    // 绘制FPS
+    drawFPS(ctx);
   }
 
   requestAnimationFrame(predictWebcam);
