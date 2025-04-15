@@ -67,10 +67,10 @@ export class Detector {
     this.detector = await HandLandmarker.createFromOptions(vision, {
       baseOptions: {
         modelAssetPath: "/mediapipe/hand_landmarker.task",
-        delegate: "GPU",
+        delegate: "CPU",
       },
       runningMode: "VIDEO",
-      numHands: 2,
+      numHands: 1,
     });
     this.gestureHandler = new GestureHandler();
   }

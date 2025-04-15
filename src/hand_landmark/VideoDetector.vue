@@ -60,7 +60,6 @@ const detector = ref(new Detector());
 const lastVideoTime = ref(-1);
 const currentStream = ref(null);
 const FPS = ref(0);
-const lastFpsTime = ref(0);
 const camera_premission = ref(false);
 
 onMounted(() => {
@@ -82,13 +81,18 @@ const drawMouseMoveBox = (ctx) => {
   );
 };
 
+const frameCount = ref(0);
+const fpsUpdateInterval = 1000; // 每秒更新一次 FPS
+const lastFpsTime = ref(0);
 const drawFPS = (ctx) => {
   const now = performance.now();
-  if (lastFpsTime.value) {
-    const delta = now - lastFpsTime.value;
-    FPS.value = Math.round(1000 / delta);
+  frameCount.value++;
+
+  if (now - lastFpsTime.value >= fpsUpdateInterval) {
+    FPS.value = frameCount.value;
+    frameCount.value = 0;
+    lastFpsTime.value = now;
   }
-  lastFpsTime.value = now;
 };
 
 const drawHandLandmarks = (ctx, hand, color) => {
