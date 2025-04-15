@@ -1,4 +1,5 @@
 import { HandInfo } from "@/hand_landmark/detector";
+import { HandGesture } from "@/hand_landmark/detector";
 import use_app_store from "@/store/app";
 import i18n from "@/locales/i18n"; // 导入 i18n 实例
 
@@ -158,7 +159,7 @@ export class TriggerAction {
  */
 export class GestureHandler {
   private triggerAction: TriggerAction;
-  private previousGesture: string | null = null;
+  private previousGesture: HandGesture | null = null;
   private previousGestureCount: number = 0;
   private minGestureCount: number = 5;
   private lastStopGestureTime: number = 0;
@@ -384,9 +385,9 @@ export class GestureHandler {
   /**
    * 处理手势
    */
-  handleGesture(gesture: string, hand: HandInfo) {
+  handleGesture(gesture: HandGesture, hand: HandInfo) {
     // 首先处理停止手势
-    if (gesture === "stop_gesture") {
+    if (gesture === HandGesture.STOP_GESTURE) {
       this.handleStopGesture();
       return;
     }
@@ -405,7 +406,7 @@ export class GestureHandler {
     }
 
     // 鼠标移动手势直接执行，不需要连续确认
-    if (gesture === "only_index_up") {
+    if (gesture === HandGesture.ONLY_INDEX_UP) {
       this.handleIndexFingerUp(hand);
       return;
     }
@@ -413,23 +414,23 @@ export class GestureHandler {
     // 其他手势需要连续确认才执行
     if (this.previousGestureCount >= this.minGestureCount) {
       switch (gesture) {
-        case "rock_gesture":
-        case "index_and_middle_up":
+        case HandGesture.ROCK_GESTURE:
+        case HandGesture.INDEX_AND_MIDDLE_UP:
           this.handleMouseClick();
           break;
-        case "three_fingers_up":
+        case HandGesture.THREE_FINGERS_UP:
           this.handleScroll(hand);
           break;
-        case "four_fingers_up":
+        case HandGesture.FOUR_FINGERS_UP:
           this.handleFourFingers();
           break;
-        case "voice_gesture_start":
+        case HandGesture.VOICE_GESTURE_START:
           this.handleVoiceStart();
           break;
-        case "voice_gesture_stop":
+        case HandGesture.VOICE_GESTURE_STOP:
           this.handleVoiceStop();
           break;
-        case "delete_gesture":
+        case HandGesture.DELETE_GESTURE:
           this.handleDelete();
           break;
       }
