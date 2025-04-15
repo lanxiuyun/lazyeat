@@ -2,34 +2,32 @@ import { GestureHandler } from "@/hand_landmark/gesture_handler";
 import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 
 // 手势枚举
-const HandGesture = {
+export enum HandGesture {
   // 食指举起，移动鼠标
-  ONLY_INDEX_UP: "only_index_up",
+  ONLY_INDEX_UP = "only_index_up",
 
   // 食指和中指同时竖起 - 鼠标左键点击
-  INDEX_AND_MIDDLE_UP: "index_and_middle_up",
-  ROCK_GESTURE: "rock_gesture",
+  INDEX_AND_MIDDLE_UP = "index_and_middle_up",
+  ROCK_GESTURE = "rock_gesture",
 
   // 三根手指同时竖起 - 滚动屏幕
-  THREE_FINGERS_UP: "three_fingers_up",
+  THREE_FINGERS_UP = "three_fingers_up",
 
   // 四根手指同时竖起 - 视频全屏
-  FOUR_FINGERS_UP: "four_fingers_up",
+  FOUR_FINGERS_UP = "four_fingers_up",
 
   // 五根手指同时竖起 - 暂停/开始 识别
-  STOP_GESTURE: "stop_gesture",
+  STOP_GESTURE = "stop_gesture",
 
   // 拇指和食指同时竖起 - 语音识别
-  VOICE_GESTURE_START: "voice_gesture_start",
-  VOICE_GESTURE_STOP: "voice_gesture_stop",
+  VOICE_GESTURE_START = "voice_gesture_start",
+  VOICE_GESTURE_STOP = "voice_gesture_stop",
 
   // 其他手势
-  DELETE_GESTURE: "delete_gesture",
+  DELETE_GESTURE = "delete_gesture",
 
-  OTHER: null,
-} as const;
-
-type HandGestureType = (typeof HandGesture)[keyof typeof HandGesture];
+  OTHER = "other"
+}
 
 interface HandLandmark {
   x: number;
@@ -178,7 +176,7 @@ export class Detector {
   /**
    * 获取单个手的手势类型
    */
-  public static getSingleHandGesture(hand: HandInfo): HandGestureType {
+  public static getSingleHandGesture(hand: HandInfo): HandGesture {
     const fingers = this._fingersUp(hand);
 
     // 0,1,2,3,4 分别代表 大拇指，食指，中指，无名指，小拇指
@@ -243,9 +241,9 @@ export class Detector {
    * 获取有效手势
    */
   private getEffectiveGesture(
-    rightHandGesture: HandGestureType,
-    leftHandGesture: HandGestureType
-  ): HandGestureType {
+    rightHandGesture: HandGesture,
+    leftHandGesture: HandGesture
+  ): HandGesture {
     // 如果左右手都是暂停手势，才执行暂停手势
     if (
       rightHandGesture === HandGesture.STOP_GESTURE &&
