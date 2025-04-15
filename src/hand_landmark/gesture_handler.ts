@@ -1,6 +1,6 @@
-import { HandInfo } from "@/hand_landmark/detector";
-import use_app_store from "@/store/app";
+import { HandGesture, HandInfo } from "@/hand_landmark/detector";
 import i18n from "@/locales/i18n"; // 导入 i18n 实例
+import use_app_store from "@/store/app";
 
 // WebSocket数据类型定义
 enum WsDataType {
@@ -158,7 +158,7 @@ export class TriggerAction {
  */
 export class GestureHandler {
   private triggerAction: TriggerAction;
-  private previousGesture: string | null = null;
+  private previousGesture: HandGesture | null = null;
   private previousGestureCount: number = 0;
   private minGestureCount: number = 5;
   private lastStopGestureTime: number = 0;
@@ -359,15 +359,25 @@ export class GestureHandler {
    * 处理停止手势
    */
   async handleStopGesture(): Promise<void> {
-    const now = Date.now();
-    // 如果距离上次暂停手势触发时间小于1.5秒，则忽略当前暂停手势
-    if (now - this.lastStopGestureTime > 1500) {
-      this.lastStopGestureTime = now;
+    const toogle_detect = () => {
       this.app_store.flag_detecting = !this.app_store.flag_detecting;
       this.triggerAction.notification({
         title: "手势识别",
         body: this.app_store.flag_detecting ? "继续手势识别" : "暂停手势识别",
       });
+    };
+
+    if (this.previousGesture !== HandGesture.STOP_GESTURE) {
+      this.previousGestureCount = 0;
+      this.previousGesture = HandGesture.STOP_GESTURE;
+    }
+
+    if (this.previousGestureCount >= 45) {
+      toogle_detect();
+      this.previousGestureCount = 0;
+      this.previousGesture = HandGesture.STOP_GESTURE;
+    } else {
+      this.previousGestureCount++;
     }
   }
 
@@ -384,9 +394,9 @@ export class GestureHandler {
   /**
    * 处理手势
    */
-  handleGesture(gesture: string, hand: HandInfo) {
+  handleGesture(gesture: HandGesture, hand: HandInfo) {
     // 首先处理停止手势
-    if (gesture === "stop_gesture") {
+    if (gesture === HandGesture.STOP_GESTURE) {
       this.handleStopGesture();
       return;
     }
@@ -405,7 +415,7 @@ export class GestureHandler {
     }
 
     // 鼠标移动手势直接执行，不需要连续确认
-    if (gesture === "only_index_up") {
+    if (gesture === HandGesture.ONLY_INDEX_UP) {
       this.handleIndexFingerUp(hand);
       return;
     }
@@ -413,23 +423,23 @@ export class GestureHandler {
     // 其他手势需要连续确认才执行
     if (this.previousGestureCount >= this.minGestureCount) {
       switch (gesture) {
-        case "rock_gesture":
-        case "index_and_middle_up":
+        case HandGesture.ROCK_GESTURE:
+        case HandGesture.INDEX_AND_MIDDLE_UP:
           this.handleMouseClick();
           break;
-        case "three_fingers_up":
+        case HandGesture.THREE_FINGERS_UP:
           this.handleScroll(hand);
           break;
-        case "four_fingers_up":
+        case HandGesture.FOUR_FINGERS_UP:
           this.handleFourFingers();
           break;
-        case "voice_gesture_start":
+        case HandGesture.VOICE_GESTURE_START:
           this.handleVoiceStart();
           break;
-        case "voice_gesture_stop":
+        case HandGesture.VOICE_GESTURE_STOP:
           this.handleVoiceStop();
           break;
-        case "delete_gesture":
+        case HandGesture.DELETE_GESTURE:
           this.handleDelete();
           break;
       }

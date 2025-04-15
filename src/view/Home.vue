@@ -190,11 +190,10 @@
 
         <GestureCard
           :title="$t('暂停/继续')"
-          :description="$t('双手张开暂停/继续 手势识别')"
+          :description="$t('单手张开1.5秒 暂停/继续 手势识别')"
           :isDoubleHand="true"
         >
           <template #icon>
-            <GestureIcon :icon="FiveFive" flipped />
             <GestureIcon :icon="FiveFive" />
           </template>
         </GestureCard>
