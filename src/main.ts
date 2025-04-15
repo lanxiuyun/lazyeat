@@ -1,29 +1,31 @@
+import i18n from "@/locales/i18n";
+import { createPinia } from "pinia";
 import { createApp } from "vue";
 import App from "./App.vue";
-import { create } from "naive-ui";
-
-import { createPinia } from "pinia";
 
 import {
+  create,
+  NAlert,
   NButton,
-  NLayout,
-  NLayoutHeader,
-  NLayoutContent,
-  NLayoutFooter,
-  NMenu,
-  NSpace,
-  NImage,
-  NDivider,
-  NSwitch,
-  NSelect,
-  NSpin,
-  NIcon,
   NCard,
-  NInput,
+  NCheckbox,
+  NDivider,
   NForm,
   NFormItem,
-  NCheckbox,
+  NIcon,
+  NImage,
+  NInput,
+  NLayout,
+  NLayoutContent,
+  NLayoutFooter,
+  NLayoutHeader,
+  NMenu,
   NMessageProvider,
+  NSelect,
+  NSpace,
+  NSpin,
+  NSwitch,
+  NTag,
 } from "naive-ui";
 
 // 引入element-plus
@@ -50,6 +52,8 @@ const naive = create({
     NCheckbox,
     NCard,
     NMessageProvider,
+    NAlert,
+    NTag,
   ],
 });
 
@@ -58,4 +62,5 @@ const pinia = createPinia();
 
 app.use(naive);
 app.use(pinia);
+app.use(i18n);
 app.mount("#app");

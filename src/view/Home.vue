@@ -1,6 +1,10 @@
 <template>
   <div class="home-container">
-    <n-card class="control-panel" hoverable>
+    <n-card
+      class="control-panel"
+      hoverable
+      v-show="app_store.config.show_window"
+    >
       <!-- <n-card class="performance-card" hoverable>
         <template #header>
           <n-space align="center">
@@ -29,17 +33,17 @@
           </n-space>
         </n-space>
       </n-card> -->
-      <VideoDetector v-show="app_store.config.show_window" />
+      <VideoDetector />
     </n-card>
 
     <!-- 顶部控制区域 -->
     <n-card class="control-panel" hoverable>
       <n-space vertical>
         <n-space justify="space-between" align="center">
-          <h2 class="section-title">手势识别控制</h2>
+          <h2 class="section-title">{{ $t("手势识别控制") }}</h2>
           <n-switch v-model:value="app_store.mission_running" size="large">
-            <template #checked>运行中</template>
-            <template #unchecked>已停止</template>
+            <template #checked>{{ $t("运行中") }}</template>
+            <template #unchecked>{{ $t("已停止") }}</template>
           </n-switch>
         </n-space>
 
@@ -53,7 +57,7 @@
               <n-icon size="20" style="margin-right: 8px">
                 <Browser />
               </n-icon>
-              <span>显示识别窗口</span>
+              <span>{{ $t("显示识别窗口") }}</span>
             </span>
             <n-switch v-model:value="app_store.config.show_window" />
           </n-space>
@@ -63,7 +67,7 @@
               <n-icon size="20" style="margin-right: 8px">
                 <Camera />
               </n-icon>
-              <span>摄像头选择</span>
+              <span>{{ $t("摄像头选择") }}</span>
             </span>
             <n-select
               v-model:value="app_store.config.selected_camera_id"
@@ -79,23 +83,32 @@
     <!-- 手势设置区域 -->
     <n-card class="gesture-panel" hoverable>
       <template #header>
-        <h2 class="section-title">手势操作指南</h2>
+        <h2 class="section-title">{{ $t("手势操作指南") }}</h2>
       </template>
 
       <div class="gesture-grid">
-        <GestureCard title="光标控制" description="竖起食指滑动控制光标位置">
+        <GestureCard
+          :title="$t('光标控制')"
+          :description="$t('竖起食指滑动控制光标位置')"
+        >
           <template #icon>
             <GestureIcon :icon="OneOne" />
           </template>
         </GestureCard>
 
-        <GestureCard title="单击操作" description="双指举起执行鼠标单击">
+        <GestureCard
+          :title="$t('单击操作')"
+          :description="$t('双指举起执行鼠标单击')"
+        >
           <template #icon>
             <GestureIcon :icon="TwoTwo" />
           </template>
         </GestureCard>
 
-        <GestureCard title="单击操作" description="Rock手势执行鼠标单击">
+        <GestureCard
+          :title="$t('单击操作')"
+          :description="$t('Rock手势执行鼠标单击')"
+        >
           <template #icon>
             <GestureIcon :icon="Rock" />
           </template>
@@ -115,13 +128,19 @@
           </template>
         </GestureCard>
 
-        <GestureCard title="滚动控制" description="三指上下滑动控制页面滚动">
+        <GestureCard
+          :title="$t('滚动控制')"
+          :description="$t('三指上下滑动控制页面滚动')"
+        >
           <template #icon>
             <GestureIcon :icon="ThreeThree" />
           </template>
         </GestureCard>
 
-        <GestureCard title="全屏控制" description="四指并拢发送按键">
+        <GestureCard
+          :title="$t('全屏控制')"
+          :description="$t('四指并拢发送按键')"
+        >
           <template #icon>
             <GestureIcon :icon="FourFour" />
           </template>
@@ -129,20 +148,20 @@
             <n-input
               :value="app_store.config.four_fingers_up_send"
               readonly
-              placeholder="点击设置快捷键"
+              :placeholder="$t('点击设置快捷键')"
               @click="listenForKey"
               :status="isListening ? 'warning' : undefined"
               :bordered="true"
               style="width: 200px"
             >
               <template #suffix>
-                {{ isListening ? "请按下按键..." : "点击设置" }}
+                {{ isListening ? $t("请按下按键...") : $t("点击设置") }}
               </template>
             </n-input>
           </template>
         </GestureCard>
 
-        <GestureCard title="删除" description="发送删除键">
+        <GestureCard :title="$t('退格')" :description="$t('发送退格键')">
           <template #icon>
             <GestureIcon
               style="transform: rotate(90deg) scaleX(-1)"
@@ -151,25 +170,30 @@
           </template>
         </GestureCard>
 
-        <GestureCard title="开始语音识别" description="六指手势开始语音识别">
+        <GestureCard
+          :title="$t('开始语音识别')"
+          :description="$t('六指手势开始语音识别')"
+        >
           <template #icon>
             <GestureIcon :icon="Six" />
           </template>
         </GestureCard>
 
-        <GestureCard title="结束语音识别" description="拳头手势结束语音识别">
+        <GestureCard
+          :title="$t('结束语音识别')"
+          :description="$t('拳头手势结束语音识别')"
+        >
           <template #icon>
             <GestureIcon :icon="Boxing" />
           </template>
         </GestureCard>
 
         <GestureCard
-          title="暂停/继续"
-          description="双手张开暂停/继续 手势识别"
+          :title="$t('暂停/继续')"
+          :description="$t('单手张开1.5秒 暂停/继续 手势识别')"
           :isDoubleHand="true"
         >
           <template #icon>
-            <GestureIcon :icon="FiveFive" flipped />
             <GestureIcon :icon="FiveFive" />
           </template>
         </GestureCard>
@@ -185,6 +209,7 @@ import GestureIcon from "@/components/GestureIcon.vue";
 import VideoDetector from "@/hand_landmark/VideoDetector.vue";
 import { use_app_store } from "@/store/app";
 import {
+  BadTwo,
   Boxing,
   Browser,
   Camera,
@@ -195,24 +220,10 @@ import {
   Six,
   ThreeThree,
   TwoTwo,
-  BadTwo,
 } from "@icon-park/vue-next";
 import { computed, onMounted, ref } from "vue";
 
 const app_store = use_app_store();
-
-onMounted(() => {
-  // 请求摄像头权限，如果拒绝，则提示用户
-  navigator.mediaDevices
-    .getUserMedia({ video: true })
-    .then((stream) => {
-      console.log("摄像头权限请求成功");
-    })
-    .catch((error) => {
-      console.error("尝试获取摄像头权限失败:", error);
-    });
-});
-
 // 计算属性：摄像头选项
 const camera_options = computed(() => {
   return app_store.cameras.map((camera) => ({

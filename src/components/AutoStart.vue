@@ -24,7 +24,7 @@ watch(
       <n-icon size="20" style="margin-right: 8px">
         <Power />
       </n-icon>
-      <span>开机自启动</span>
+      <span>{{ $t("开机自启动") }}</span>
     </span>
     <n-switch v-model:value="app_store.config.auto_start" />
   </n-space>
