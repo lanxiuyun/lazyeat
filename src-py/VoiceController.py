@@ -1,7 +1,8 @@
 import json
 import threading
+import sounddevice as sd
+import numpy as np
 
-import pyaudio
 from vosk import Model, KaldiRecognizer
 
 big_model_path = "big-model"
@@ -18,14 +19,14 @@ class VoiceController:
         self.zh_text = None
         self.is_recording = False
         self.recognizer = KaldiRecognizer(self.model, 16000)
-        self.audio = pyaudio.PyAudio()
-        self.stream = self.audio.open(
-            format=pyaudio.paInt16,
+        # 初始化输入流
+        self.stream = sd.InputStream(
+            samplerate=16000,
             channels=1,
-            rate=16000,
-            input=True,
-            frames_per_buffer=4096
+            blocksize=4096,
+            dtype='int16'  # 对应原来 PyAudio 的 paInt16
         )
+        self.stream.start()
 
     def record_audio(self):
         self.frames = []
@@ -33,8 +34,8 @@ class VoiceController:
 
         # 持续录音直到标志改变
         while self.is_recording:
-            data = self.stream.read(4096, exception_on_overflow=False)
-            self.frames.append(data)
+            data, _ = self.stream.read(4096)
+            self.frames.append(data.tobytes())  # 转成 bytes，保持跟原先 pyaudio 一致
 
     def start_record_thread(self):
         self.is_recording = True
