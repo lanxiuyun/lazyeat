@@ -1,5 +1,5 @@
 import { GestureHandler } from "@/hand_landmark/gesture_handler";
-import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
+import { FilesetResolver, HandLandmarker, HandLandmarkerOptions } from "@mediapipe/tasks-vision";
 
 // 手势枚举
 export enum HandGesture {
@@ -60,16 +60,30 @@ export class Detector {
   private detector: HandLandmarker | null = null;
   private gestureHandler: GestureHandler | null = null;
 
-  async initialize() {
+  async initialize(useCanvas = false) {
     const vision = await FilesetResolver.forVisionTasks("/mediapipe/wasm");
-    this.detector = await HandLandmarker.createFromOptions(vision, {
-      baseOptions: {
-        modelAssetPath: "/mediapipe/hand_landmarker.task",
-        delegate: "GPU",
-      },
-      runningMode: "VIDEO",
-      numHands: 1,
-    });
+    try {
+      const params = {
+        baseOptions: {
+          modelAssetPath: "/mediapipe/hand_landmarker.task",
+          delegate: "GPU",
+        },
+        runningMode: "VIDEO",
+        numHands: 1,
+      } as HandLandmarkerOptions;
+      if (useCanvas) {
+        params.canvas = document.createElement("canvas");
+      }
+
+      this.detector = await HandLandmarker.createFromOptions(vision, params);
+    } catch (error: any) {
+      // macos 旧设备的 wkwebview 对 webgl 兼容性不好，需要手动创建 canvas
+      if (error.toString().includes('kGpuService')) {
+        await this.initialize(true);
+      } else {
+        throw error;
+      }
+    }
     this.gestureHandler = new GestureHandler();
   }
 
