@@ -8,11 +8,12 @@
     "dev": "vite",
     "py-build": "pyinstaller --noconfirm --distpath src-tauri/bin/ main_win.spec",
     "py-build-mac": "pyinstaller --noconfirm --distpath src-tauri/bin/ main_mac.spec",
-    "build:icons": "npm run tauri icon public/lazyeat.png",
+    "build:icons": "npx tauri icon public/lazyeat.png",
+    "build:icons-mac": "npx tauri icon public/lazyeat-mac.png --output src-tauri/icons/mac",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri": "tauri",
-    "tauri dev": "tauri"
+    "tauri": "npx tauri",
+    "tauri dev": "npx tauri"
   },
   "dependencies": {
     "@icon-park/vue-next": "^1.4.2",
