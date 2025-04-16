@@ -22,6 +22,20 @@ export const use_app_store = defineStore("app-store", {
     VIDEO_HEIGHT: 480,
     flag_detecting: false,
   }),
+
+  actions: {
+    is_macos() {
+      return navigator.userAgent.includes("Mac");
+    },
+    is_windows() {
+      return navigator.userAgent.includes("Windows");
+    },
+    is_linux() {
+      return navigator.userAgent.includes("Linux");
+    },
+    
+
+  },
 });
 
 export default use_app_store;
