@@ -47,7 +47,7 @@
       },
       "files": {},
       "hardenedRuntime": true,
-      "minimumSystemVersion": "14.6"
+      "minimumSystemVersion": "10.13"
     },
   
     "targets": "all",
