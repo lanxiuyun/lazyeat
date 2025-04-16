@@ -14,9 +14,10 @@ import {
 import { ElAside, ElContainer, ElMain } from "element-plus";
 import { onMounted, ref, watch } from "vue";
 
-const appVersion = ref("");
-const ready = ref(false);
 const is_dev = import.meta.env.DEV;
+const appVersion = ref("");
+const app_store = use_app_store();
+const ready = ref(false);
 
 onMounted(async () => {
   ready.value = await pyApi.ready();
@@ -44,7 +45,6 @@ onMounted(async () => {
 });
 
 // app_store 数据加载
-const app_store = use_app_store();
 const app_store_json = new LazyStore("settings.json");
 onMounted(async () => {
   const config_data = await app_store_json.get("config");
@@ -102,7 +102,29 @@ window.addEventListener("message", async function (e) {
           />
           <span class="logo-text">Lazyeat {{ appVersion }}</span>
         </div>
-        <AppMenu />
+        <AppMenu  style="flex-grow: 1"/>
+        <!-- platfrom info -->
+        <div
+          v-if="app_store.is_macos()"
+          style="display: flex; flex-direction: column; align-items: center;
+          margin: 5px;
+          "
+        >
+          Build by
+          <a
+            class="contributor-link"
+            href="https://github.com/mxue12138"
+            target="_blank"
+          >
+            @mxue12138</a
+          >
+          <a
+            class="contributor-link"
+            href="https://github.com/GEYOUR"
+            target="_blank"
+            >@GEYOUR</a
+          >
+        </div>
       </el-aside>
       <el-container>
         <el-main>
@@ -147,6 +169,8 @@ window.addEventListener("message", async function (e) {
 .el-aside {
   background-color: #f5f7fa;
   border-right: 1px solid #e6e6e6;
+  display: flex;
+  flex-direction: column;
 }
 
 .aside-header {

@@ -7,13 +7,13 @@
     "install-reqs": "npm install && pip install -r requirements.txt",
     "dev": "vite",
     "py-build": "pyinstaller --noconfirm --distpath src-tauri/bin/ main_win.spec",
-    "build:sidecar-macos": "pyinstaller -c -F --clean --name main-aarch64-apple-darwin --distpath src-tauri/bin/ python/main.py",
-    "build:sidecar-linux": "pyinstaller -c -F --clean --name main-x86_64-unknown-linux-gnu --distpath src-tauri/bin/ python/main.py",
-    "build:icons": "npm run tauri icon public/lazyeat.png",
+    "py-build-mac": "pyinstaller --noconfirm --distpath src-tauri/bin/ main_mac.spec",
+    "build:icons": "npx tauri icon public/lazyeat.png",
+    "build:icons-mac": "npx tauri icon public/lazyeat-mac.png --output src-tauri/icons/mac",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri": "tauri",
-    "tauri dev": "tauri"
+    "tauri": "npx tauri",
+    "tauri dev": "npx tauri"
   },
   "dependencies": {
     "@icon-park/vue-next": "^1.4.2",

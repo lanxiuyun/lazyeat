@@ -23,18 +23,39 @@
   },
   "bundle": {
     "active": true,
-    "externalBin": ["bin/backend-py/Lazyeat Backend"],
+    "externalBin": ["bin/backend-py/Lazyeat Backend"
+                    ],
     "resources": {
       "bin/backend-py/_internal": "_internal/",
       "../model": "model/",
       "../debug backend.bat": "/"
     },
-    "targets": "msi",
+    "macOS": {
+      "dmg": {
+        "appPosition": {
+          "x": 180,
+          "y": 170
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 170
+        },
+        "windowSize": {
+          "height": 400,
+          "width": 660
+        }
+      },
+      "files": {},
+      "hardenedRuntime": true,
+      "minimumSystemVersion": "10.13"
+    },
+  
+    "targets": "all",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
-      "icons/icon.icns",
+      "icons/mac/icon.icns",
       "icons/icon.ico"
     ]
   }
