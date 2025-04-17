@@ -55,10 +55,8 @@ export class TriggerAction {
       this.ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
       this.ws.onmessage = (event: MessageEvent) => {
         const response: WsData = JSON.parse(event.data);
-        this.notification({
-          title: response.title || "Lazyeat",
-          body: response.msg || "",
-        });
+        const app_store = use_app_store();
+        app_store.sub_window_info(response.msg || "");
       };
       this.ws.onopen = () => {
         console.log("ws_lazyeat connected");
@@ -76,15 +74,6 @@ export class TriggerAction {
       console.error("Failed to create WebSocket instance:", error);
       this.ws = null;
       setTimeout(() => this.connectWebSocket(), 1000);
-    }
-  }
-
-  async notification({ title, body }: { title: string; body: string }) {
-    try {
-      const app_store = use_app_store();
-      app_store.sub_windows.notification = i18n.global.t(body);
-    } catch (error) {
-      console.error("Failed to send notification:", error);
     }
   }
 
@@ -358,10 +347,6 @@ export class GestureHandler {
   async handleStopGesture(): Promise<void> {
     const toogle_detect = () => {
       this.app_store.flag_detecting = !this.app_store.flag_detecting;
-      this.triggerAction.notification({
-        title: "手势识别",
-        body: this.app_store.flag_detecting ? "继续手势识别" : "暂停手势识别",
-      });
     };
 
     if (this.previousGesture !== HandGesture.STOP_GESTURE) {

@@ -6,6 +6,13 @@ interface Camera {
   kind: string;
 }
 
+enum NotiType {
+  INFO = "info",
+  SUCCESS = "success",
+  WARNING = "warning",
+  ERROR = "error",
+}
+
 export const use_app_store = defineStore("app-store", {
   state: () => ({
     config: {
@@ -21,6 +28,7 @@ export const use_app_store = defineStore("app-store", {
       y: 0,
       progress: 0,
       notification: "",
+      noti_type: NotiType.INFO,
     },
 
     mission_running: false,
@@ -44,6 +52,26 @@ export const use_app_store = defineStore("app-store", {
     },
     is_linux() {
       return navigator.userAgent.includes("Linux");
+    },
+
+    async sub_window_info(body: string) {
+      this.sub_windows.notification = body;
+      this.sub_windows.noti_type = NotiType.INFO;
+    },
+
+    async sub_window_success(body: string) {
+      this.sub_windows.notification = body;
+      this.sub_windows.noti_type = NotiType.SUCCESS;
+    },
+
+    async sub_window_warning(body: string) {
+      this.sub_windows.notification = body;
+      this.sub_windows.noti_type = NotiType.WARNING;
+    },
+
+    async sub_window_error(body: string) {
+      this.sub_windows.notification = body;
+      this.sub_windows.noti_type = NotiType.ERROR;
     },
   },
 });
