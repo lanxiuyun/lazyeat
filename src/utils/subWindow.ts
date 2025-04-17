@@ -16,14 +16,16 @@ export async function createSubWindow(url: string, title: string) {
     const webview_window = new WebviewWindow(label, {
       url: openUrl,
       title: openTitle,
-      width: 1080,
-      height: 600,
-      resizable: true,
-      center: true,
-      minHeight: 120,
-      minWidth: 100,
-      zoomHotkeysEnabled: false,
       parent: "main",
+      zoomHotkeysEnabled: false,
+      tabbingIdentifier: "sub-window",
+
+      width: 100,
+      height: 120,
+      minWidth: 100,
+      minHeight: 120,
+      decorations: false, // 隐藏窗口边框
+      // resizable: true,
     });
     webview_window.once("tauri://created", async () => {
       message = "打开成功";

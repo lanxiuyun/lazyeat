@@ -17,7 +17,9 @@ export const use_app_store = defineStore("app-store", {
     },
 
     sub_windows: {
-      progress: 0,
+      x: 0,
+      y: 0,
+      progress: 50,
     },
 
     mission_running: false,

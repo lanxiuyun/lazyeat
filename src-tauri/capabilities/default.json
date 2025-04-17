@@ -2,7 +2,7 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main", "sub-window"],
+  "windows": ["main", "NewWindow_2"],
   "permissions": [
     "core:default",
     "shell:default",
@@ -32,6 +32,7 @@
     "opener:allow-open-url",
 
     "core:webview:default",
-    "core:webview:allow-create-webview-window"
+    "core:webview:allow-create-webview-window",
+    "core:window:allow-set-position"
   ]
 }
