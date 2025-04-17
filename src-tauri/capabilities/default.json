@@ -2,7 +2,7 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "windows": ["main", "sub-window"],
   "permissions": [
     "core:default",
     "shell:default",
@@ -25,6 +25,7 @@
     "notification:allow-show",
     "notification:allow-request-permission",
 
+    "opener:default",
     "opener:allow-open-path",
     "opener:allow-reveal-item-in-dir",
     "opener:allow-default-urls",
