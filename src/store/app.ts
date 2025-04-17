@@ -20,6 +20,7 @@ export const use_app_store = defineStore("app-store", {
       x: 0,
       y: 0,
       progress: 0,
+      notification: "",
     },
 
     mission_running: false,

@@ -81,13 +81,8 @@ export class TriggerAction {
 
   async notification({ title, body }: { title: string; body: string }) {
     try {
-      const { sendNotification } = await import(
-        "@tauri-apps/plugin-notification"
-      );
-      await sendNotification({
-        title: i18n.global.t(title),
-        body: i18n.global.t(body),
-      });
+      const app_store = use_app_store();
+      app_store.sub_windows.notification = i18n.global.t(body);
     } catch (error) {
       console.error("Failed to send notification:", error);
     }
@@ -387,7 +382,9 @@ export class GestureHandler {
     } else {
       this.previousGestureCount++;
       // 更新 sub-window 进度条
-      this.app_store.sub_windows.progress = Math.floor((this.previousGestureCount / 45) * 100);
+      this.app_store.sub_windows.progress = Math.floor(
+        (this.previousGestureCount / 45) * 100
+      );
 
       console.log(this.app_store.sub_windows.progress);
     }
