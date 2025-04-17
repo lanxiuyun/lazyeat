@@ -1,12 +1,11 @@
 <template>
   <div class="container-sub-window">
     <CircleProgress
-      v-show="display_progress"
       :percentage="app_store.sub_windows.progress"
       :size="100"
       :text="app_store.flag_detecting ? '暂停检测' : '继续检测'"
     />
-    <div v-show="display_notification">
+    <div>
       <span>{{ app_store.sub_windows.notification }}</span>
     </div>
   </div>
@@ -87,5 +86,6 @@ watch(
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 </style>

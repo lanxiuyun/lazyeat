@@ -3,6 +3,9 @@ import {
   getAllWebviewWindows,
 } from "@tauri-apps/api/webviewWindow";
 
+export const SUB_WINDOW_WIDTH = 130;
+export const SUB_WINDOW_HEIGHT = 130;
+
 export async function createSubWindow(url: string, title: string) {
   let message = "";
   let success = true;
@@ -20,10 +23,10 @@ export async function createSubWindow(url: string, title: string) {
       zoomHotkeysEnabled: false,
       tabbingIdentifier: "sub-window",
 
-      width: 100,
-      height: 100,
-      minWidth: 100,
-      minHeight: 100,
+      width: SUB_WINDOW_WIDTH,
+      height: SUB_WINDOW_HEIGHT,
+      minWidth: SUB_WINDOW_WIDTH,
+      minHeight: SUB_WINDOW_HEIGHT,
       alwaysOnTop: true,
       decorations: false, // 隐藏窗口边框
       visible: false,
