@@ -1,6 +1,11 @@
 <template>
   <div class="container-sub-window">
-    <NProgress type="circle" :percentage="app_store.sub_windows.progress" />
+    <NProgress
+      type="circle"
+      :percentage="app_store.sub_windows.progress"
+      :show-indicator="false"
+      style="height: 30px; width: 30px"
+    />
   </div>
 </template>
 
