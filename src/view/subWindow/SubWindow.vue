@@ -3,7 +3,7 @@
     <NProgress
       type="circle"
       :percentage="app_store.sub_windows.progress"
-      style="height: 120px; width: 120px"
+      style="height: 100px; width: 100px"
     >
       <span style="text-align: center">{{
         app_store.flag_detecting ? "继续检测" : "暂停检测"

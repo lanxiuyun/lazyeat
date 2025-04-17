@@ -248,7 +248,7 @@ export class GestureHandler {
       this.prev_loc_y = screenY;
 
       // 移动鼠标
-      this.app_store.sub_windows.x = this.screen_width - screenX;
+      this.app_store.sub_windows.x = this.screen_width - screenX + 10;
       this.app_store.sub_windows.y = screenY;
       this.triggerAction.moveMouse(this.screen_width - screenX, screenY);
     } catch (error) {

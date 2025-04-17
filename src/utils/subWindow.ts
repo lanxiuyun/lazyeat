@@ -21,11 +21,11 @@ export async function createSubWindow(url: string, title: string) {
       tabbingIdentifier: "sub-window",
 
       width: 100,
-      height: 120,
+      height: 100,
       minWidth: 100,
-      minHeight: 120,
+      minHeight: 100,
       decorations: false, // 隐藏窗口边框
-      // resizable: true,
+      resizable: false,
     });
     webview_window.once("tauri://created", async () => {
       message = "打开成功";
