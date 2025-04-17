@@ -4,6 +4,7 @@
       :percentage="app_store.sub_windows.progress"
       :size="100"
       :text="app_store.flag_detecting ? '暂停检测' : '继续检测'"
+      :color="app_store.flag_detecting ? '#F56C6C' : '#67C23A'"
     />
     <div style="height: 30px">
       <span>{{ app_store.sub_windows.notification }}</span>
