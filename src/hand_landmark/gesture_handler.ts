@@ -1,5 +1,4 @@
 import { HandGesture, HandInfo } from "@/hand_landmark/detector";
-import i18n from "@/locales/i18n"; // 导入 i18n 实例
 import use_app_store from "@/store/app";
 
 // WebSocket数据类型定义
@@ -145,7 +144,6 @@ export class GestureHandler {
   private previousGesture: HandGesture | null = null;
   private previousGestureCount: number = 0;
   private minGestureCount: number = 5;
-  private lastStopGestureTime: number = 0;
 
   // 鼠标移动参数
   private screen_width: number = window.screen.width;
@@ -166,8 +164,10 @@ export class GestureHandler {
   private readonly SCROLL_INTERVAL = 100; // 滚动间隔
   private readonly FULL_SCREEN_INTERVAL = 1500; // 全屏切换间隔
 
-  private app_store: any;
+  // 语音识别参数
+  private voice_recording: boolean = false;
 
+  private app_store: any;
   constructor() {
     this.triggerAction = new TriggerAction();
     this.app_store = use_app_store();
@@ -319,6 +319,8 @@ export class GestureHandler {
    * 处理拇指和小指同时竖起手势 - 开始语音识别
    */
   private handleVoiceStart() {
+    console.log("handleVoiceStart");
+    this.voice_recording = true;
     this.triggerAction.voiceRecord();
   }
 
@@ -326,6 +328,7 @@ export class GestureHandler {
    * 处理拳头手势 - 停止语音识别
    */
   private handleVoiceStop() {
+    this.voice_recording = false;
     this.triggerAction.voiceStop();
   }
 
@@ -334,7 +337,7 @@ export class GestureHandler {
    */
   private handleDelete() {
     const now = Date.now();
-    if (now - this.lastDeleteTime < 1500) {
+    if (now - this.lastDeleteTime < 500) {
       return;
     }
     this.lastDeleteTime = now;
@@ -408,6 +411,12 @@ export class GestureHandler {
       this.previousGestureCount = 1;
     }
 
+    // 只要切换手势就停止语音识别
+    if (gesture !== HandGesture.VOICE_GESTURE_START && this.voice_recording) {
+      this.handleVoiceStop();
+      return;
+    }
+
     // 鼠标移动手势直接执行，不需要连续确认
     if (gesture === HandGesture.ONLY_INDEX_UP) {
       this.handleIndexFingerUp(hand);
@@ -429,9 +438,6 @@ export class GestureHandler {
           break;
         case HandGesture.VOICE_GESTURE_START:
           this.handleVoiceStart();
-          break;
-        case HandGesture.VOICE_GESTURE_STOP:
-          this.handleVoiceStop();
           break;
         case HandGesture.DELETE_GESTURE:
           this.handleDelete();
