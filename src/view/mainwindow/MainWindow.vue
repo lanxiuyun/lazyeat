@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DevTool from "@/components/DevTool.vue";
 import AppMenu from "@/components/Menu.vue";
 import pyApi from "@/py_api";
 import use_app_store from "@/store/app";
@@ -88,6 +89,7 @@ window.addEventListener("message", async function (e) {
 </script>
 
 <template>
+  <DevTool />
   <n-spin :show="!ready" size="large">
     <template #description> 手势识别模块加载中... </template>
 
