@@ -1,6 +1,6 @@
 <template>
   <router-view />
-  
+
   <div
     v-if="is_dev"
     class="dev-tool"
