@@ -1,5 +1,4 @@
 import { HandGesture, HandInfo } from "@/hand_landmark/detector";
-import i18n from "@/locales/i18n"; // 导入 i18n 实例
 import use_app_store from "@/store/app";
 
 // WebSocket数据类型定义
@@ -55,10 +54,8 @@ export class TriggerAction {
       this.ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
       this.ws.onmessage = (event: MessageEvent) => {
         const response: WsData = JSON.parse(event.data);
-        this.notification({
-          title: response.title || "Lazyeat",
-          body: response.msg || "",
-        });
+        const app_store = use_app_store();
+        app_store.sub_window_info(response.msg || "");
       };
       this.ws.onopen = () => {
         console.log("ws_lazyeat connected");
@@ -76,20 +73,6 @@ export class TriggerAction {
       console.error("Failed to create WebSocket instance:", error);
       this.ws = null;
       setTimeout(() => this.connectWebSocket(), 1000);
-    }
-  }
-
-  async notification({ title, body }: { title: string; body: string }) {
-    try {
-      const { sendNotification } = await import(
-        "@tauri-apps/plugin-notification"
-      );
-      await sendNotification({
-        title: i18n.global.t(title),
-        body: i18n.global.t(body),
-      });
-    } catch (error) {
-      console.error("Failed to send notification:", error);
     }
   }
 
@@ -161,7 +144,6 @@ export class GestureHandler {
   private previousGesture: HandGesture | null = null;
   private previousGestureCount: number = 0;
   private minGestureCount: number = 5;
-  private lastStopGestureTime: number = 0;
 
   // 鼠标移动参数
   private screen_width: number = window.screen.width;
@@ -182,8 +164,10 @@ export class GestureHandler {
   private readonly SCROLL_INTERVAL = 100; // 滚动间隔
   private readonly FULL_SCREEN_INTERVAL = 1500; // 全屏切换间隔
 
-  private app_store: any;
+  // 语音识别参数
+  private voice_recording: boolean = false;
 
+  private app_store: any;
   constructor() {
     this.triggerAction = new TriggerAction();
     this.app_store = use_app_store();
@@ -248,6 +232,8 @@ export class GestureHandler {
       this.prev_loc_y = screenY;
 
       // 移动鼠标
+      this.app_store.sub_windows.x = this.screen_width - screenX + 10;
+      this.app_store.sub_windows.y = screenY;
       this.triggerAction.moveMouse(this.screen_width - screenX, screenY);
     } catch (error) {
       console.error("处理鼠标移动失败:", error);
@@ -332,14 +318,24 @@ export class GestureHandler {
   /**
    * 处理拇指和小指同时竖起手势 - 开始语音识别
    */
-  private handleVoiceStart() {
+  async handleVoiceStart() {
+    if (this.voice_recording) {
+      return;
+    }
+    await this.app_store.sub_window_info("开始语音识别");
+    this.voice_recording = true;
     this.triggerAction.voiceRecord();
   }
 
   /**
    * 处理拳头手势 - 停止语音识别
    */
-  private handleVoiceStop() {
+  async handleVoiceStop() {
+    if (!this.voice_recording) {
+      return;
+    }
+    await this.app_store.sub_window_success("停止语音识别");
+    this.voice_recording = false;
     this.triggerAction.voiceStop();
   }
 
@@ -348,7 +344,7 @@ export class GestureHandler {
    */
   private handleDelete() {
     const now = Date.now();
-    if (now - this.lastDeleteTime < 1500) {
+    if (now - this.lastDeleteTime < 500) {
       return;
     }
     this.lastDeleteTime = now;
@@ -361,23 +357,23 @@ export class GestureHandler {
   async handleStopGesture(): Promise<void> {
     const toogle_detect = () => {
       this.app_store.flag_detecting = !this.app_store.flag_detecting;
-      this.triggerAction.notification({
-        title: "手势识别",
-        body: this.app_store.flag_detecting ? "继续手势识别" : "暂停手势识别",
-      });
     };
 
-    if (this.previousGesture !== HandGesture.STOP_GESTURE) {
-      this.previousGestureCount = 0;
-      this.previousGesture = HandGesture.STOP_GESTURE;
-    }
-
-    if (this.previousGestureCount >= 45) {
+    if (this.previousGestureCount >= 60) {
       toogle_detect();
       this.previousGestureCount = 0;
-      this.previousGesture = HandGesture.STOP_GESTURE;
+
+      // 暂停手势识别后，更新 sub-window 进度条
+      this.app_store.sub_windows.progress = 0;
     } else {
       this.previousGestureCount++;
+
+      if (this.previousGestureCount >= 20) {
+        // 更新 sub-window 进度条
+        this.app_store.sub_windows.progress = Math.floor(
+          (this.previousGestureCount / 60) * 100
+        );
+      }
     }
   }
 
@@ -395,23 +391,31 @@ export class GestureHandler {
    * 处理手势
    */
   handleGesture(gesture: HandGesture, hand: HandInfo) {
-    // 首先处理停止手势
-    if (gesture === HandGesture.STOP_GESTURE) {
-      this.handleStopGesture();
-      return;
-    }
-
-    // 如果手势识别已暂停，则不处理其他手势
-    if (!this.app_store.flag_detecting) {
-      return;
-    }
-
     // 更新手势连续性计数
     if (gesture === this.previousGesture) {
       this.previousGestureCount++;
     } else {
       this.previousGesture = gesture;
       this.previousGestureCount = 1;
+    }
+
+    // 首先处理停止手势
+    if (gesture === HandGesture.STOP_GESTURE) {
+      if (hand.categoryName === "Open_Palm") {
+        this.handleStopGesture();
+      }
+      return;
+    }
+
+    // 如果手势识别已暂停，则不处理
+    if (!this.app_store.flag_detecting) {
+      return;
+    }
+
+    // 只要切换手势就停止语音识别
+    if (gesture !== HandGesture.VOICE_GESTURE_START && this.voice_recording) {
+      this.handleVoiceStop();
+      return;
     }
 
     // 鼠标移动手势直接执行，不需要连续确认
@@ -435,9 +439,6 @@ export class GestureHandler {
           break;
         case HandGesture.VOICE_GESTURE_START:
           this.handleVoiceStart();
-          break;
-        case HandGesture.VOICE_GESTURE_STOP:
-          this.handleVoiceStop();
           break;
         case HandGesture.DELETE_GESTURE:
           this.handleDelete();

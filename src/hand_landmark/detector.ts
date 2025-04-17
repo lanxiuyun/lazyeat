@@ -1,5 +1,5 @@
 import { GestureHandler } from "@/hand_landmark/gesture_handler";
-import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
+import { FilesetResolver, GestureRecognizer } from "@mediapipe/tasks-vision";
 
 // 手势枚举
 export enum HandGesture {
@@ -39,6 +39,7 @@ export interface HandInfo {
   landmarks: HandLandmark[];
   handedness: "Left" | "Right";
   score: number;
+  categoryName?: string;
 }
 
 interface DetectionResult {
@@ -57,14 +58,14 @@ interface DetectionResult {
  * 4. 提供手部关键点查询方法
  */
 export class Detector {
-  private detector: HandLandmarker | null = null;
+  private detector: GestureRecognizer | null = null;
   private gestureHandler: GestureHandler | null = null;
 
   async initialize() {
     const vision = await FilesetResolver.forVisionTasks("/mediapipe/wasm");
-    this.detector = await HandLandmarker.createFromOptions(vision, {
+    this.detector = await GestureRecognizer.createFromOptions(vision, {
       baseOptions: {
-        modelAssetPath: "/mediapipe/hand_landmarker.task",
+        modelAssetPath: "/mediapipe/gesture_recognizer.task",
         delegate: "GPU",
       },
       runningMode: "VIDEO",
@@ -81,7 +82,7 @@ export class Detector {
       throw new Error("检测器未初始化");
     }
 
-    const result = await this.detector.detect(video);
+    const result = await this.detector.recognize(video);
     const detection: DetectionResult = {
       rawResult: result,
     };
@@ -93,6 +94,10 @@ export class Detector {
           handedness: result.handedness[i][0].categoryName as "Left" | "Right",
           score: result.handedness[i][0].score,
         };
+
+        if (result.gestures.length > 0) {
+          hand.categoryName = result.gestures[0][0].categoryName;
+        }
 
         if (hand.handedness === "Left") {
           detection.leftHand = hand;
