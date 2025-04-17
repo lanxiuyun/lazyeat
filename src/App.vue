@@ -1,5 +1,6 @@
 <template>
   <router-view />
+  
   <div
     v-if="is_dev"
     class="dev-tool"
@@ -8,18 +9,25 @@
     <div class="dev-tool__toggle" @click="toggleToolbox">
       <span class="dev-tool__icon">🔧</span>
     </div>
-    <div class="dev-tool__content" v-if="isExpanded"></div>
+    <div class="dev-tool__content" v-if="isExpanded">
+      <div class="dev-tool__item" @click="createSubWindowClick">创建子窗口</div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { createSubWindow } from "@/utils/subWindow";
 
 const is_dev = import.meta.env.DEV;
 const isExpanded = ref(false);
 
 const toggleToolbox = () => {
   isExpanded.value = !isExpanded.value;
+};
+
+const createSubWindowClick = () => {
+  createSubWindow("/subWindow", "subWindow");
 };
 </script>
 
@@ -96,7 +104,7 @@ body {
   }
 
   &:active {
-    color: #0d47a1 !important; // 点击时使用更深的蓝色 
+    color: #0d47a1 !important; // 点击时使用更深的蓝色
   }
 }
 </style>

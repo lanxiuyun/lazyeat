@@ -28,6 +28,9 @@
     "opener:allow-open-path",
     "opener:allow-reveal-item-in-dir",
     "opener:allow-default-urls",
-    "opener:allow-open-url"
+    "opener:allow-open-url",
+
+    "core:webview:default",
+    "core:webview:allow-create-webview-window"
   ]
 }
