@@ -3,15 +3,10 @@ import DevTool from "@/components/DevTool.vue";
 import AppMenu from "@/components/Menu.vue";
 import pyApi from "@/py_api";
 import use_app_store from "@/store/app";
-import Home from "@/view/mainwindow/Home.vue";
+import Home from "@/view/mainWindow/Home.vue";
 import { getVersion } from "@tauri-apps/api/app";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getCurrentWindow, LogicalPosition } from "@tauri-apps/api/window";
 import { LazyStore } from "@tauri-apps/plugin-store";
-import {
-  restoreStateCurrent,
-  saveWindowState,
-  StateFlags,
-} from "@tauri-apps/plugin-window-state";
 import { ElAside, ElContainer, ElMain } from "element-plus";
 import { onMounted, ref, watch } from "vue";
 
@@ -31,7 +26,14 @@ onMounted(async () => {
   }, 5000);
 
   await getCurrentWindow().onCloseRequested(async () => {
-    await saveWindowState(StateFlags.ALL);
+    const factor = await getCurrentWindow().scaleFactor();
+    const position = (await getCurrentWindow().innerPosition()).toLogical(
+      factor
+    );
+    await window_store_json.set("window_state", {
+      x: position.x,
+      y: position.y,
+    });
 
     if (!is_dev) {
       await pyApi.shutdown();
@@ -39,10 +41,16 @@ onMounted(async () => {
   });
 });
 
-// 窗口恢复上一次状态
+// 窗口恢复上一次位置
+const window_store_json = new LazyStore("window_state.json");
 onMounted(async () => {
   appVersion.value = await getVersion();
-  restoreStateCurrent(StateFlags.ALL);
+  const window_state = await window_store_json.get("window_state");
+  if (window_state) {
+    getCurrentWindow().setPosition(
+      new LogicalPosition(window_state.x, window_state.y)
+    );
+  }
 });
 
 // app_store 数据加载
@@ -84,6 +92,15 @@ window.addEventListener("message", async function (e) {
   const url = e.data;
   if (url) {
     await openUrl(url);
+  }
+});
+
+// 创建子窗口
+import { createSubWindow } from "@/utils/subWindow";
+const subWindow = ref(null);
+onMounted(async () => {
+  if (!subWindow.value) {
+    subWindow.value = await createSubWindow("/sub-window", "subWindow");
   }
 });
 </script>
