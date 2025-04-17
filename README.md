@@ -70,9 +70,13 @@ npm run install-reqs
 
 # 2. build tauri 图标
 npm run build:icons
+#build:icons-mac
+#build:icons-linux
 
 # 3. pyinstaller 打包
 npm run py-build
+#py-build-mac
+#py-build-linux
 
 # 4. 下载语音识别模型并解压到项目目录 model 文件夹下
 https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
