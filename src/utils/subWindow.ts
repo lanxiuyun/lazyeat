@@ -24,6 +24,7 @@ export async function createSubWindow(url: string, title: string) {
       height: 100,
       minWidth: 100,
       minHeight: 100,
+      alwaysOnTop: true,
       decorations: false, // 隐藏窗口边框
       resizable: false,
     });
