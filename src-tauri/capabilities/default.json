@@ -32,6 +32,8 @@
     "opener:allow-open-url",
 
     "core:webview:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
     "core:webview:allow-create-webview-window",
     "core:window:allow-set-position"
   ]
