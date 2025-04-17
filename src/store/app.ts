@@ -16,13 +16,22 @@ export const use_app_store = defineStore("app-store", {
       mouse_move_boundary: 150, // 鼠标移动的有效区域边界
     },
 
+    sub_windows: {
+      progress: 0,
+    },
+
     mission_running: false,
     cameras: [] as Camera[],
     VIDEO_WIDTH: 640,
     VIDEO_HEIGHT: 480,
     flag_detecting: false,
   }),
-
+  // PiniaSharedState 来共享不同 tauri 窗口之间的状态
+  share: {
+    // Override global config for this store.
+    enable: true,
+    initialize: true,
+  },
   actions: {
     is_macos() {
       return navigator.userAgent.includes("Mac");
@@ -33,8 +42,6 @@ export const use_app_store = defineStore("app-store", {
     is_linux() {
       return navigator.userAgent.includes("Linux");
     },
-    
-
   },
 });
 
