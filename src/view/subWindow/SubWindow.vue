@@ -55,7 +55,7 @@ watch(
       // 设置新的定时器
       hideTimer = setTimeout(() => {
         hide_window();
-      }, 500);
+      }, 300);
     }
   }
 );
