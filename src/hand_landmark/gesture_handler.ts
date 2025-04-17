@@ -359,29 +359,21 @@ export class GestureHandler {
       this.app_store.flag_detecting = !this.app_store.flag_detecting;
     };
 
-    if (this.previousGesture !== HandGesture.STOP_GESTURE) {
-      this.previousGestureCount = 0;
-      this.previousGesture = HandGesture.STOP_GESTURE;
-
-      // 暂停手势识别后，更新 sub-window 进度条
-      this.app_store.sub_windows.progress = 0;
-    }
-
-    if (this.previousGestureCount >= 45) {
+    if (this.previousGestureCount >= 60) {
       toogle_detect();
       this.previousGestureCount = 0;
-      this.previousGesture = HandGesture.STOP_GESTURE;
 
       // 暂停手势识别后，更新 sub-window 进度条
       this.app_store.sub_windows.progress = 0;
     } else {
       this.previousGestureCount++;
-      // 更新 sub-window 进度条
-      this.app_store.sub_windows.progress = Math.floor(
-        (this.previousGestureCount / 45) * 100
-      );
 
-      console.log(this.app_store.sub_windows.progress);
+      if (this.previousGestureCount >= 20) {
+        // 更新 sub-window 进度条
+        this.app_store.sub_windows.progress = Math.floor(
+          (this.previousGestureCount / 60) * 100
+        );
+      }
     }
   }
 
@@ -399,18 +391,18 @@ export class GestureHandler {
    * 处理手势
    */
   handleGesture(gesture: HandGesture, hand: HandInfo) {
-    // 首先处理停止手势
-    if (gesture === HandGesture.STOP_GESTURE) {
-      this.handleStopGesture();
-      return;
-    }
-
     // 更新手势连续性计数
     if (gesture === this.previousGesture) {
       this.previousGestureCount++;
     } else {
       this.previousGesture = gesture;
       this.previousGestureCount = 1;
+    }
+
+    // 首先处理停止手势
+    if (gesture === HandGesture.STOP_GESTURE) {
+      this.handleStopGesture();
+      return;
     }
 
     // 如果手势识别已暂停，则不处理
