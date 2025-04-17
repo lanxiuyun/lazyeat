@@ -4,7 +4,7 @@
       type="circle"
       :percentage="app_store.sub_windows.progress"
       :show-indicator="false"
-      style="height: 30px; width: 30px"
+      style="height: 120px; width: 120px"
     />
   </div>
 </template>
