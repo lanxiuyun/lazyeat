@@ -372,14 +372,24 @@ export class GestureHandler {
     if (this.previousGesture !== HandGesture.STOP_GESTURE) {
       this.previousGestureCount = 0;
       this.previousGesture = HandGesture.STOP_GESTURE;
+
+      // 暂停手势识别后，更新 sub-window 进度条
+      this.app_store.sub_windows.progress = 0;
     }
 
     if (this.previousGestureCount >= 45) {
       toogle_detect();
       this.previousGestureCount = 0;
       this.previousGesture = HandGesture.STOP_GESTURE;
+
+      // 暂停手势识别后，更新 sub-window 进度条
+      this.app_store.sub_windows.progress = 0;
     } else {
       this.previousGestureCount++;
+      // 更新 sub-window 进度条
+      this.app_store.sub_windows.progress = Math.floor((this.previousGestureCount / 45) * 100);
+
+      console.log(this.app_store.sub_windows.progress);
     }
   }
 
