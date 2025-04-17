@@ -1,13 +1,13 @@
 <template>
   <div class="container-sub-window">
     <CircleProgress
-      v-if="display_progress"
+      v-show="display_progress"
       :percentage="app_store.sub_windows.progress"
       :size="100"
       :text="app_store.flag_detecting ? '暂停检测' : '继续检测'"
     />
-    <div v-if="display_notification">
-      {{ app_store.sub_windows.notification }}
+    <div v-show="display_notification">
+      <span>{{ app_store.sub_windows.notification }}</span>
     </div>
   </div>
 </template>
@@ -16,11 +16,13 @@
 import CircleProgress from "@/components/CircleProgress.vue";
 import use_app_store from "@/store/app";
 import { getCurrentWindow, LogicalPosition } from "@tauri-apps/api/window";
-import { watch, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 const app_store = use_app_store();
 const display_progress = ref(false);
-const display_notification = ref(false);
+const display_notification = computed(() => {
+  return !display_progress.value;
+});
 let hideTimer: number | null = null;
 
 async function show_window() {
@@ -63,7 +65,7 @@ watch(
   () => app_store.sub_windows.notification,
   (newVal) => {
     if (newVal) {
-      display_notification.value = true;
+      display_progress.value = false;
       show_window();
       // 清除之前的定时器
       if (hideTimer) {
@@ -72,7 +74,7 @@ watch(
       // 设置新的定时器
       hideTimer = setTimeout(() => {
         hide_window();
-      }, 500);
+      }, 1000);
     }
   }
 );

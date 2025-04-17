@@ -2,6 +2,15 @@
   <router-view />
 </template>
 
+<script setup lang="ts">
+import { createSubWindow } from "@/utils/subWindow";
+import { onMounted } from "vue";
+
+onMounted(() => {
+  createSubWindow("/sub-window", "subWindow");
+});
+</script>
+
 <style lang="scss">
 html,
 body {

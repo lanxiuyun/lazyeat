@@ -7,9 +7,9 @@
     <div class="dev-tool__toggle" @click="toggleToolbox">
       <span class="dev-tool__icon">🔧</span>
     </div>
-    <div class="dev-tool__content" v-if="isExpanded">
+    <!-- <div class="dev-tool__content" v-if="isExpanded">
       <div class="dev-tool__item" @click="createSubWindowClick">创建子窗口</div>
-    </div>
+    </div> -->
   </div>
 </template>
 

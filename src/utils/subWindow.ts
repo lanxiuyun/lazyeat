@@ -26,6 +26,7 @@ export async function createSubWindow(url: string, title: string) {
       minHeight: 100,
       alwaysOnTop: true,
       decorations: false, // 隐藏窗口边框
+      visible: false,
       resizable: false,
     });
     webview_window.once("tauri://created", async () => {

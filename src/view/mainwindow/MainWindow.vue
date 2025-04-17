@@ -3,7 +3,7 @@ import DevTool from "@/components/DevTool.vue";
 import AppMenu from "@/components/Menu.vue";
 import pyApi from "@/py_api";
 import use_app_store from "@/store/app";
-import Home from "@/view/mainWindow/Home.vue";
+import Home from "@/view/mainwindow/Home.vue";
 import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { LazyStore } from "@tauri-apps/plugin-store";
