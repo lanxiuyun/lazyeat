@@ -1,22 +1,23 @@
-import { createRouter, createWebHashHistory } from "vue-router";
 import MainWindow from "@/view/mainWindow/MainWindow.vue";
 import SubWindow from "@/view/subWindow/SubWindow.vue";
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   {
     path: "/",
-    name: "MainWindow",
+    name: "mainWindow",
     component: MainWindow,
   },
   {
-    path: "/subWindow",
-    name: "SubWindow",
+    path: "/sub-window",
+    name: "subWindow",
     component: SubWindow,
   },
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  // 设置成 html5 模式,subWindow 才能正常工作
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 

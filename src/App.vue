@@ -27,7 +27,7 @@ const toggleToolbox = () => {
 };
 
 const createSubWindowClick = () => {
-  createSubWindow("/subWindow", "subWindow");
+  createSubWindow("/sub-window", "subWindow");
 };
 </script>
 
