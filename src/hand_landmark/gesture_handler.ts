@@ -405,17 +405,17 @@ export class GestureHandler {
       return;
     }
 
-    // 如果手势识别已暂停，则不处理其他手势
-    if (!this.app_store.flag_detecting) {
-      return;
-    }
-
     // 更新手势连续性计数
     if (gesture === this.previousGesture) {
       this.previousGestureCount++;
     } else {
       this.previousGesture = gesture;
       this.previousGestureCount = 1;
+    }
+
+    // 如果手势识别已暂停，则不处理
+    if (!this.app_store.flag_detecting) {
+      return;
     }
 
     // 只要切换手势就停止语音识别
