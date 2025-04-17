@@ -1,8 +1,6 @@
 <template>
   <div class="container-sub-window">
-    <h1>子窗口</h1>
-    <span> camera: {{ app_store.cameras }}</span>
-    <span> camera-index: {{ app_store.config.selected_camera_id }}</span>
+    <NProgress type="circle" :percentage="app_store.sub_windows.progress" />
   </div>
 </template>
 

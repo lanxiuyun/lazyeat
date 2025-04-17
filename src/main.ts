@@ -28,6 +28,7 @@ import {
   NSpace,
   NSpin,
   NSwitch,
+  NProgress,
   NTag,
 } from "naive-ui";
 
@@ -57,6 +58,7 @@ const naive = create({
     NMessageProvider,
     NAlert,
     NTag,
+    NProgress,
   ],
 });
 
