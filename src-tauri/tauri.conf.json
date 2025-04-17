@@ -23,8 +23,7 @@
   },
   "bundle": {
     "active": true,
-    "externalBin": ["bin/backend-py/Lazyeat Backend"
-                    ],
+    "externalBin": ["bin/backend-py/Lazyeat Backend"],
     "resources": {
       "bin/backend-py/_internal": "_internal/",
       "../model": "model/",
@@ -49,8 +48,7 @@
       "hardenedRuntime": true,
       "minimumSystemVersion": "10.13"
     },
-  
-    "targets": "all",
+    "targets": ["dmg", "msi"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
