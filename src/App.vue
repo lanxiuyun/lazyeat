@@ -16,10 +16,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { createSubWindow } from "@/utils/subWindow";
+import { ref } from "vue";
 
 const is_dev = import.meta.env.DEV;
+// const is_dev = true;
 const isExpanded = ref(false);
 
 const toggleToolbox = () => {
