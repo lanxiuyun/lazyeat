@@ -20,7 +20,8 @@ export async function createSubWindow(url: string, title: string) {
       height: 600,
       resizable: true,
       center: true,
-      decorations: false,
+      minHeight: 120,
+      minWidth: 100,
       zoomHotkeysEnabled: false,
       parent: "main",
     });
