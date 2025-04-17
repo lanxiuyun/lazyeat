@@ -2,7 +2,7 @@
 import AppMenu from "@/components/Menu.vue";
 import pyApi from "@/py_api";
 import use_app_store from "@/store/app";
-import Home from "@/view/Home.vue";
+import Home from "@/view/mainWindow/Home.vue";
 import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { LazyStore } from "@tauri-apps/plugin-store";
@@ -102,12 +102,15 @@ window.addEventListener("message", async function (e) {
           />
           <span class="logo-text">Lazyeat {{ appVersion }}</span>
         </div>
-        <AppMenu  style="flex-grow: 1"/>
+        <AppMenu style="flex-grow: 1" />
         <!-- platfrom info -->
         <div
           v-if="app_store.is_macos()"
-          style="display: flex; flex-direction: column; align-items: center;
-          margin: 5px;
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 5px;
           "
         >
           Build by
