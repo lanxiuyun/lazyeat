@@ -318,8 +318,11 @@ export class GestureHandler {
   /**
    * 处理拇指和小指同时竖起手势 - 开始语音识别
    */
-  private handleVoiceStart() {
-    console.log("handleVoiceStart");
+  async handleVoiceStart() {
+    if (this.voice_recording) {
+      return;
+    }
+    await this.app_store.sub_window_info("开始语音识别");
     this.voice_recording = true;
     this.triggerAction.voiceRecord();
   }
@@ -327,7 +330,11 @@ export class GestureHandler {
   /**
    * 处理拳头手势 - 停止语音识别
    */
-  private handleVoiceStop() {
+  async handleVoiceStop() {
+    if (!this.voice_recording) {
+      return;
+    }
+    await this.app_store.sub_window_success("停止语音识别");
     this.voice_recording = false;
     this.triggerAction.voiceStop();
   }

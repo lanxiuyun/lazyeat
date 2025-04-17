@@ -5,7 +5,7 @@
       :size="100"
       :text="app_store.flag_detecting ? '暂停检测' : '继续检测'"
     />
-    <div>
+    <div style="height: 30px">
       <span>{{ app_store.sub_windows.notification }}</span>
     </div>
   </div>
@@ -73,6 +73,7 @@ watch(
       // 设置新的定时器
       hideTimer = setTimeout(() => {
         hide_window();
+        app_store.sub_windows.notification = "";
       }, 1000);
     }
   }
