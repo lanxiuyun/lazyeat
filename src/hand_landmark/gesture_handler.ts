@@ -401,7 +401,9 @@ export class GestureHandler {
 
     // 首先处理停止手势
     if (gesture === HandGesture.STOP_GESTURE) {
-      this.handleStopGesture();
+      if (hand.categoryName === "Open_Palm") {
+        this.handleStopGesture();
+      }
       return;
     }
 
