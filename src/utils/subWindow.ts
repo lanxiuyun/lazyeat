@@ -21,7 +21,6 @@ export async function createSubWindow(url: string, title: string) {
       title: openTitle,
       parent: "main",
       zoomHotkeysEnabled: false,
-      tabbingIdentifier: "sub-window",
 
       width: SUB_WINDOW_WIDTH,
       height: SUB_WINDOW_HEIGHT,
