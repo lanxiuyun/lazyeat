@@ -3,7 +3,7 @@ import sys
 import site
 
 # Get site-packages directory
-site_packages = site.getsitepackages()[1]
+site_packages = site.getsitepackages()[0]
 
 a = Analysis(
     ['src-py/main.py'],
