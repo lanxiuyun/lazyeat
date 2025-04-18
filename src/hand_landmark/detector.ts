@@ -1,6 +1,9 @@
 import { GestureHandler } from "@/hand_landmark/gesture_handler";
-import { FilesetResolver, GestureRecognizer } from "@mediapipe/tasks-vision";
-import { FilesetResolver, HandLandmarker, HandLandmarkerOptions } from "@mediapipe/tasks-vision";
+import {
+  FilesetResolver,
+  GestureRecognizer,
+  GestureRecognizerOptions,
+} from "@mediapipe/tasks-vision";
 
 // 手势枚举
 export enum HandGesture {
@@ -72,7 +75,7 @@ export class Detector {
         },
         runningMode: "VIDEO",
         numHands: 1,
-      } as HandLandmarkerOptions;
+      } as GestureRecognizerOptions;
       if (useCanvas) {
         params.canvas = document.createElement("canvas");
       }
@@ -80,7 +83,7 @@ export class Detector {
       this.detector = await GestureRecognizer.createFromOptions(vision, params);
     } catch (error: any) {
       // macos 旧设备的 wkwebview 对 webgl 兼容性不好，需要手动创建 canvas
-      if (error.toString().includes('kGpuService')) {
+      if (error.toString().includes("kGpuService")) {
         await this.initialize(true);
       } else {
         throw error;
