@@ -1,5 +1,4 @@
 pynput
-pyautogui
 mediapipe
 fastapi
 opencv-python
