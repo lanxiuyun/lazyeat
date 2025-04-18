@@ -62,7 +62,7 @@ v22.14.0
 
 1. 安装 [rust](https://www.rust-lang.org/zh-CN/tools/install)
 2. 安装 [nodejs](https://nodejs.org/zh-cn/)
-3. 执行下面命令
+3. `cd 到项目目录` 执行下面命令
 
 ```bash
 # 1. 安装 npm 以及 python 环境
