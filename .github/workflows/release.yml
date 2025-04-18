@@ -56,9 +56,9 @@ jobs:
       - name: python backend build
         run: |
           if [ "${{ matrix.platform }}" = "windows-latest" ]; then
-            npm run py-build
+            npm run build:py
           elif [ "${{ matrix.platform }}" = "macos-latest" ]; then
-            npm run py-build-mac
+            npm run build:py-mac
           fi
 
       - uses: tauri-apps/tauri-action@v0

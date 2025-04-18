@@ -1,11 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
+import sys
+import site
+
+# Get site-packages directory
+site_packages = site.getsitepackages()[1]
 
 a = Analysis(
-    ['/Users/cjd/Dropbox/CJD/github_projects/lazyeat/src-py/main.py'],
+    ['src-py/main.py'],
     pathex=[],
     binaries=[],
     datas=[
-        ('/Users/cjd/miniconda3/lib/python3.12/site-packages/vosk/*', 'vosk'),
+        (f'{site_packages}/vosk/*', 'vosk'),
         # Update paths for other `datas` entries
     ],
     hookspath=[],
