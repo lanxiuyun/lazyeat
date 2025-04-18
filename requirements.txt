@@ -1,5 +1,4 @@
 pynput
-mediapipe
 fastapi
 opencv-python
 numpy
