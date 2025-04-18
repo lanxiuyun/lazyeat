@@ -81,6 +81,7 @@ export class Detector {
       }
 
       this.detector = await GestureRecognizer.createFromOptions(vision, params);
+      this.gestureHandler = new GestureHandler();
     } catch (error: any) {
       // macos 旧设备的 wkwebview 对 webgl 兼容性不好，需要手动创建 canvas
       if (error.toString().includes("kGpuService")) {
@@ -89,7 +90,6 @@ export class Detector {
         throw error;
       }
     }
-    this.gestureHandler = new GestureHandler();
   }
 
   /**
