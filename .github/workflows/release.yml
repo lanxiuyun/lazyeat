@@ -42,6 +42,12 @@ jobs:
         with:
           python-version: 3.11
 
+      - name: Download and extract VOSK model
+        run: |
+          curl -L https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip -o vosk-model.zip
+          unzip vosk-model.zip -d .
+          rm vosk-model.zip
+
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
         run: |
