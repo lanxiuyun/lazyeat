@@ -60,6 +60,9 @@ jobs:
       - name: install python and frontend dependencies
         run: npm run install-reqs
 
+      - name: build icons
+        run: npm run build:icons
+
       - name: build python backend-Win
         if: matrix.platform == 'windows-latest'
         run: npm run build:py
