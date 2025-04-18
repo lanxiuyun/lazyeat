@@ -59,16 +59,18 @@ jobs:
 
       - name: install python and frontend dependencies
         run: npm run install-reqs
-      
-      - name: build icon and python backend
+
+      - name: Build icon and python backend(windows)
+        if: matrix.platform == 'windows-latest'
         run: |
-          if [[ "${{ matrix.platform }}" == 'windows-latest' ]]; then
-            npm run build:icons
-            npm run build:py
-          elif [[ "${{ matrix.platform }}" == 'macos-latest' ]]; then
-            npm run build:icons-mac
-            npm run build:py-mac
-          fi
+          npm run build:icons
+          npm run build:py
+
+      - name: Build icon and python backend(macOS)
+        if: matrix.platform == 'macos-latest'
+        run: |
+          npm run build:icons-mac
+          npm run build:py-mac
 
       - uses: tauri-apps/tauri-action@v0
         env:
