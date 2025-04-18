@@ -45,7 +45,8 @@ jobs:
       - name: Download and extract VOSK model
         run: |
           curl -L https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip -o vosk-model.zip
-          unzip vosk-model.zip -d .
+          mkdir -p model
+          unzip vosk-model.zip -d model
           rm vosk-model.zip
 
       - name: install dependencies (ubuntu only)
