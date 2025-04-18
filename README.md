@@ -52,6 +52,7 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 # 版本号声明
 \Desktop\lazyeat> python --version
 Python 3.11.11
+(2025年4月19日 python 3.12.7 以及以上版本 pyinstaller 打包会失败)
 
 Desktop\lazyeat> rustc --version
 rustc 1.85.1 (4eb161250 2025-03-15)
