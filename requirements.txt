@@ -4,7 +4,6 @@ mediapipe
 fastapi
 opencv-python
 numpy
-pyaudio
 uvicorn
 vosk
 pygrabber
