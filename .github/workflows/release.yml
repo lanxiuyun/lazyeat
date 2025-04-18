@@ -70,6 +70,7 @@ jobs:
         if: matrix.platform == 'macos-latest'
         run: |
           npm run build:icons
+          npm run build:icons-mac
           npm run build:py-mac
 
       - uses: tauri-apps/tauri-action@v0
