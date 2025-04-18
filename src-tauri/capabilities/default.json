@@ -2,7 +2,7 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "windows": ["main", "NewWindow_2"],
   "permissions": [
     "core:default",
     "shell:default",
@@ -25,9 +25,16 @@
     "notification:allow-show",
     "notification:allow-request-permission",
 
+    "opener:default",
     "opener:allow-open-path",
     "opener:allow-reveal-item-in-dir",
     "opener:allow-default-urls",
-    "opener:allow-open-url"
+    "opener:allow-open-url",
+
+    "core:webview:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:webview:allow-create-webview-window",
+    "core:window:allow-set-position"
   ]
 }

@@ -186,9 +186,6 @@ class VoiceHandler:
         """开始录音"""
         if self.controller and not self.controller.is_recording:
             self.controller.start_record_thread()
-            await MessageSender.send_message(
-                WebSocketMessageType.INFO, "开始语音识别", "提示", 1
-            )
 
     async def stop_recording(
         self, websocket: WebSocket, gesture_handler: GestureHandler
@@ -196,10 +193,6 @@ class VoiceHandler:
         """停止录音并处理结果"""
         if self.controller and self.controller.is_recording:
             self.controller.stop_record()
-
-            await MessageSender.send_message(
-                WebSocketMessageType.INFO, "停止语音识别", "提示", 1
-            )
 
             # 获取识别结果并输入
             text = self.controller.transcribe_audio()
