@@ -74,9 +74,9 @@ npm run build:icons
 #npm run build:icons-linux
 
 # 3. pyinstaller 打包
-npm run py-build
-#npm run py-build-mac
-#npm run py-build-linux
+npm run build:py
+#npm run build:py-mac
+#npm run build:py-linux
 
 # 4. 下载语音识别模型并解压到项目目录 model 文件夹下
 https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip

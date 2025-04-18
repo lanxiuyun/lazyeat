@@ -1,13 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
+import sys
+import site
 
+# Get site-packages directory
+site_packages = site.getsitepackages()[1]
 
 a = Analysis(
     ['src-py\\main.py'],
     pathex=[],
     binaries=[],
-        datas=[
-        ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\vosk\\*', 'vosk'),
-        ('C:\\Users\\che\\miniconda3\\envs\\lazyeat\\Lib\\site-packages\\uvicorn\\*', 'uvicorn'),
+    datas=[
+        (f'{site_packages}\\vosk\\*', 'vosk'),
+        (f'{site_packages}\\uvicorn\\*', 'uvicorn'),
     ],
     hiddenimports=[
         'vosk',

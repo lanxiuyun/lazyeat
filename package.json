@@ -6,10 +6,9 @@
   "scripts": {
     "install-reqs": "npm install && pip install -r requirements.txt",
     "dev": "vite",
-    "py-build": "pyinstaller --noconfirm --distpath src-tauri/bin/ main_win.spec",
-    "py-build-mac": "pyinstaller --noconfirm --distpath src-tauri/bin/ main_mac.spec",
+    "build:py": "pyinstaller --noconfirm --distpath src-tauri/bin/ main_win.spec",
+    "build:py-mac": "pyinstaller --noconfirm --distpath src-tauri/bin/ main_mac.spec",
     "build:icons": "npx tauri icon public/lazyeat.png",
-    "build:icons-mac": "npx tauri icon public/lazyeat.png --output src-tauri/icons/mac",
     "build": "vite build",
     "preview": "vite preview",
     "tauri": "npx tauri",
