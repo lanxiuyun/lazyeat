@@ -405,7 +405,7 @@ export class GestureHandler {
    */
   private handleDelete() {
     const now = Date.now();
-    if (now - this.lastDeleteTime < 200) {
+    if (now - this.lastDeleteTime < 300) {
       return;
     }
     this.lastDeleteTime = now;
