@@ -21,6 +21,9 @@ export const use_app_store = defineStore("app-store", {
       four_fingers_up_send: "f",
       selected_camera_id: "",
       mouse_move_boundary: 150, // 鼠标移动的有效区域边界
+
+      // 手势识别
+      scroll_gesture_2_thumb_and_index_threshold: 0.02, // 食指和拇指距离阈值
     },
 
     sub_windows: {

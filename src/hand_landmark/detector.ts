@@ -232,8 +232,6 @@ export class Detector {
       ["0,0,0,0,0", HandGesture.VOICE_GESTURE_STOP],
     ]);
 
-    console.log(fingerState);
-
     if (gestureMap.has(fingerState)) {
       return gestureMap.get(fingerState) as HandGesture;
     }

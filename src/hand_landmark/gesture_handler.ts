@@ -1,4 +1,5 @@
 import { HandGesture, HandInfo } from "@/hand_landmark/detector";
+import i18n from "@/locales/i18n";
 import use_app_store from "@/store/app";
 
 // WebSocket数据类型定义
@@ -318,8 +319,13 @@ export class GestureHandler {
       (indexTip.x - thumbTip.x) ** 2 + (indexTip.y - thumbTip.y) ** 2
     );
 
+    console.log(i18n.global.t("当前食指和拇指距离"), distance);
+
     // 如果距离大于阈值，说明没有捏合，重置上一次的 Y 坐标
-    if (distance > 0.02) {
+    if (
+      distance >
+      this.app_store.config.scroll_gesture_2_thumb_and_index_threshold
+    ) {
       this.prev_scroll2_y = 0;
       return;
     }

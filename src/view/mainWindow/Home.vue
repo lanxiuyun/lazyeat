@@ -135,6 +135,17 @@
           <template #icon>
             <GestureIcon :icon="Okay" />
           </template>
+          <template #extra>
+            <n-input-number
+              v-model:value="
+                app_store.config.scroll_gesture_2_thumb_and_index_threshold
+              "
+              :min="0"
+              :step="0.01"
+              :placeholder="$t('设置食指和拇指距离阈值')"
+              style="width: 200px"
+            />
+          </template>
         </GestureCard>
 
         <GestureCard
