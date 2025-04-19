@@ -161,10 +161,11 @@ const predictWebcam = async () => {
     if (app_store.config.show_window) {
       // 绘制视频帧
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // 翻转绘制
+      ctx.save();
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // 绘制鼠标移动框
-      drawMouseMoveBox(ctx);
 
       // 绘制手势点
       if (detection.leftHand) {
@@ -173,6 +174,12 @@ const predictWebcam = async () => {
       if (detection.rightHand) {
         drawHandLandmarks(ctx, detection.rightHand, "blue");
       }
+
+      // 恢复绘制状态
+      ctx.restore();
+
+      // 绘制鼠标移动框
+      drawMouseMoveBox(ctx);
     }
 
     // 手势处理
@@ -253,6 +260,5 @@ onBeforeUnmount(() => {
 
 .output-canvas {
   position: absolute;
-  transform: scaleX(-1);
 }
 </style>

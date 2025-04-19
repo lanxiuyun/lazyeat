@@ -184,7 +184,8 @@ export class GestureHandler {
 
     try {
       // 将坐标转换为显示器分辨率
-      const video_x = indexTip.x * this.app_store.VIDEO_WIDTH;
+      const video_x =
+        this.app_store.VIDEO_WIDTH - indexTip.x * this.app_store.VIDEO_WIDTH;
       const video_y = indexTip.y * this.app_store.VIDEO_HEIGHT;
 
       // 获取鼠标移动边界配置
@@ -209,6 +210,7 @@ export class GestureHandler {
       }
 
       // 将视频坐标映射到屏幕坐标
+      // 由于 x 轴方向相反，所以需要翻转
       let screenX = mapRange(
         video_x,
         this.app_store.config.boundary_left,
@@ -217,6 +219,7 @@ export class GestureHandler {
         0,
         this.screen_width
       );
+
       let screenY = mapRange(
         video_y,
         this.app_store.config.boundary_top,
@@ -236,9 +239,9 @@ export class GestureHandler {
       this.prev_loc_y = screenY;
 
       // 移动鼠标
-      this.app_store.sub_windows.x = this.screen_width - screenX + 10;
+      this.app_store.sub_windows.x = screenX + 10;
       this.app_store.sub_windows.y = screenY;
-      this.triggerAction.moveMouse(this.screen_width - screenX, screenY);
+      this.triggerAction.moveMouse(screenX, screenY);
     } catch (error) {
       console.error("处理鼠标移动失败:", error);
     }
