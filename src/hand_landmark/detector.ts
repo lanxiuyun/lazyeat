@@ -217,6 +217,7 @@ export class Detector {
       // 滚动屏幕手势
       ["0,1,1,1,0", HandGesture.THREE_FINGERS_UP],
       ["1,0,1,1,1", HandGesture.SCROLL_GESTURE_2],
+      ["0,0,1,1,1", HandGesture.SCROLL_GESTURE_2],
 
       // 四根手指同时竖起
       ["0,1,1,1,1", HandGesture.FOUR_FINGERS_UP],
@@ -231,13 +232,19 @@ export class Detector {
       ["0,0,0,0,0", HandGesture.VOICE_GESTURE_STOP],
     ]);
 
+    console.log(fingerState);
+
+    if (gestureMap.has(fingerState)) {
+      return gestureMap.get(fingerState) as HandGesture;
+    }
+
     // 检查删除手势
     if (this._isDeleteGesture(hand, fingers)) {
       return HandGesture.DELETE_GESTURE;
     }
 
-    // 返回匹配的手势或默认值
-    return gestureMap.get(fingerState) || HandGesture.OTHER;
+    // 返回默认值
+    return HandGesture.OTHER;
   }
 
   /**

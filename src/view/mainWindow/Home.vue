@@ -130,10 +130,10 @@
 
         <GestureCard
           :title="$t('滚动控制')"
-          :description="$t('三指上下滑动控制页面滚动')"
+          :description="$t('（okay手势）食指和拇指捏合滚动页面')"
         >
           <template #icon>
-            <GestureIcon :icon="ThreeThree" />
+            <GestureIcon :icon="Okay" />
           </template>
         </GestureCard>
 
@@ -218,7 +218,7 @@ import {
   OneOne,
   Rock,
   Six,
-  ThreeThree,
+  Okay,
   TwoTwo,
 } from "@icon-park/vue-next";
 import { computed, onMounted, ref } from "vue";
