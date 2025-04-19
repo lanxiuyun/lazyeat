@@ -130,10 +130,32 @@
 
         <GestureCard
           :title="$t('滚动控制')"
-          :description="$t('三指上下滑动控制页面滚动')"
+          :description="$t('（okay手势）食指和拇指捏合滚动页面')"
         >
           <template #icon>
-            <GestureIcon :icon="ThreeThree" />
+            <GestureIcon :icon="Okay" />
+          </template>
+          <template #extra>
+            <div style="display: flex; align-items: center; gap: 4px">
+              {{ $t("食指和拇指距离小于") }}
+              <n-input-number
+                v-model:value="
+                  app_store.config.scroll_gesture_2_thumb_and_index_threshold
+                "
+                :min="0"
+                :step="0.01"
+                style="width: 150px"
+              />
+              {{ $t("触发捏合") }}
+            </div>
+            <n-space>
+              <n-tag>
+                {{ $t("默认值0.02") }}
+              </n-tag>
+              <n-tag>
+                {{ $t("可以通过右键->检查->控制台->捏合手势->查看当前距离") }}
+              </n-tag>
+            </n-space>
           </template>
         </GestureCard>
 
@@ -215,12 +237,13 @@ import {
   Camera,
   FiveFive,
   FourFour,
+  Okay,
   OneOne,
   Rock,
   Six,
-  ThreeThree,
   TwoTwo,
 } from "@icon-park/vue-next";
+import { NTag } from "naive-ui";
 import { computed, onMounted, ref } from "vue";
 
 const app_store = use_app_store();

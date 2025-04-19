@@ -1,4 +1,5 @@
 import { HandGesture, HandInfo } from "@/hand_landmark/detector";
+import i18n from "@/locales/i18n";
 import use_app_store from "@/store/app";
 
 // WebSocket数据类型定义
@@ -151,12 +152,13 @@ export class GestureHandler {
   private smoothening = 7; // 平滑系数
   private prev_loc_x: number = 0;
   private prev_loc_y: number = 0;
+  private prev_three_fingers_y: number = 0; // 添加三根手指上一次的 Y 坐标
+  private prev_scroll2_y: number = 0;
 
   // 时间间隔参数
   private lastClickTime: number = 0;
   private lastScrollTime: number = 0;
   private lastFullScreenTime: number = 0;
-  private prev_three_fingers_y: number = 0; // 添加三根手指上一次的 Y 坐标
   private lastDeleteTime: number = 0;
 
   // 时间间隔常量（毫秒）
@@ -297,6 +299,60 @@ export class GestureHandler {
     }
   }
 
+  // 拇指和食指捏合，滚动屏幕
+  private handleScroll2(hand: HandInfo) {
+    const indexTip = this.getFingerTip(hand, 1);
+    const thumbTip = this.getFingerTip(hand, 0);
+    if (!indexTip || !thumbTip) {
+      this.prev_scroll2_y = 0;
+      return;
+    }
+
+    const now = Date.now();
+    if (now - this.lastScrollTime < this.SCROLL_INTERVAL) {
+      return;
+    }
+    this.lastScrollTime = now;
+
+    // 计算食指和拇指的距离
+    const distance = Math.sqrt(
+      (indexTip.x - thumbTip.x) ** 2 + (indexTip.y - thumbTip.y) ** 2
+    );
+
+    console.log(i18n.global.t("当前食指和拇指距离"), distance);
+
+    // 如果距离大于阈值，说明没有捏合，重置上一次的 Y 坐标
+    if (
+      distance >
+      this.app_store.config.scroll_gesture_2_thumb_and_index_threshold
+    ) {
+      this.prev_scroll2_y = 0;
+      return;
+    }
+
+    // 如果是第一次检测到捏合，记录当前 Y 坐标
+    if (this.prev_scroll2_y === 0) {
+      this.prev_scroll2_y = indexTip.y;
+      return;
+    }
+
+    // 计算 Y
+    const deltaY = indexTip.y - this.prev_scroll2_y;
+
+    // 如果变化超过阈值，则触发滚动
+    if (Math.abs(deltaY) > 0.008) {
+      if (deltaY < 0) {
+        // 手指向上移动，向上滚动
+        this.triggerAction.scrollUp();
+      } else {
+        // 手指向下移动，向下滚动
+        this.triggerAction.scrollDown();
+      }
+      // 更新上一次的 Y 坐标
+      this.prev_scroll2_y = indexTip.y;
+    }
+  }
+
   /**
    * 处理四根手指同时竖起手势 - 发送快捷键
    */
@@ -431,9 +487,12 @@ export class GestureHandler {
         case HandGesture.INDEX_AND_MIDDLE_UP:
           this.handleMouseClick();
           break;
-        case HandGesture.THREE_FINGERS_UP:
-          this.handleScroll(hand);
+        case HandGesture.SCROLL_GESTURE_2:
+          this.handleScroll2(hand);
           break;
+        // case HandGesture.THREE_FINGERS_UP:
+        //   this.handleScroll(hand);
+        //   break;
         case HandGesture.FOUR_FINGERS_UP:
           this.handleFourFingers();
           break;

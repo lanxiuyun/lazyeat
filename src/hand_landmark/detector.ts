@@ -16,8 +16,9 @@ export enum HandGesture {
 
   // 三根手指同时竖起 - 滚动屏幕
   THREE_FINGERS_UP = "three_fingers_up",
+  SCROLL_GESTURE_2 = "scroll_gesture_2",
 
-  // 四根手指同时竖起 - 视频全屏
+  // 四根手指同时竖起
   FOUR_FINGERS_UP = "four_fingers_up",
 
   // 五根手指同时竖起 - 暂停/开始 识别
@@ -201,39 +202,68 @@ export class Detector {
    */
   public static getSingleHandGesture(hand: HandInfo): HandGesture {
     const fingers = this._fingersUp(hand);
+    const fingerState = fingers.join(",");
 
-    // 0,1,2,3,4 分别代表 大拇指，食指，中指，无名指，小拇指
-    if (fingers.toString() === [0, 1, 0, 0, 0].toString()) {
-      return HandGesture.ONLY_INDEX_UP;
-    } else if (fingers.toString() === [0, 1, 1, 0, 0].toString()) {
-      return HandGesture.INDEX_AND_MIDDLE_UP;
-    } else if (
-      fingers.toString() === [0, 1, 0, 0, 1].toString() ||
-      fingers.toString() === [1, 1, 0, 0, 1].toString()
-    ) {
-      return HandGesture.ROCK_GESTURE;
-    } else if (fingers.toString() === [0, 1, 1, 1, 0].toString()) {
-      return HandGesture.THREE_FINGERS_UP;
-    } else if (fingers.toString() === [0, 1, 1, 1, 1].toString()) {
-      return HandGesture.FOUR_FINGERS_UP;
-    } else if (fingers.toString() === [1, 1, 1, 1, 1].toString()) {
-      return HandGesture.STOP_GESTURE;
-    } else if (fingers.toString() === [1, 0, 0, 0, 1].toString()) {
-      return HandGesture.VOICE_GESTURE_START;
-    } else if (fingers.toString() === [0, 0, 0, 0, 0].toString()) {
-      return HandGesture.VOICE_GESTURE_STOP;
-    } else if (
-      // 拇指在左边，其他全收起 手势判断
-      hand.landmarks[4].x > hand.landmarks[8].x + 0.05 &&
-      hand.landmarks[4].x > hand.landmarks[12].x + 0.05 &&
-      hand.landmarks[4].x > hand.landmarks[16].x + 0.05 &&
-      hand.landmarks[4].x > hand.landmarks[20].x + 0.05 &&
-      fingers.toString() === [1, 0, 0, 0, 0].toString()
-    ) {
-      return HandGesture.DELETE_GESTURE;
-    } else {
-      return HandGesture.OTHER;
+    // 定义手势映射表
+    const gestureMap = new Map<string, HandGesture>([
+      // 食指举起，移动鼠标
+      ["0,1,0,0,0", HandGesture.ONLY_INDEX_UP],
+
+      // 鼠标左键点击手势
+      ["0,1,1,0,0", HandGesture.INDEX_AND_MIDDLE_UP],
+      ["0,1,0,0,1", HandGesture.ROCK_GESTURE],
+      ["1,1,0,0,1", HandGesture.ROCK_GESTURE],
+
+      // 滚动屏幕手势
+      ["0,1,1,1,0", HandGesture.THREE_FINGERS_UP],
+      ["1,0,1,1,1", HandGesture.SCROLL_GESTURE_2],
+      ["0,0,1,1,1", HandGesture.SCROLL_GESTURE_2],
+
+      // 四根手指同时竖起
+      ["0,1,1,1,1", HandGesture.FOUR_FINGERS_UP],
+
+      // 五根手指同时竖起 - 暂停/开始 识别
+      ["1,1,1,1,1", HandGesture.STOP_GESTURE],
+
+      // 拇指和食指同时竖起 - 语音识别
+      ["1,0,0,0,1", HandGesture.VOICE_GESTURE_START],
+
+      // 其他手势
+      ["0,0,0,0,0", HandGesture.VOICE_GESTURE_STOP],
+    ]);
+
+    if (gestureMap.has(fingerState)) {
+      return gestureMap.get(fingerState) as HandGesture;
     }
+
+    // 检查删除手势
+    if (this._isDeleteGesture(hand, fingers)) {
+      return HandGesture.DELETE_GESTURE;
+    }
+
+    // 返回默认值
+    return HandGesture.OTHER;
+  }
+
+  /**
+   * 检查是否为删除手势
+   */
+  private static _isDeleteGesture(hand: HandInfo, fingers: number[]): boolean {
+    const THUMB_INDEX = 4;
+    const FINGER_TIPS = [8, 12, 16, 20];
+    const distance_threshold = 0.05;
+
+    const isThumbExtended = fingers[0] === 1;
+    const areOtherFingersClosed = fingers
+      .slice(1)
+      .every((finger) => finger === 0);
+    const isThumbLeftmost = FINGER_TIPS.every(
+      (tipIndex) =>
+        hand.landmarks[THUMB_INDEX].x >
+        hand.landmarks[tipIndex].x + distance_threshold
+    );
+
+    return isThumbExtended && areOtherFingersClosed && isThumbLeftmost;
   }
 
   /**
