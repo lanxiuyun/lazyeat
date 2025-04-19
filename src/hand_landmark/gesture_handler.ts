@@ -211,15 +211,17 @@ export class GestureHandler {
       // 将视频坐标映射到屏幕坐标
       let screenX = mapRange(
         video_x,
-        mouse_move_boundary,
-        wCam - mouse_move_boundary,
+        this.app_store.config.boundary_left,
+        this.app_store.config.boundary_left +
+          this.app_store.config.boundary_width,
         0,
         this.screen_width
       );
       let screenY = mapRange(
         video_y,
-        mouse_move_boundary,
-        hCam - mouse_move_boundary,
+        this.app_store.config.boundary_top,
+        this.app_store.config.boundary_top +
+          this.app_store.config.boundary_height,
         0,
         this.screen_height
       );
