@@ -5,7 +5,11 @@ import pyApi from "@/py_api";
 import use_app_store from "@/store/app";
 import Home from "@/view/mainWindow/Home.vue";
 import { getVersion } from "@tauri-apps/api/app";
-import { getCurrentWindow, LogicalPosition } from "@tauri-apps/api/window";
+import {
+  getCurrentWindow,
+  LogicalPosition,
+  LogicalSize,
+} from "@tauri-apps/api/window";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { ElAside, ElContainer, ElMain } from "element-plus";
 import { onMounted, ref, watch } from "vue";
@@ -26,13 +30,17 @@ onMounted(async () => {
   }, 5000);
 
   await getCurrentWindow().onCloseRequested(async () => {
+    // 保存窗口状态
     const factor = await getCurrentWindow().scaleFactor();
     const position = (await getCurrentWindow().innerPosition()).toLogical(
       factor
     );
+    const size = (await getCurrentWindow().innerSize()).toLogical(factor);
     await window_store_json.set("window_state", {
       x: position.x,
       y: position.y,
+      width: size.width,
+      height: size.height,
     });
 
     if (!is_dev) {
@@ -49,6 +57,9 @@ onMounted(async () => {
   if (window_state) {
     getCurrentWindow().setPosition(
       new LogicalPosition(window_state.x, window_state.y)
+    );
+    getCurrentWindow().setSize(
+      new LogicalSize(window_state.width, window_state.height)
     );
   }
 });

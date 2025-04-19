@@ -42,6 +42,44 @@
         :height="app_store.VIDEO_HEIGHT"
       ></canvas>
     </div>
+
+    <n-space>
+      <n-form-item label="识别框x">
+        <n-input-number
+          v-model:value="app_store.config.boundary_left"
+          :min="0"
+          :max="app_store.VIDEO_WIDTH - app_store.config.boundary_width - 10"
+          style="width: 150px"
+        />
+      </n-form-item>
+
+      <n-form-item label="识别框y">
+        <n-input-number
+          v-model:value="app_store.config.boundary_top"
+          :min="0"
+          :max="app_store.VIDEO_HEIGHT - app_store.config.boundary_height - 10"
+          style="width: 150px"
+        />
+      </n-form-item>
+
+      <n-form-item label="识别框宽">
+        <n-input-number
+          v-model:value="app_store.config.boundary_width"
+          :min="0"
+          :max="app_store.VIDEO_WIDTH - app_store.config.boundary_left - 10"
+          style="width: 150px"
+        />
+      </n-form-item>
+
+      <n-form-item label="识别框高">
+        <n-input-number
+          v-model:value="app_store.config.boundary_height"
+          :min="0"
+          :max="app_store.VIDEO_HEIGHT - app_store.config.boundary_top - 10"
+          style="width: 150px"
+        />
+      </n-form-item>
+    </n-space>
   </div>
 </template>
 
@@ -74,10 +112,10 @@ const drawMouseMoveBox = (ctx) => {
   ctx.strokeStyle = "rgb(255, 0, 255)";
   ctx.lineWidth = 2;
   ctx.strokeRect(
-    app_store.config.mouse_move_boundary,
-    app_store.config.mouse_move_boundary,
-    app_store.VIDEO_WIDTH - 2 * app_store.config.mouse_move_boundary,
-    app_store.VIDEO_HEIGHT - 2 * app_store.config.mouse_move_boundary
+    app_store.config.boundary_left,
+    app_store.config.boundary_top,
+    app_store.config.boundary_width,
+    app_store.config.boundary_height
   );
 };
 
@@ -123,10 +161,11 @@ const predictWebcam = async () => {
     if (app_store.config.show_window) {
       // 绘制视频帧
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // 翻转绘制
+      ctx.save();
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // 绘制鼠标移动框
-      drawMouseMoveBox(ctx);
 
       // 绘制手势点
       if (detection.leftHand) {
@@ -135,6 +174,12 @@ const predictWebcam = async () => {
       if (detection.rightHand) {
         drawHandLandmarks(ctx, detection.rightHand, "blue");
       }
+
+      // 恢复绘制状态
+      ctx.restore();
+
+      // 绘制鼠标移动框
+      drawMouseMoveBox(ctx);
     }
 
     // 手势处理
@@ -209,13 +254,11 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .hand-detection {
-  position: relative;
   width: v-bind('app_store.VIDEO_WIDTH + "px"');
   height: v-bind('app_store.VIDEO_HEIGHT + "px"');
 }
 
 .output-canvas {
   position: absolute;
-  transform: scaleX(-1);
 }
 </style>

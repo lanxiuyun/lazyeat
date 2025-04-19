@@ -35,6 +35,7 @@
     "core:window:allow-show",
     "core:window:allow-hide",
     "core:webview:allow-create-webview-window",
-    "core:window:allow-set-position"
+    "core:window:allow-set-position",
+    "core:window:allow-set-size"
   ]
 }

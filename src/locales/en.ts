@@ -14,6 +14,12 @@ export default {
   "Rock手势执行鼠标单击": "Rock gesture to perform mouse click",
   "滚动控制": "Scroll Control",
   "三指上下滑动控制页面滚动": "Slide three fingers up/down to control page scrolling",
+  "（okay手势）食指和拇指捏合滚动页面": "（okay gesture）Pinch with index and thumb to scroll page",
+  "食指和拇指距离小于": "Index and thumb distance less than",
+  "触发捏合": "Trigger pinch",
+  "默认值0.02": "Default value 0.02",
+  "可以通过右键->检查->控制台->捏合手势->查看当前距离": "Can check current distance by right-click -> inspect -> console -> pinch gesture",
+
   "全屏控制": "Full Screen Control",
   "四指并拢发送按键": "Four fingers together to send key",
   "点击设置快捷键": "Click to set shortcut",
@@ -27,6 +33,11 @@ export default {
   "拳头手势结束语音识别": "Fist gesture to end voice recognition",
   "暂停/继续": "Pause/Resume",
   "单手张开1.5秒 暂停/继续 手势识别": "Open one hand for 1.5 seconds to pause/resume gesture recognition",
+
+  "识别框x": "Recognition box x",
+  "识别框y": "Recognition box y",
+  "识别框宽": "Recognition box width",
+  "识别框高": "Recognition box height",
 
   // 通知
   "Lazyeat": "Lazyeat",
