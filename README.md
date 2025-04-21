@@ -34,7 +34,7 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
 - 单指滑动控制光标
 - 双指/Rock 执行鼠标单击
-- 三指上下移动控制页面滚动
+- ok 手势控制页面滚动
 - 四指并拢发送按键
 - 支持语音输入
 
@@ -44,12 +44,14 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
 视频演示:https://www.bilibili.com/video/BV11SXTYTEJi/?spm_id_from=333.1387.homepage.video_card.click
 
-![img.png](.readme/img.png)
+<div align="center">
+<img src=.readme/img.png width="800" height="600" />
+</div>
 
 # 快速开始
 
 ```
-# 版本号声明
+# 版本号声明，以下为我的开发环境
 \Desktop\lazyeat> python --version
 Python 3.11.11
 (2025年4月19日 python 3.12.7 以及以上版本 pyinstaller 打包会失败)
@@ -61,45 +63,75 @@ rustc 1.85.1 (4eb161250 2025-03-15)
 v22.14.0
 ```
 
-1. 安装 [rust](https://www.rust-lang.org/zh-CN/tools/install)
-2. 安装 [nodejs](https://nodejs.org/zh-cn/)
-3. `cd 到项目目录` 执行下面命令
+### 安装 rust 和 node
+
+[rust](https://www.rust-lang.org/zh-CN/tools/install) 和 [node](https://nodejs.org/zh-cn/)
+
+### 项目根目录打开项目(vscode,pycharm 等)
+
+项目根目录（也就是 lazyeat 的根目录）
+（如：C:\Users\你的用户名\Desktop\lazyeat，也可以直接打开文件夹后在地址栏输入 cmd）
+
+### 安装 npm 以及 python 环境
 
 ```bash
-# 1. 安装 npm 以及 python 环境
 npm run install-reqs
-
-# 2. build tauri 图标
-npm run build:icons
-#npm run build:icons-mac
-#npm run build:icons-linux
-
-# 3. pyinstaller 打包
-npm run build:py
-#npm run build:py-mac
-#npm run build:py-linux
-
-# 4. 下载语音识别模型并解压到项目目录 model 文件夹下
-https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
-
-# 5. tauri 开发模式
-npm run tauri dev
-
-# 6. tauri 生产构建
-# npm run tauri build
 ```
 
-如果你需要 debug 后端，那么先 pyinstaller 打包，再运行 `python src-py/main.py`。
-`npm run tauri dev` 需要先生成 [tauri.conf.json](src-tauri/tauri.conf.json) 中编写的 sidecar。
+这一步遇到问题可以尝试使用管理员方式运行 cmd 再运行该命令
+
+### build tauri 图标
+
+```bash
+npm run build:icons
+```
+
+### pyinstaller 打包
+
+```bash
+npm run build:py
+# 打包 mac 版本
+# npm run build:py-mac
+# 打包 linux 版本
+# npm run build:py-linux
+```
+
+### 下载语音识别模型并解压到 model 文件夹下
+
+```bash
+https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
+```
+
+![img.png](.readme/img_model_example_inside.png)
+
+### 运行 tauri dev 开发环境
+
+```bash
+npm run tauri dev
+```
+
+### 额外说明
+
+#### 打包成生产环境（不发布就不需要）
+
+```bash
+npm run tauri build
+```
+
+打包后在 **lazyeat\src-tauri\target\release**目录下找到 exe 文件运行即可。
+
+#### python 后端 debug
+
+如果你需要 debug python 后端，那么先 pyinstaller 打包，再运行 `python src-py/main.py`。
+
+因为 `npm run tauri dev` 需要生成 [tauri.conf.json](src-tauri/tauri.conf.json) 中编写的 sidecar。
 详见：https://v2.tauri.app/zh-cn/develop/sidecar/
 
-# 📢 语音识别模型下载
+# 📢 语音识别模型替换
 
-[小模型](https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip)
+[小模型](https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip) [大模型](https://alphacephei.com/vosk/models/vosk-model-cn-0.22.zip)
 
-[大模型](https://alphacephei.com/vosk/models/vosk-model-cn-0.22.zip)
-
-下载后解压到 `exe` 同级的 `model` 文件夹下,才能使用语音识别功能
+前面的步骤下载的是小模型，如果需要使用大模型，下载后解压到 `model/` 替换
 
 ![img.png](.readme/img_model_example.png)
 
