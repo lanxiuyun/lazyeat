@@ -99,7 +99,7 @@ npm run build:py
 ### 下载语音识别模型并解压到 model 文件夹下
 
 ```bash
- https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
+https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
 ```
 
 ![img.png](.readme/img_model_example_inside.png)
