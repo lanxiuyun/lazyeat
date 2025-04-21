@@ -125,13 +125,11 @@ npm run tauri build
 `npm run tauri dev` 需要生成 [tauri.conf.json](src-tauri/tauri.conf.json) 中编写的 sidecar。
 详见：https://v2.tauri.app/zh-cn/develop/sidecar/
 
-# 📢 语音识别模型下载
+# 📢 语音识别模型替换
 
-[小模型](https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip)
+[小模型](https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip) [大模型](https://alphacephei.com/vosk/models/vosk-model-cn-0.22.zip)
 
-[大模型](https://alphacephei.com/vosk/models/vosk-model-cn-0.22.zip)
-
-前面的步骤下载的是小模型，如果要替换，下载后解压到 exe 同目录下的 **lazyeat/model/**
+前面的步骤下载的是小模型，如果需要使用大模型，下载后解压到 `model/` 替换
 
 ![img.png](.readme/img_model_example.png)
 
