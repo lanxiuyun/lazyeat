@@ -93,16 +93,16 @@ npm run build:py
 # npm run build:py-linux
 ```
 
-### 下载语音识别模型并解压到项目目录 model 文件夹下
+### 下载语音识别模型并解压到 model 文件夹下
 
-windows
+windows 运行
 
 ```bash
 Invoke-WebRequest -Uri https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip -OutFile vosk-model-small-cn-0.22.zip
 Expand-Archive -Path vosk-model-small-cn-0.22.zip -DestinationPath model
 ```
 
-mac 和 linux
+mac 和 linux 运行
 
 ```bash
 curl -L https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip -o vosk-model-small-cn-0.22.zip
