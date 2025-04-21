@@ -5,7 +5,6 @@ main_win.spec
 .idea
 example
 .cursorrules
-model/
 big-model/
 main_bak
 main.dist
