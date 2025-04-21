@@ -183,16 +183,10 @@ export class GestureHandler {
     if (!indexTip) return;
 
     try {
-      // 将坐标转换为显示器分辨率
+      // 将 hand 的坐标转换为视频坐标
       const video_x =
         this.app_store.VIDEO_WIDTH - indexTip.x * this.app_store.VIDEO_WIDTH;
       const video_y = indexTip.y * this.app_store.VIDEO_HEIGHT;
-
-      // 获取鼠标移动边界配置
-      const mouse_move_boundary =
-        this.app_store.config.mouse_move_boundary || 50; // 默认值为50
-      const wCam = this.app_store.VIDEO_WIDTH;
-      const hCam = this.app_store.VIDEO_HEIGHT;
 
       /**
        * 辅助方法：将值从一个范围映射到另一个范围
