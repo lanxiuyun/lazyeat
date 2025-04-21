@@ -89,8 +89,9 @@ npm run tauri dev
 # npm run tauri build
 ```
 
-如果你需要 debug 后端，那么先 pyinstaller 打包，再运行 `python src-py/main.py`。
-`npm run tauri dev` 需要先生成 [tauri.conf.json](src-tauri/tauri.conf.json) 中编写的 sidecar。
+如果你需要 debug python 后端，那么先 pyinstaller 打包，再运行 `python src-py/main.py`。
+
+`npm run tauri dev` 需要生成 [tauri.conf.json](src-tauri/tauri.conf.json) 中编写的 sidecar。
 详见：https://v2.tauri.app/zh-cn/develop/sidecar/
 
 # 📢 语音识别模型下载
