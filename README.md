@@ -68,7 +68,7 @@ v22.14.0
 ## 终端进入项目根目录
 
 ```bash
-cd 到项目目录（也就是lazyeat的根目录）
+cd 到项目目录（也就是lazyeat的根目录, 如：C:\Users\你的用户名\Desktop\lazyeat）
 ```
 
 ## 安装 npm 以及 python 环境
