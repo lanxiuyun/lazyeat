@@ -12,6 +12,10 @@ const menuOptions: MenuOption[] = [
     key: "/",
   },
   {
+    label: "操作指南",
+    key: "/guide",
+  },
+  {
     label: "开发",
     key: "/update",
   }
