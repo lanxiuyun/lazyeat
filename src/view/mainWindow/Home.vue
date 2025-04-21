@@ -1,5 +1,17 @@
 <template>
   <div class="home-container">
+    <n-card class="ad-container">
+      <iframe
+        :src="
+          is_dev
+            ? '/lazyeat-ad/html/index.html'
+            : 'https://lazyeat-ad.pages.dev/'
+        "
+        width="100%"
+        height="100%"
+      ></iframe>
+    </n-card>
+
     <n-card
       class="control-panel"
       hoverable
@@ -61,6 +73,7 @@ import { use_app_store } from "@/store/app";
 import { Browser, Camera } from "@icon-park/vue-next";
 import { computed, onMounted } from "vue";
 
+const is_dev = computed(() => import.meta.env.DEV);
 const app_store = use_app_store();
 // 计算属性：摄像头选项
 const camera_options = computed(() => {
@@ -110,5 +123,23 @@ onMounted(async () => {
 .settings-row {
   flex-wrap: wrap;
   gap: 16px;
+}
+</style>
+
+<style scoped lang="scss">
+// 广告区域
+.ad-container {
+  height: 260px;
+  background-color: transparent;
+  margin-bottom: 24px;
+
+  iframe {
+    border: none;
+  }
+
+  :deep(.n-card__content) {
+    padding: 0 !important;
+    padding-top: 0 !important;
+  }
 }
 </style>

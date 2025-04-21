@@ -142,7 +142,7 @@ onMounted(async () => {
             margin: 5px;
           "
         >
-          Build by
+          Mac by
           <a
             class="contributor-link"
             href="https://github.com/mxue12138"
@@ -158,7 +158,7 @@ onMounted(async () => {
           >
         </div>
       </el-aside>
-      <el-container>
+      <el-container style="min-width: 800px">
         <el-main>
           <router-view />
         </el-main>
