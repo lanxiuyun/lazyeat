@@ -61,29 +61,29 @@ rustc 1.85.1 (4eb161250 2025-03-15)
 v22.14.0
 ```
 
-## 安装 rust 和 node
+### 安装 rust 和 node
 
 [rust](https://www.rust-lang.org/zh-CN/tools/install) 和 [node](https://nodejs.org/zh-cn/)
 
-## 终端进入项目根目录
+### 终端进入项目根目录
 
 ```bash
 cd 到项目目录（也就是lazyeat的根目录, 如：C:\Users\你的用户名\Desktop\lazyeat）
 ```
 
-## 安装 npm 以及 python 环境
+### 安装 npm 以及 python 环境
 
 ```bash
 npm run install-reqs
 ```
 
-## build tauri 图标
+### build tauri 图标
 
 ```bash
 npm run build:icons
 ```
 
-## pyinstaller 打包
+### pyinstaller 打包
 
 ```bash
 npm run build:py
@@ -93,7 +93,7 @@ npm run build:py
 # npm run build:py-linux
 ```
 
-## 下载语音识别模型并解压到项目目录 model 文件夹下
+### 下载语音识别模型并解压到项目目录 model 文件夹下
 
 windows
 
@@ -111,15 +111,15 @@ unzip vosk-model-small-cn-0.22.zip -d model
 rm vosk-model-small-cn-0.22.zip
 ```
 
-## 运行项目
+### 运行项目
 
 ```bash
 npm run tauri dev
 ```
 
-## 额外说明
+### 额外说明
 
-### 打包成生产版本（不发布就不需要）
+#### 打包成生产版本（不发布就不需要）
 
 ```bash
 npm run tauri build
