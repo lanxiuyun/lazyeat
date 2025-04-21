@@ -152,7 +152,10 @@ tauri build 失败:[tauri build 失败](https://github.com/tauri-apps/tauri/issu
 
 cargo 被墙:[cargo 被墙,换源](https://www.chenreal.com/post/599)
 
+[非代码异常问题总结](https://github.com/maplelost/lazyeat/issues/30)
+
 ```
 # 不知道有没有用
 rm -rf ~/.cargo/.package-cache
 ```
+

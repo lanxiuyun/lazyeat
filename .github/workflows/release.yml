@@ -50,7 +50,6 @@ jobs:
           mkdir -p temp
           unzip vosk-model.zip -d temp
           mv temp/*/* model/  # 自动处理嵌套目录
-          rm -rf temp vosk-model.zip
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
