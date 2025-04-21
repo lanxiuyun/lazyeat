@@ -100,7 +100,6 @@ windows
 ```bash
 Invoke-WebRequest -Uri https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip -OutFile vosk-model-small-cn-0.22.zip
 Expand-Archive -Path vosk-model-small-cn-0.22.zip -DestinationPath model
-rm vosk-model-small-cn-0.22.zip
 ```
 
 mac 和 linux
@@ -108,7 +107,6 @@ mac 和 linux
 ```bash
 curl -L https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip -o vosk-model-small-cn-0.22.zip
 unzip vosk-model-small-cn-0.22.zip -d model
-rm vosk-model-small-cn-0.22.zip
 ```
 
 ### 运行 tauri dev 开发环境
