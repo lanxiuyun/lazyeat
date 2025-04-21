@@ -61,32 +61,68 @@ rustc 1.85.1 (4eb161250 2025-03-15)
 v22.14.0
 ```
 
-1. 安装 [rust](https://www.rust-lang.org/zh-CN/tools/install)
-2. 安装 [nodejs](https://nodejs.org/zh-cn/)
-3. `cd 到项目目录` 执行下面命令
+## 安装 rust 和 node
+
+[rust](https://www.rust-lang.org/zh-CN/tools/install) 和 [node](https://nodejs.org/zh-cn/)
+
+## 终端进入项目根目录
 
 ```bash
-# 1. 安装 npm 以及 python 环境
+cd 到项目目录（也就是lazyeat的根目录）
+```
+
+## 安装 npm 以及 python 环境
+
+```bash
 npm run install-reqs
+```
 
-# 2. build tauri 图标
+## build tauri 图标
+
+```bash
 npm run build:icons
-#npm run build:icons-mac
-#npm run build:icons-linux
+```
 
-# 3. pyinstaller 打包
+## pyinstaller 打包
+
+```bash
 npm run build:py
-#npm run build:py-mac
-#npm run build:py-linux
+# 打包 mac 版本
+# npm run build:py-mac
+# 打包 linux 版本
+# npm run build:py-linux
+```
 
-# 4. 下载语音识别模型并解压到项目目录 model 文件夹下
-https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
+## 下载语音识别模型并解压到项目目录 model 文件夹下
 
-# 5. tauri 开发模式
+windows
+
+```bash
+Invoke-WebRequest -Uri https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
+Expand-Archive -Path vosk-model-small-cn-0.22.zip -DestinationPath model
+rm vosk-model-small-cn-0.22.zip
+```
+
+mac 和 linux
+
+```bash
+curl -L https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip -o vosk-model-small-cn-0.22.zip
+unzip vosk-model-small-cn-0.22.zip -d model
+rm vosk-model-small-cn-0.22.zip
+```
+
+## 运行项目
+
+```bash
 npm run tauri dev
+```
 
-# 6. tauri 生产构建
-# npm run tauri build
+## 额外说明
+
+### 打包成生产版本（不发布就不需要）
+
+```bash
+npm run tauri build
 ```
 
 如果你需要 debug python 后端，那么先 pyinstaller 打包，再运行 `python src-py/main.py`。
