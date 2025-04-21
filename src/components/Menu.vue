@@ -2,7 +2,7 @@
 import type { MenuOption } from "naive-ui";
 import { NMenu } from "naive-ui";
 import { ref } from "vue";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
@@ -15,10 +15,10 @@ const menuOptions: MenuOption[] = [
     label: "操作指南",
     key: "/guide",
   },
-  {
-    label: "开发",
-    key: "/update",
-  }
+  // {
+  //   label: "开发",
+  //   key: "/update",
+  // }
 ];
 
 const activeKey = ref("/");
@@ -30,9 +30,9 @@ const handleUpdateValue = (key: string) => {
 </script>
 
 <template>
-  <n-menu 
-    :options="menuOptions" 
-    v-model:value="activeKey" 
+  <n-menu
+    :options="menuOptions"
+    v-model:value="activeKey"
     mode="vertical"
     @update:value="handleUpdateValue"
   />
