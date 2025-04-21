@@ -1,5 +1,7 @@
 import MainWindow from "@/view/mainWindow/MainWindow.vue";
 import SubWindow from "@/view/subWindow/SubWindow.vue";
+import Home from "@/view/mainWindow/Home.vue";
+import Update from "@/view/mainWindow/Update.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -7,6 +9,18 @@ const routes = [
     path: "/",
     name: "mainWindow",
     component: MainWindow,
+    children: [
+      {
+        path: "",
+        name: "home",
+        component: Home,
+      },
+      {
+        path: "update",
+        name: "update",
+        component: Update,
+      }
+    ]
   },
   {
     path: "/sub-window",

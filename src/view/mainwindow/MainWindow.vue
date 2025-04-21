@@ -3,7 +3,6 @@ import DevTool from "@/components/DevTool.vue";
 import AppMenu from "@/components/Menu.vue";
 import pyApi from "@/py_api";
 import use_app_store from "@/store/app";
-import Home from "@/view/mainWindow/Home.vue";
 import { getVersion } from "@tauri-apps/api/app";
 import {
   getCurrentWindow,
@@ -161,18 +160,7 @@ onMounted(async () => {
       </el-aside>
       <el-container>
         <el-main>
-          <n-card class="ad-container">
-            <iframe
-              :src="
-                is_dev
-                  ? '/lazyeat-ad/html/index.html'
-                  : 'https://lazyeat-ad.pages.dev/'
-              "
-              width="100%"
-              height="100%"
-            ></iframe>
-          </n-card>
-          <Home />
+          <router-view />
         </el-main>
       </el-container>
     </el-container>
