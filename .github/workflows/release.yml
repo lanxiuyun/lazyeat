@@ -47,7 +47,7 @@ jobs:
       - name: Download and extract VOSK model
         run: |
           curl -L https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip -o vosk-model.zip
-          mkdir -p model temp
+          mkdir -p temp
           unzip vosk-model.zip -d temp
           mv temp/*/* model/  # 自动处理嵌套目录
           rm -rf temp vosk-model.zip
