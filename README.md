@@ -34,7 +34,7 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
 - 单指滑动控制光标
 - 双指/Rock 执行鼠标单击
-- ok手势控制页面滚动
+- ok 手势控制页面滚动
 - 四指并拢发送按键
 - 支持语音输入
 
@@ -44,9 +44,9 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
 视频演示:https://www.bilibili.com/video/BV11SXTYTEJi/?spm_id_from=333.1387.homepage.video_card.click
 
-![img.png](.readme/img.png)
-
----
+<div align="center">
+<img src=.readme/img.png width="800" height="600" />
+</div>
 
 # 快速开始
 
@@ -67,19 +67,18 @@ v22.14.0
 
 [rust](https://www.rust-lang.org/zh-CN/tools/install) 和 [node](https://nodejs.org/zh-cn/)
 
-### 终端进入项目根目录
+### 项目根目录打开项目(vscode,pycharm 等)
 
-```bash
-cd 到项目目录（也就是lazyeat的根目录, 如：C:\Users\你的用户名\Desktop\lazyeat）
-（也可以直接打开文件夹后在地址栏输入cmd）
-```
+项目根目录（也就是 lazyeat 的根目录）
+（如：C:\Users\你的用户名\Desktop\lazyeat，也可以直接打开文件夹后在地址栏输入 cmd）
 
 ### 安装 npm 以及 python 环境
 
 ```bash
 npm run install-reqs
 ```
-这一步如果遇到问题可以试试用管理员方式运行cmd
+
+这一步遇到问题可以尝试使用管理员方式运行 cmd 再运行该命令
 
 ### build tauri 图标
 
@@ -97,12 +96,11 @@ npm run build:py
 # npm run build:py-linux
 ```
 
-### 下载语音识别模型并解压到项目根目录下，重命名为model
-```bash 
+### 下载语音识别模型并解压到 model 文件夹下
+
+```bash
  https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
 ```
-
-
 
 ### 运行 tauri dev 开发环境
 
@@ -118,9 +116,9 @@ npm run tauri dev
 npm run tauri build
 ```
 
-打包后在 **lazyeat\src-tauri\target\release**目录下找到exe文件运行即可。
+打包后在 **lazyeat\src-tauri\target\release**目录下找到 exe 文件运行即可。
 
----
+#### python 后端 debug
 
 如果你需要 debug python 后端，那么先 pyinstaller 打包，再运行 `python src-py/main.py`。
 
@@ -133,7 +131,7 @@ npm run tauri build
 
 [大模型](https://alphacephei.com/vosk/models/vosk-model-cn-0.22.zip)
 
-前面的步骤下载的是小模型，如果要替换，下载后解压到exe同目录下的 **lazyeat/model/**
+前面的步骤下载的是小模型，如果要替换，下载后解压到 exe 同目录下的 **lazyeat/model/**
 
 ![img.png](.readme/img_model_example.png)
 
