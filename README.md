@@ -98,9 +98,27 @@ npm run build:py
 
 ### 下载语音识别模型并解压到 model 文件夹下
 
+#### 1. 下载模型压缩包
+
 ```bash
- https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
+wget https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
 ```
+
+#### 2. 解压模型压缩包
+
+```bash
+# 解压到 model 目录（会生成一个子文件夹 vosk-model-small-cn-0.22）
+unzip vosk-model-small-cn-0.22.zip -d model
+
+# 将子文件夹内容移动到 model 目录下，并删除空文件夹
+mv model/vosk-model-small-cn-0.22/* model/
+rmdir model/vosk-model-small-cn-0.22
+
+# （可选）删除下载的压缩包
+rm vosk-model-small-cn-0.22.zip
+```
+
+![img.png](.readme/img_model_example_inside.png)
 
 ### 运行 tauri dev 开发环境
 
