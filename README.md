@@ -98,26 +98,6 @@ npm run build:py
 
 ### 下载语音识别模型并解压到 model 文件夹下
 
-#### 1. 下载模型压缩包
-
-```bash
-wget https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
-```
-
-#### 2. 解压模型压缩包
-
-```bash
-# 解压到 model 目录（会生成一个子文件夹 vosk-model-small-cn-0.22）
-unzip vosk-model-small-cn-0.22.zip -d model
-
-# 将子文件夹内容移动到 model 目录下，并删除空文件夹
-mv model/vosk-model-small-cn-0.22/* model/
-rmdir model/vosk-model-small-cn-0.22
-
-# （可选）删除下载的压缩包
-rm vosk-model-small-cn-0.22.zip
-```
-
 ![img.png](.readme/img_model_example_inside.png)
 
 ### 运行 tauri dev 开发环境
@@ -140,7 +120,7 @@ npm run tauri build
 
 如果你需要 debug python 后端，那么先 pyinstaller 打包，再运行 `python src-py/main.py`。
 
-`npm run tauri dev` 需要生成 [tauri.conf.json](src-tauri/tauri.conf.json) 中编写的 sidecar。
+因为 `npm run tauri dev` 需要生成 [tauri.conf.json](src-tauri/tauri.conf.json) 中编写的 sidecar。
 详见：https://v2.tauri.app/zh-cn/develop/sidecar/
 
 # 📢 语音识别模型替换
