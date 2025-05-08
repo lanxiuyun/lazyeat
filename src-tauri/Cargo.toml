@@ -1,6 +1,6 @@
 [package]
 name = "Lazyeat"
-version = "0.3.10"
+version = "0.3.11"
 description = "Lazyeat 手势识别"
 authors = ["https://github.com/maplelost"]
 edition = "2021"
