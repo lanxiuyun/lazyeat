@@ -54,9 +54,29 @@ onMounted(async () => {
   appVersion.value = await getVersion();
   const window_state = await window_store_json.get("window_state");
   if (window_state) {
-    getCurrentWindow().setPosition(
-      new LogicalPosition(window_state.x, window_state.y)
-    );
+    let new_x = window_state.x;
+    let new_y = window_state.y;
+    const screen_width = window.screen.width;
+    const screen_height = window.screen.height;
+
+    // console.log("screen_width", screen_width);
+    // console.log("screen_height", screen_height);
+    // console.log("new_x", new_x);
+    // console.log("new_y", new_y);
+
+    // 如果窗口位置超出屏幕，则将窗口位置设置为100，100
+    if (new_x <= 0) {
+      new_x = 100;
+    } else if (new_x >= screen_width) {
+      new_x = 100;
+    }
+    if (new_y <= 0) {
+      new_y = 100;
+    } else if (new_y >= screen_height) {
+      new_y = 100;
+    }
+
+    getCurrentWindow().setPosition(new LogicalPosition(new_x, new_y));
     getCurrentWindow().setSize(
       new LogicalSize(window_state.width, window_state.height)
     );
