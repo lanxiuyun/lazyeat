@@ -142,10 +142,6 @@ npm run tauri build
 
 [//]: # "# 📚 References"
 
-# Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=maplelost/lazyeat&type=Date)](https://www.star-history.com/#maplelost/lazyeat&Date)
-
 # 开发问题
 
 tauri build 失败:[tauri build 失败](https://github.com/tauri-apps/tauri/issues/7338)
