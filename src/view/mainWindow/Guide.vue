@@ -63,14 +63,14 @@
               />
               {{ $t("触发捏合") }}
             </div>
-            <n-space>
+            <div class="tag-wrap">
               <n-tag>
                 {{ $t("默认值0.02") }}
               </n-tag>
               <n-tag>
                 {{ $t("可以通过右键->检查->控制台->捏合手势->查看当前距离") }}
               </n-tag>
-            </n-space>
+            </div>
           </template>
         </GestureCard>
 
@@ -194,13 +194,12 @@ const listenForKey = () => {
 <style scoped>
 .guide-container {
   padding: 16px;
-  max-width: 1200px;
   margin: 0 auto;
 }
 
 .gesture-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 20px;
 }
 
@@ -211,4 +210,15 @@ const listenForKey = () => {
 :deep(.n-card:hover) {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-</style> 
+
+.tag-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tag-wrap .n-tag {
+  white-space: normal !important;
+  word-break: break-all;
+  max-width: 100%;
+}
+</style>
