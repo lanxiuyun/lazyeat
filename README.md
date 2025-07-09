@@ -1,18 +1,14 @@
-<h1 align="center">
-  <a href="https://github.com/maplelost/lazy-eat/releases">
-    <img src="https://github.com/maplelost/lazy-eat/blob/master/public/lazyeat.png?raw=true" width="150" height="150" alt="banner" /><br>
-  </a>
-<div align="center">
+# Lazyeat
 
 ![GitHub stars](https://img.shields.io/github/stars/maplelost/lazyeat)
 ![GitHub forks](https://img.shields.io/github/forks/maplelost/lazyeat?style=flat)
+![Github Downloads](https://img.shields.io/github/downloads/lanxiuyun/lazyeat/total)
 
-[English README](README_EN.md)
-
+<div>
+<a href="https://hellogithub.com/repository/286c84fcdd9945569ce9b9cbde402adc" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 </div>
-</h1>
 
-# 🍕 Lazyeat
+<h3>简体中文 | <a href="README_EN.md">English</a></h3>
 
 Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
@@ -24,13 +20,13 @@ Lazyeat 吃饭时看剧/刷网页不想沾油手？
 
 如果有任何的想法或者建议，都可以在 QQ 群 [452246065](https://jq.qq.com/?_wv=1027&k=452246065) 中讨论喔！
 
-|    平台    | 支持状态  |                               下载地址                               |
-| :--------: | :-------: | :------------------------------------------------------------------: |
-| 🪟 Windows |  ✅ 支持  | [下载最新版本](https://github.com/maplelost/lazyeat/releases/latest) |
-|   🍎 Mac   |  ✅ 支持  | [下载最新版本](https://github.com/maplelost/lazyeat/releases/latest) |
-|  🐧 Linux  | ⏳ 开发中 |                                  /                                   |
-| 🤖 Android | ⏳ 开发中 |                                  /                                   |
-|   📱 iOS   | ⏳ 开发中 |                                  /                                   |
+|     平台     | 支持状态  |                              下载地址                              |
+|:----------:|:-----:|:--------------------------------------------------------------:|
+| 🪟 Windows | ✅ 支持  | [下载最新版本](https://github.com/maplelost/lazyeat/releases/latest) |
+|   🍎 Mac   | ✅ 支持  | [下载最新版本](https://github.com/maplelost/lazyeat/releases/latest) |
+|  🐧 Linux  | ⏳ 开发中 |                               /                                |
+| 🤖 Android | ⏳ 开发中 |                               /                                |
+|   📱 iOS   | ⏳ 开发中 |                               /                                |
 
 ## 功能
 
