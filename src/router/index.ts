@@ -1,9 +1,10 @@
-import MainWindow from "@/view/mainWindow/MainWindow.vue";
-import SubWindow from "@/view/subWindow/SubWindow.vue";
-import Home from "@/view/mainWindow/Home.vue";
-import Update from "@/view/mainWindow/Update.vue";
 import Guide from "@/view/mainWindow/Guide.vue";
+import Home from "@/view/mainWindow/Home.vue";
+import MainWindow from "@/view/mainWindow/MainWindow.vue";
+import Update from "@/view/mainWindow/Update.vue";
+import SubWindow from "@/view/subWindow/SubWindow.vue";
 import { createRouter, createWebHistory } from "vue-router";
+import Help from "@/view/mainWindow/Help.vue";
 
 const routes = [
   {
@@ -25,7 +26,12 @@ const routes = [
         path: "guide",
         name: "guide",
         component: Guide,
-      }
+      },
+      {
+        path: "help",
+        name: "help",
+        component: Help,
+      },
     ]
   },
   {

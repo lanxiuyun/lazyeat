@@ -15,6 +15,10 @@ const menuOptions: MenuOption[] = [
     label: "操作指南",
     key: "/guide",
   },
+  {
+    label: "帮助",
+    key: "/help",
+  },
   // {
   //   label: "开发",
   //   key: "/update",
