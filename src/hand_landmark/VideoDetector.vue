@@ -80,6 +80,14 @@
         />
       </n-form-item>
     </n-space>
+
+    <n-alert title="提示" type="info">
+      <p>识别框的位置决定了光标的移动范围：</p>
+      <ul>
+        <li>识别框x和y：决定识别框的左上角位置</li>
+        <li>当手势在识别框内移动时，光标会跟随手势在屏幕上移动</li>
+      </ul>
+    </n-alert>
   </div>
 </template>
 
