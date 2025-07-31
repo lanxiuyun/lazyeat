@@ -24,7 +24,7 @@
     </n-alert>
   </div>
 
-  <div>
+  <div v-else>
     <span>FPS: {{ FPS }}</span>
     <div class="hand-detection">
       <video
