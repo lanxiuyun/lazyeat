@@ -138,9 +138,7 @@ onMounted(async () => {
 <template>
   <DevTool />
   <n-spin :show="!ready" size="large">
-    <template #description> 手势识别模块加载中... </template>
-
-    <el-container v-if="ready">
+    <el-container class="app-container">
       <el-aside width="200px">
         <div class="aside-header">
           <img
@@ -152,7 +150,6 @@ onMounted(async () => {
           <span class="logo-text">Lazyeat {{ appVersion }}</span>
         </div>
         <AppMenu style="flex-grow: 1" />
-        <!-- platfrom info -->
         <div
           v-if="app_store.is_macos()"
           style="
@@ -178,12 +175,13 @@ onMounted(async () => {
           >
         </div>
       </el-aside>
-      <el-container style="min-width: 800px">
+      <el-container class="main-container">
         <el-main>
           <router-view />
         </el-main>
       </el-container>
     </el-container>
+    <template #description> 手势识别模块加载中... </template>
   </n-spin>
 </template>
 
@@ -191,13 +189,11 @@ onMounted(async () => {
 .n-spin-container {
   height: 100%;
   width: 100%;
-  overflow: auto;
 }
 
 .n-spin-content {
   height: 100%;
   width: 100%;
-  overflow: auto;
 }
 </style>
 
@@ -205,6 +201,11 @@ onMounted(async () => {
 .el-container {
   height: 100%;
   width: 100%;
+}
+
+.main-container {
+  min-width: 800px;
+  overflow: auto;
 }
 
 .el-aside {
@@ -230,21 +231,5 @@ onMounted(async () => {
 
 .logo-text {
   font-size: 16px;
-}
-
-// 广告区域
-.ad-container {
-  height: 220px;
-  background-color: transparent;
-  margin-bottom: 24px;
-
-  iframe {
-    border: none;
-  }
-
-  :deep(.n-card__content) {
-    padding: 0 !important;
-    padding-top: 0 !important;
-  }
 }
 </style>
