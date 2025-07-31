@@ -13,8 +13,10 @@
     "windows": [
       {
         "title": "Lazyeat",
-        "width": 800,
+        "width": 1000,
         "height": 600,
+        "minWidth": 1000,
+        "minHeight": 600,
         "devtools": true
       }
     ],
