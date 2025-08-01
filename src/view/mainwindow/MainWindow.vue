@@ -54,8 +54,8 @@ onMounted(async () => {
   appVersion.value = await getVersion();
   const window_state = await window_store_json.get("window_state");
   if (window_state) {
-    let new_x = window_state.x;
-    let new_y = window_state.y;
+    let new_x = (window_state as any)?.x ?? 100;
+    let new_y = (window_state as any)?.y ?? 100;
     const screen_width = window.screen.width;
     const screen_height = window.screen.height;
 
@@ -78,7 +78,7 @@ onMounted(async () => {
 
     getCurrentWindow().setPosition(new LogicalPosition(new_x, new_y));
     getCurrentWindow().setSize(
-      new LogicalSize(window_state.width, window_state.height)
+      new LogicalSize((window_state as any)?.width ?? 100, (window_state as any)?.height ?? 100)
     );
   }
 });
@@ -130,7 +130,7 @@ import { createSubWindow } from "@/utils/subWindow";
 const subWindow = ref(null);
 onMounted(async () => {
   if (!subWindow.value) {
-    subWindow.value = await createSubWindow("/sub-window", "subWindow");
+    subWindow.value = await createSubWindow("/sub-window", "subWindow") as any;
   }
 });
 </script>
