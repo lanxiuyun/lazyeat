@@ -26,6 +26,7 @@
   },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "externalBin": ["bin/backend-py/Lazyeat Backend"],
     "resources": {
       "bin/backend-py/_internal": "_internal/",
@@ -59,5 +60,17 @@
       "icons/mac/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "dangerousInsecureTransportProtocol": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEI4QUFERUNDNkU2RkFBQjgKUldTNHFtOXV6TjZxdUU1TjgrazZVMWNPNVNKNzZENHJQQkhYbytKbWMvZERQWkFoOG9qSDZkNEYK",
+      "endpoints": [
+        "https://github.com/lanxiuyun/lazyeat/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }
