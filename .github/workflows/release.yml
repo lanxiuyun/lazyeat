@@ -9,6 +9,8 @@ on:
 
 jobs:
   publish-tauri:
+    outputs:
+      appVersion: ${{ steps.set_output.outputs.appVersion }}
     permissions:
       contents: write
     strategy:
