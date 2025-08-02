@@ -76,6 +76,7 @@ jobs:
           npm run build:py-mac
 
       - uses: tauri-apps/tauri-action@v0
+        id: tauri-action # 添加 id 以便后续引用
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -84,6 +85,38 @@ jobs:
           tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: "v__VERSION__"
           releaseBody: "See the assets to download this version and install."
-          releaseDraft: true
-          prerelease: false
+          releaseDraft: false # 不创建草稿版本
+          prerelease: false # 不作为预发布版本
           args: ${{ matrix.args }}
+
+      # 增加获取版本号
+      - name: Generate release tag
+        id: save_tag
+        if: matrix.platform == 'ubuntu-24.04'
+        run: |
+          # 调试输出
+          echo ${{ steps.tauri-action.outputs.appVersion }}
+          # 输出到步骤级
+          echo "appVersion=${{ steps.tauri-action.outputs.appVersion }}" >> $GITHUB_OUTPUT
+
+      # 设置作业级输出
+      - name: Set job output
+        id: set_output
+        if: matrix.platform == 'ubuntu-24.04'
+        run: |
+          # 注意：这里引用的是 save_tag 步骤的 tag_name 输出
+          echo "appVersion=${{ steps.save_tag.outputs.appVersion }}" >> $GITHUB_OUTPUT
+
+  upgradeLink-upload:
+    needs: publish-tauri # 依赖于 publish-tauri作业完成
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send a request to UpgradeLink
+        uses: toolsetlink/upgradelink-action@v5
+        with:
+          source-url: "https://github.com/lanxiuyun/lazyeat/releases/download/v${{ needs.publish-tauri.outputs.appVersion }}/latest.json"
+          access-key: ${{ secrets.UPGRADE_LINK_ACCESS_KEY }} # ACCESS_KEY  密钥key
+          tauri-key: ${{ secrets.UPGRADE_LINK_TAURI_KEY }} # TAURI_KEY tauri 应用唯一标识
+          github-token: ${{ secrets.GITHUB_TOKEN }}
