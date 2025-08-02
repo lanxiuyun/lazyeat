@@ -8,7 +8,7 @@ on:
 # This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
 
 jobs:
-  release-lazyeat:
+  publish-tauri:
     permissions:
       contents: write
     strategy:
