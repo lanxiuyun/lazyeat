@@ -1,6 +1,11 @@
 <template>
   <router-view />
+  <UpdaterNotification />
 </template>
+
+<script lang="ts" setup>
+import UpdaterNotification from "@/components/updaterNotification.vue";
+</script>
 
 <style lang="scss">
 html,

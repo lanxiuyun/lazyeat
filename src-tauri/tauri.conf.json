@@ -66,7 +66,7 @@
       "dangerousInsecureTransportProtocol": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEI4QUFERUNDNkU2RkFBQjgKUldTNHFtOXV6TjZxdUU1TjgrazZVMWNPNVNKNzZENHJQQkhYbytKbWMvZERQWkFoOG9qSDZkNEYK",
       "endpoints": [
-        "https://github.com/lanxiuyun/lazyeat/releases/latest/download/latest.json"
+        "https://api.upgrade.toolsetlink.com/v1/tauri/upgrade?tauriKey=zY0JIMn9x6W7vCs4P1mtgQ&versionName={{current_version}}&appointVersionName=&devModelKey=&devKey=&target={{target}}&arch={{arch}}"
       ],
       "windows": {
         "installMode": "passive"
