@@ -21,8 +21,8 @@ jobs:
             args: "--target aarch64-apple-darwin"
           # - platform: "macos-latest" # for Intel based macs.
           #   args: "--target x86_64-apple-darwin"
-          - platform: 'ubuntu-24.04' # for Tauri v1 you could replace this with ubuntu-20.04.
-            args: ''
+#          - platform: 'ubuntu-24.04' # for Tauri v1 you could replace this with ubuntu-20.04.
+#            args: ''
           - platform: "windows-latest"
             args: ""
 
@@ -94,7 +94,7 @@ jobs:
       # 增加获取版本号
       - name: Generate release tag
         id: save_tag
-        if: matrix.platform == 'ubuntu-24.04'
+        if: matrix.platform == 'macos-latest'
         run: |
           # 调试输出
           echo ${{ steps.tauri-action.outputs.appVersion }}
@@ -104,7 +104,7 @@ jobs:
       # 设置作业级输出
       - name: Set job output
         id: set_output
-        if: matrix.platform == 'ubuntu-24.04'
+        if: matrix.platform == 'macos-latest'
         run: |
           # 注意：这里引用的是 save_tag 步骤的 tag_name 输出
           echo "appVersion=${{ steps.save_tag.outputs.appVersion }}" >> $GITHUB_OUTPUT
