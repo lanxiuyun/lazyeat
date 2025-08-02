@@ -52,7 +52,12 @@ onUnmounted(() => {
 
 async function checkUpdate() {
   try {
-    const update = await check();
+    const update = await check({
+      headers: {
+        "X-AccessKey": "9SzxzOb3pQgkOB-LU-QU1Q",
+      },
+      timeout: 5000,
+    });
     if (update) {
       console.log(
         `发现新版本 ${update.version}，发布于 ${update.date}，更新说明：${update.body}`
@@ -79,7 +84,12 @@ function closeUpdate() {
 }
 
 async function installUpdate() {
-  const update = await check();
+  const update = await check({
+    headers: {
+      "X-AccessKey": "9SzxzOb3pQgkOB-LU-QU1Q",
+    },
+    timeout: 5000,
+  });
 
   // 取消自动关闭定时器
   if (autoCloseTimer) {
