@@ -211,22 +211,4 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
 }
-
-.aside-header {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  border-bottom: 1px solid #e6e6e6;
-}
-
-.logo {
-  width: 30px;
-  height: 30px;
-  margin-right: 10px;
-}
-
-.logo-text {
-  font-size: 16px;
-}
 </style>
