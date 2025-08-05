@@ -78,7 +78,10 @@ onMounted(async () => {
 
     getCurrentWindow().setPosition(new LogicalPosition(new_x, new_y));
     getCurrentWindow().setSize(
-      new LogicalSize((window_state as any)?.width ?? 100, (window_state as any)?.height ?? 100)
+      new LogicalSize(
+        (window_state as any)?.width ?? 100,
+        (window_state as any)?.height ?? 100
+      )
     );
   }
 });
@@ -130,7 +133,10 @@ import { createSubWindow } from "@/utils/subWindow";
 const subWindow = ref(null);
 onMounted(async () => {
   if (!subWindow.value) {
-    subWindow.value = await createSubWindow("/sub-window", "subWindow") as any;
+    subWindow.value = (await createSubWindow(
+      "/sub-window",
+      "subWindow"
+    )) as any;
   }
 });
 </script>
