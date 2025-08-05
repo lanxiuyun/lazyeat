@@ -1,7 +1,7 @@
 <template>
   <div class="help-container">
     <div class="nav-bar">
-      <h1 class="title">帮助文档</h1>
+      <h1 class="title">帮助文档 2025年8月5日</h1>
       <button class="open-browser-btn" @click="openInBrowser">
         <span class="btn-text">在浏览器中打开(浏览器中才能正常跳转)</span>
         <svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
