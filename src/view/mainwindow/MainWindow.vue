@@ -26,7 +26,7 @@ onMounted(async () => {
     if (ready.value) {
       clearInterval(timer);
     }
-  }, 5000);
+  }, 500);
 
   await getCurrentWindow().onCloseRequested(async () => {
     // 保存窗口状态
