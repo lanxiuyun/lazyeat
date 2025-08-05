@@ -192,11 +192,6 @@ const listenForKey = () => {
 </script>
 
 <style scoped>
-.guide-container {
-  padding: 16px;
-  margin: 0 auto;
-}
-
 .gesture-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));

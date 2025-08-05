@@ -106,11 +106,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.home-container {
-  padding: 16px;
-  box-sizing: border-box;
-}
-
 .control-panel {
   margin-bottom: 16px;
 }
