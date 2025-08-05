@@ -42,15 +42,12 @@ const handleUpdateValue = (key: string) => {
   <n-menu
     :options="menuOptions"
     v-model:value="activeKey"
-    :collapsed="true"
     mode="vertical"
     @update:value="handleUpdateValue"
+    :collapsed="true"
+    :collapsed-width="48"
+    :collapsed-icon-size="16"
   />
 </template>
 
-<style scoped>
-:deep(.i-icon) {
-  width: 20px;
-  height: 38px;
-}
-</style>
+<style scoped></style>

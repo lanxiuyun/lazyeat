@@ -139,16 +139,7 @@ onMounted(async () => {
   <DevTool />
   <n-spin :show="!ready" size="large">
     <el-container class="app-container">
-      <el-aside width="200px">
-        <div class="aside-header">
-          <img
-            style="width: 30px; height: 30px"
-            src="/lazyeat.png"
-            alt="logo"
-            class="logo"
-          />
-          <span class="logo-text">Lazyeat {{ appVersion }}</span>
-        </div>
+      <el-aside width="48px">
         <AppMenu style="flex-grow: 1" />
         <div
           v-if="app_store.is_macos()"
