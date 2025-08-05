@@ -20,7 +20,7 @@ const menuOptions: MenuOption[] = [
     icon: () => h(TurnOn),
   },
   {
-    label: "疑问",
+    label: "帮助",
     key: "/help",
     icon: () => h(Helpcenter),
   },
