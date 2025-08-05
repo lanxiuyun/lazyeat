@@ -46,8 +46,18 @@ const handleUpdateValue = (key: string) => {
     @update:value="handleUpdateValue"
     :collapsed="true"
     :collapsed-width="48"
-    :collapsed-icon-size="16"
+    :collapsed-icon-size="20"
   />
 </template>
 
-<style scoped></style>
+<style scoped>
+:deep(.n-menu-item) {
+  height: 30px;
+}
+
+:deep(.i-icon) {
+  height: 20px;
+  width: 20px;
+  display: flex;
+}
+</style>
