@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { TurnOn, Helpcenter, Home } from "@icon-park/vue-next";
 import type { MenuOption } from "naive-ui";
 import { NMenu } from "naive-ui";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { h } from "vue";
 
 const router = useRouter();
 
@@ -10,14 +12,17 @@ const menuOptions: MenuOption[] = [
   {
     label: "首页",
     key: "/",
+    icon: () => h(Home),
   },
   {
-    label: "操作指南",
+    label: "手势指南",
     key: "/guide",
+    icon: () => h(TurnOn),
   },
   {
-    label: "帮助",
+    label: "疑问",
     key: "/help",
+    icon: () => h(Helpcenter),
   },
   // {
   //   label: "开发",
@@ -37,9 +42,15 @@ const handleUpdateValue = (key: string) => {
   <n-menu
     :options="menuOptions"
     v-model:value="activeKey"
+    :collapsed="true"
     mode="vertical"
     @update:value="handleUpdateValue"
   />
 </template>
 
-<style scoped></style>
+<style scoped>
+:deep(.i-icon) {
+  width: 20px;
+  height: 38px;
+}
+</style>
