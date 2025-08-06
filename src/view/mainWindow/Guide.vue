@@ -51,30 +51,38 @@
             <GestureIcon :icon="Okay" />
           </template>
           <template #extra>
-            <div style="display: flex; align-items: center; gap: 4px">
-              {{ $t("食指和拇指距离小于") }}
-              <n-input-number
-                v-model:value="
-                  app_store.config.scroll_gesture_2_thumb_and_index_threshold
+            <div style="display: flex; gap: 8px; flex-direction: column">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  text-wrap: nowrap;
                 "
-                :min="0"
-                :step="0.01"
-                style="width: 150px"
-                :default-value="0.02"
-                clearable
-                :on-clear="
-                  async () => {
-                    await nextTick();
-                    app_store.config.scroll_gesture_2_thumb_and_index_threshold = 0.02;
-                  }
-                "
-              />
-              {{ $t("触发捏合") }}
-            </div>
-            <div class="tag-wrap">
-              <n-tag>
-                {{ $t("可以通过右键->检查->控制台->捏合手势->查看当前距离") }}
-              </n-tag>
+              >
+                {{ $t("食指和拇指距离小于") }}
+                <n-input-number
+                  size="tiny"
+                  v-model:value="
+                    app_store.config.scroll_gesture_2_thumb_and_index_threshold
+                  "
+                  :min="0"
+                  :step="0.01"
+                  style="width: 150px"
+                  clearable
+                  :on-clear="
+                    async () => {
+                      await nextTick();
+                      app_store.config.scroll_gesture_2_thumb_and_index_threshold = 0.02;
+                    }
+                  "
+                />
+              </div>
+              <div class="tag-wrap">
+                <n-tag>
+                  {{ $t("可以通过右键->检查->控制台->捏合手势->查看当前距离") }}
+                </n-tag>
+              </div>
             </div>
           </template>
         </GestureCard>
@@ -159,8 +167,7 @@ import {
   Six,
   TwoTwo,
 } from "@icon-park/vue-next";
-import { ref, nextTick } from "vue";  
-
+import { nextTick, ref } from "vue";
 
 const app_store = use_app_store();
 const isListening = ref(false);
@@ -200,7 +207,7 @@ const listenForKey = () => {
 <style scoped>
 .gesture-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 20px;
 }
 
