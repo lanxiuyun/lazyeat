@@ -1,6 +1,10 @@
 <template>
   <div class="guide-container">
-    <n-card title="操作指南" hoverable>
+    <div class="sticky-header">
+      <h2>手势指南</h2>
+    </div>
+
+    <n-scrollbar>
       <div class="gesture-grid">
         <GestureCard
           :title="$t('光标控制')"
@@ -148,7 +152,7 @@
           </template>
         </GestureCard>
       </div>
-    </n-card>
+    </n-scrollbar>
   </div>
 </template>
 
@@ -205,10 +209,21 @@ const listenForKey = () => {
 </script>
 
 <style scoped>
+.guide-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sticky-header {
+  border-bottom: 1px solid #e5e5e5;
+}
+
 .gesture-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 20px;
+  padding-top: 20px;
 }
 
 :deep(.n-card) {
