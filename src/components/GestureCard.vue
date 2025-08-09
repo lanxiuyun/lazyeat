@@ -1,6 +1,6 @@
 <template>
   <n-card class="gesture-card" :bordered="false">
-    <n-space align="center" class="gesture-content">
+    <n-space :wrap="false" class="gesture-content">
       <div class="gesture-icon" :class="{ 'double-hand': isDoubleHand }">
         <slot name="icon"></slot>
       </div>

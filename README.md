@@ -5,7 +5,11 @@
 ![Github Downloads](https://img.shields.io/github/downloads/lanxiuyun/lazyeat/total)
 
 <div>
-<a href="https://hellogithub.com/repository/286c84fcdd9945569ce9b9cbde402adc" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+<a href="https://hellogithub.com/repository/286c84fcdd9945569ce9b9cbde402adc" target="_blank">
+<img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+  <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
+    <img src="https://s2.loli.net/2025/06/11/r2dqNIWVXp4RaFe.png" height="54" />
+  </a>
 </div>
 
 <h3>简体中文 | <a href="README_EN.md">English</a></h3>

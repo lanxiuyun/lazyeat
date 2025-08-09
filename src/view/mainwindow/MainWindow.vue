@@ -26,7 +26,7 @@ onMounted(async () => {
     if (ready.value) {
       clearInterval(timer);
     }
-  }, 5000);
+  }, 500);
 
   await getCurrentWindow().onCloseRequested(async () => {
     // 保存窗口状态
@@ -78,7 +78,10 @@ onMounted(async () => {
 
     getCurrentWindow().setPosition(new LogicalPosition(new_x, new_y));
     getCurrentWindow().setSize(
-      new LogicalSize((window_state as any)?.width ?? 100, (window_state as any)?.height ?? 100)
+      new LogicalSize(
+        (window_state as any)?.width ?? 100,
+        (window_state as any)?.height ?? 100
+      )
     );
   }
 });
@@ -130,7 +133,10 @@ import { createSubWindow } from "@/utils/subWindow";
 const subWindow = ref(null);
 onMounted(async () => {
   if (!subWindow.value) {
-    subWindow.value = await createSubWindow("/sub-window", "subWindow") as any;
+    subWindow.value = (await createSubWindow(
+      "/sub-window",
+      "subWindow"
+    )) as any;
   }
 });
 </script>
@@ -139,16 +145,7 @@ onMounted(async () => {
   <DevTool />
   <n-spin :show="!ready" size="large">
     <el-container class="app-container">
-      <el-aside width="200px">
-        <div class="aside-header">
-          <img
-            style="width: 30px; height: 30px"
-            src="/lazyeat.png"
-            alt="logo"
-            class="logo"
-          />
-          <span class="logo-text">Lazyeat {{ appVersion }}</span>
-        </div>
+      <el-aside width="48px">
         <AppMenu style="flex-grow: 1" />
         <div
           v-if="app_store.is_macos()"
@@ -213,23 +210,5 @@ onMounted(async () => {
   border-right: 1px solid #e6e6e6;
   display: flex;
   flex-direction: column;
-}
-
-.aside-header {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  border-bottom: 1px solid #e6e6e6;
-}
-
-.logo {
-  width: 30px;
-  height: 30px;
-  margin-right: 10px;
-}
-
-.logo-text {
-  font-size: 16px;
 }
 </style>
