@@ -26,7 +26,6 @@
     "@tauri-apps/plugin-store": "^2.2.0",
     "@tauri-apps/plugin-updater": "^2.9.0",
     "@tauri-apps/plugin-window-state": "^2.2.1",
-    "@vicons/ionicons5": "^0.13.0",
     "element-plus": "^2.9.5",
     "pinia": "^3.0.1",
     "pinia-shared-state": "^1.0.1",
