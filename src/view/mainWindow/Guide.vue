@@ -5,7 +5,7 @@
     </div>
 
     <n-scrollbar>
-      <div class="gesture-grid">
+      <el-main class="gesture-grid">
         <GestureCard
           :title="$t('光标控制')"
           :description="$t('竖起食指滑动控制光标位置')"
@@ -151,7 +151,7 @@
             <GestureIcon :icon="FiveFive" />
           </template>
         </GestureCard>
-      </div>
+      </el-main>
     </n-scrollbar>
   </div>
 </template>
@@ -223,7 +223,7 @@ const listenForKey = () => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 20px;
-  padding-top: 20px;
+  padding: 20px;
 }
 
 :deep(.n-card) {
