@@ -74,10 +74,11 @@ v22.14.0
 项目根目录（也就是 lazyeat 的根目录）
 （如：C:\Users\你的用户名\Desktop\lazyeat，也可以直接打开文件夹后在地址栏输入 cmd）
 
-### 安装 npm 以及 python 环境
+### 安装 pnpm 以及 python 环境
 
 ```bash
-npm run install-reqs
+npm install -g pnpm
+pnpm install-reqs
 ```
 
 这一步遇到问题可以尝试使用管理员方式运行 cmd 再运行该命令
@@ -85,17 +86,17 @@ npm run install-reqs
 ### build tauri 图标
 
 ```bash
-npm run build:icons
+pnpm build:icons
 ```
 
 ### pyinstaller 打包
 
 ```bash
-npm run build:py
+pnpm build:py
 # 打包 mac 版本
-# npm run build:py-mac
+# pnpm build:py-mac
 # 打包 linux 版本
-# npm run build:py-linux
+# pnpm build:py-linux
 ```
 
 ### 下载语音识别模型并解压到 model 文件夹下
@@ -109,7 +110,7 @@ https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip
 ### 运行 tauri dev 开发环境
 
 ```bash
-npm run tauri dev
+pnpm tauri dev
 ```
 
 ### 额外说明
@@ -117,7 +118,7 @@ npm run tauri dev
 #### 打包成生产环境（不发布就不需要）
 
 ```bash
-npm run tauri build
+pnpm tauri build
 ```
 
 打包后在 **lazyeat\src-tauri\target\release**目录下找到 exe 文件运行即可。
@@ -126,7 +127,7 @@ npm run tauri build
 
 如果你需要 debug python 后端，那么先 pyinstaller 打包，再运行 `python src-py/main.py`。
 
-因为 `npm run tauri dev` 需要生成 [tauri.conf.json](src-tauri/tauri.conf.json) 中编写的 sidecar。
+因为 `pnpm tauri dev` 需要生成 [tauri.conf.json](src-tauri/tauri.conf.json) 中编写的 sidecar。
 详见：https://v2.tauri.app/zh-cn/develop/sidecar/
 
 # 📢 语音识别模型替换
