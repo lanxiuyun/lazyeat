@@ -1,11 +1,20 @@
 const help = {
   帮助文档: "Help",
-  "在浏览器中打开": "Open in Browser",
-  "浏览器中才能正常跳转": "Browser to jump link",
+  在浏览器中打开: "Open in Browser",
+  浏览器中才能正常跳转: "Browser to jump link",
+};
+
+const Guide = {
+  食指和拇指距离小于值时滚动页面:
+    "Scroll page when index and thumb distance is less than value",
+  "可以通过右键->检查->控制台->捏合手势->查看当前距离":
+    "Can check current distance by right-click -> inspect -> console -> pinch gesture",
 };
 
 export default {
   ...help,
+  ...Guide,
+
   // menu
   首页: "Home",
   手势指南: "Gesture Guide",
