@@ -1,7 +1,7 @@
 <template>
   <div class="guide-container">
     <div class="sticky-header">
-      <h2>手势指南</h2>
+      <h2>{{ $t('手势指南') }}</h2>
     </div>
 
     <n-scrollbar>

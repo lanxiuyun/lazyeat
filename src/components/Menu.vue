@@ -5,22 +5,23 @@ import { NMenu } from "naive-ui";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { h } from "vue";
+import i18n from "@/locales/i18n";
 
 const router = useRouter();
 
 const menuOptions: MenuOption[] = [
   {
-    label: "首页",
+    label: i18n.global.t("首页"),
     key: "/",
     icon: () => h(Home),
   },
   {
-    label: "手势指南",
+    label: i18n.global.t("手势指南"),
     key: "/guide",
     icon: () => h(TurnOn),
   },
   {
-    label: "帮助",
+    label: i18n.global.t("帮助"),
     key: "/help",
     icon: () => h(Helpcenter),
   },

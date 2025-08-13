@@ -1,7 +1,7 @@
 <template>
   <div class="help-container">
     <div class="nav-bar">
-      <h2 class="title">帮助文档 2025年8月5日</h2>
+      <h2 class="title">{{ $t("帮助文档") }} 2025/8/5</h2>
 
       <n-button @click="openInBrowser" size="small" type="info">
         <template #icon>
@@ -26,7 +26,7 @@
             </svg>
           </n-icon>
         </template>
-        在浏览器中打开(浏览器中才能正常跳转)
+        {{ $t("在浏览器中打开") }}({{ $t("浏览器中才能正常跳转") }})
       </n-button>
     </div>
 
