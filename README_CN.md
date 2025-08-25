@@ -16,7 +16,7 @@
 
 Lazyeat 是一款基于手势识别的非接触式控制工具。它支持摄像头手势操作和语音输入，使用户在进食时可以方便地使用设备而不弄脏手。
 
-![img.png](.readme/guide_english.png)
+![img.png](.readme/guide.png)
 
 ## 为什么选择 Lazyeat？
 
