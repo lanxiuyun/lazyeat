@@ -8,6 +8,8 @@
 <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 </div>
 
+<h3><a href="README.md">English</a> | 简体中文 </h3>
+
 ## 指南
 
 🖥️ 官方文档: [English](https://notegen.top/en/) | [简体中文](https://notegen.top/cn/)
@@ -25,6 +27,12 @@ Lazyeat 是一款基于手势识别的非接触式控制工具。它支持摄像
 - 多平台支持：在 Windows 和 Mac 上都能工作，确保跨常用操作系统的兼容性。
 - 增强用户体验：消除重复清洁双手的麻烦，简化用餐时观看视频等活动。
 - 语音输入集成：通过支持语音命令，为不同用户偏好提供灵活性。
+
+## 截图
+
+> 视频演示: https://www.bilibili.com/video/BV11SXTYTEJi/?spm_id_from=333.1387.homepage.video_card.click
+
+![demo.gif](.readme/demo.gif)
 
 ## 如何使用？
 
