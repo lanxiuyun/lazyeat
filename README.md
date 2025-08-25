@@ -8,9 +8,9 @@
 <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 </div>
 
-## Guide
+<h3>English | <a href="README_CN.md">简体中文</a> </h3>
 
-🖥️ Official Document: [English](https://notegen.top/en/) | [简体中文](https://notegen.top/cn/)
+## Guide
 
 💬 Join [QQ Group](https://github.com/lanxiuyun/lazyeat/discussions/86)
 
@@ -25,6 +25,12 @@ Lazyeat is a contactless control tool based on gesture recognition. It supports 
 - Multi-platform support: Works on both Windows and Mac, ensuring compatibility across common operating systems.
 - Enhanced user experience: Eliminates the hassle of cleaning hands repeatedly, streamlining activities like watching videos during meals.
 - Voice input integration: Adds flexibility by supporting voice commands alongside gestures, catering to diverse user preferences.
+
+## Screenshots
+
+> Video Demo: https://www.bilibili.com/video/BV11SXTYTEJi/?spm_id_from=333.1387.homepage.video_card.click
+
+![demo.gif](.readme/demo.gif)
 
 ## How to Use?
 
@@ -56,6 +62,3 @@ Currently supports Mac, Windows, and Linux. Thanks to Tauri2's cross-platform ca
     <img height="54" alt="UpgradeLink"  src=".readme/UpgradeLink_1.png" />
   </a>
 </div>
-
-
-
