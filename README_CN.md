@@ -12,8 +12,6 @@
 
 ## 指南
 
-🖥️ 官方文档: [English](https://notegen.top/en/) | [简体中文](https://notegen.top/cn/)
-
 💬 加入 [QQ群](https://github.com/lanxiuyun/lazyeat/discussions/86)
 
 Lazyeat 是一款基于手势识别的非接触式控制工具。它支持摄像头手势操作和语音输入，使用户在进食时可以方便地使用设备而不弄脏手。
