@@ -47,7 +47,7 @@ Currently supports Mac, Windows, and Linux. Thanks to Tauri2's cross-platform ca
 
 ## Contribute
 
-- [Read contribution guide](https://notegen.top/en/docs/contributing)
+- [Read contribution guide](https://notegen.top/en/docs/contributing) | [阅读贡献指南(快速开始)](contribution_cn.md)
 
 ## Contributors
 

@@ -1,59 +1,3 @@
-<h1 align="center">
-  <a href="https://github.com/maplelost/lazy-eat/releases">
-    <img src="https://github.com/maplelost/lazy-eat/blob/master/public/lazyeat.png?raw=true" width="150" height="150" alt="banner" /><br>
-  </a>
-<div align="center">
-
-![GitHub stars](https://img.shields.io/github/stars/maplelost/lazyeat)
-![GitHub forks](https://img.shields.io/github/forks/maplelost/lazyeat?style=flat)
-![Github Downloads](https://img.shields.io/github/downloads/lanxiuyun/lazyeat/total)
-
-[中文 README](README.md)
-
-</div>
-</h1>
-
-# 🍕 Lazyeat
-
-Lazyeat is a touch-free controller for eating! Don't want to get your hands greasy while watching videos or browsing the
-web while eating?
-
-Just make hand gestures in front of your camera to pause videos, toggle fullscreen, or switch videos!
-
-If you find this useful, please give it a star! ⭐
-
-We really need everyone to promote this software to gain more attention! 🚀
-
-Feel free to join
-our [![Discord](https://img.shields.io/discord/1357641609176551566?label=Join%20Discord&logo=discord)](https://discord.gg/nTH6qRng)
-community to share your ideas and suggestions!
-
-|   Platform   |   Status    |                              Download                              |
-|:------------:|:----------:|:------------------------------------------------------------------:|
-| 🪟 Windows | ✅ Supported | [Latest Release](https://github.com/maplelost/lazyeat/releases/latest) |
-|   🍎 Mac   | ✅ Supported | [Latest Release](https://github.com/maplelost/lazyeat/releases/latest) |
-|  🐧 Linux  | ⏳ In Development |                               /                                |
-| 🤖 Android | ⏳ In Development |                               /                                |
-|   📱 iOS   | ⏳ In Development |                               /                                |
-
-## Features
-
-- Single finger slide to control cursor
-- Two fingers/Rock gesture for mouse click
-- OK gesture to control page scrolling
-- Four fingers together to send keys
-- Voice input support
-
-![demo.gif](.readme/demo.gif)
-
-# 🌠 Screenshots
-
-Video Demo: https://www.bilibili.com/video/BV11SXTYTEJi/?spm_id_from=333.1387.homepage.video_card.click
-
-<div align="center">
-<img src=.readme/guide.png width="800" height="600" />
-</div>
-
 # Quick Start
 
 ```
@@ -143,11 +87,6 @@ The steps above download the small model. If you need to use the large model, do
 
 ![img.png](.readme/img_model_example.png)
 
-# 📝 TODO
-
-- [ ] (March 12, 2025) Integrate browser-use for voice-controlled browser navigation
-- [ ] (March 24, 2025) Develop Android version
-
 # Development Issues
 
 ## Tauri Build Issues
@@ -162,13 +101,9 @@ If the build fails, check if the size of src-tauri/bin exceeds 200MB. If it does
 If you're experiencing network issues with Cargo (common in some regions), you can try changing the
 source: [cargo blocked, change source](https://www.chenreal.com/post/599)
 
-[Non-code Exception Issues Summary](https://github.com/maplelost/lazyeat/issues/30)
-
 ```bash
 # May or may not help
 rm -rf ~/.cargo/.package-cache
 ```
 
-# Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=maplelost/lazyeat&type=Date)](https://www.star-history.com/#maplelost/lazyeat&Date)
+[Non-code Exception Issues Summary](https://github.com/maplelost/lazyeat/issues/30)

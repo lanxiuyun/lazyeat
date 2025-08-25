@@ -47,7 +47,7 @@ Lazyeat 是一款基于手势识别的非接触式控制工具。它支持摄像
 
 ## 贡献
 
-- [阅读贡献指南](https://notegen.top/en/docs/contributing)
+- [阅读贡献指南(快速开始)](contribution_cn.md)
 
 ## 贡献者
 
