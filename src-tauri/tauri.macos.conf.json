@@ -3,6 +3,7 @@
   "identifier": "com.Lazyeat.maplelost",
   "bundle": {
     "resources": [],
+    "targets": "all",
     "macOS": {
       "files": {
         "Resources/model": "../model",
