@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "install-reqs": "npm install && pip install -r requirements.txt",
+    "install-reqs": "pnpm install && pip install -r requirements.txt",
     "dev": "vite",
     "build:py": "pyinstaller --noconfirm --distpath src-tauri/bin/ main_win.spec",
     "build:py-mac": "pyinstaller --noconfirm --distpath src-tauri/bin/ main_mac.spec",
