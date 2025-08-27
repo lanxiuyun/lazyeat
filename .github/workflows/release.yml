@@ -77,7 +77,7 @@ jobs:
           npm run build:icons-mac
           npm run build:py-mac
 
-      - uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@v0.5.23
         id: tauri-action # 添加 id 以便后续引用
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
