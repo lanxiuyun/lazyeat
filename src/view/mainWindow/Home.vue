@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <div class="sticky-header">
-      <h2>首页</h2>
+      <h2>{{ $t("首页") }}</h2>
     </div>
 
     <n-scrollbar>

@@ -1,7 +1,7 @@
 <template>
   <div class="guide-container">
     <div class="sticky-header">
-      <h2>手势指南</h2>
+      <h2>{{ $t("手势指南") }}</h2>
     </div>
 
     <n-scrollbar>
@@ -55,37 +55,34 @@
             <GestureIcon :icon="Okay" />
           </template>
           <template #extra>
-            <div style="display: flex; gap: 8px; flex-direction: column">
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 4px;
-                  text-wrap: nowrap;
+            <div
+              style="
+                display: flex;
+                gap: 4px;
+                flex-direction: column;
+                padding-top: 4px;
+              "
+            >
+              <n-input-number
+                v-model:value="
+                  app_store.config.scroll_gesture_2_thumb_and_index_threshold
                 "
-              >
-                {{ $t("食指和拇指距离小于") }}
-                <n-input-number
-                  size="tiny"
-                  v-model:value="
-                    app_store.config.scroll_gesture_2_thumb_and_index_threshold
-                  "
-                  :min="0"
-                  :step="0.01"
-                  style="width: 150px"
-                  clearable
-                  :on-clear="
-                    async () => {
-                      await nextTick();
-                      app_store.config.scroll_gesture_2_thumb_and_index_threshold = 0.02;
-                    }
-                  "
-                />
-              </div>
+                size="small"
+                style="width: 150px"
+                :min="0"
+                :step="0.01"
+                clearable
+                :on-clear="
+                  async () => {
+                    await nextTick();
+                    app_store.config.scroll_gesture_2_thumb_and_index_threshold = 0.02;
+                  }
+                "
+              />
+
+              {{ $t("食指和拇指距离小于值时滚动页面") }}
               <div class="tag-wrap">
-                <n-tag>
-                  {{ $t("可以通过右键->检查->控制台->捏合手势->查看当前距离") }}
-                </n-tag>
+                {{ $t("可以通过右键->检查->控制台->捏合手势->查看当前距离") }}
               </div>
             </div>
           </template>
@@ -237,7 +234,8 @@ const listenForKey = () => {
 .tag-wrap {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  background-color: #fafafc;
+  border: 1px solid #e5e9f2;
 }
 .tag-wrap .n-tag {
   white-space: normal !important;
