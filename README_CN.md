@@ -9,10 +9,7 @@
 ## 赞助商
 
 <div>
-  <a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank">
-        <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
-  </a>
-  <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
+<a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>  <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
     <img height="54" alt="UpgradeLink"  src=".readme/UpgradeLink_1.png" />
   </a>
 </div>
