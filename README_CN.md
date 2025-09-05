@@ -4,11 +4,18 @@
 ![GitHub stars](https://img.shields.io/github/stars/lanxiuyun/lazyeat)
 ![](https://img.shields.io/github/issues-closed/lanxiuyun/lazyeat)
 
+## 赞助商
+
 <div>
-<a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+  <a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank">
+        <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
+  </a>
+  <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
+    <img height="54" alt="UpgradeLink"  src=".readme/UpgradeLink_1.png" />
+  </a>
 </div>
 
-<h3><a href="README.md">English</a> | 简体中文 </h3>
+<h2><a href="README.md">English</a> | 简体中文 </h2>
 
 ## 指南
 
@@ -54,11 +61,3 @@ Lazyeat 是一款基于手势识别的非接触式控制工具。它支持摄像
 <a href="https://github.com/lanxiuyun/lazyeat/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=lanxiuyun/lazyeat" />
 </a>
-
-## 赞助商
-
-<div>
-  <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
-    <img height="54" alt="UpgradeLink" src=".readme/UpgradeLink_1.png" />
-  </a>
-</div>
