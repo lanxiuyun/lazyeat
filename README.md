@@ -1,12 +1,13 @@
 # Lazyeat
 
 ![](https://img.shields.io/badge/free-pricing?logo=free&color=%20%23155EEF&label=pricing&labelColor=%20%23528bff)
-![GitHub stars](https://img.shields.io/github/stars/maplelost/lazyeat)
+![GitHub stars](https://img.shields.io/github/stars/lanxiuyun/lazyeat)
 ![](https://img.shields.io/github/issues-closed/lanxiuyun/lazyeat)
 
 <div>
-<img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+<a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 </div>
+
 
 <h3>English | <a href="README_CN.md">简体中文</a> </h3>
 
