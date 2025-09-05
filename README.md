@@ -4,6 +4,8 @@
 ![GitHub stars](https://img.shields.io/github/stars/lanxiuyun/lazyeat)
 ![](https://img.shields.io/github/issues-closed/lanxiuyun/lazyeat)
 
+<h3>English | <a href="README_CN.md">简体中文</a> </h3>
+
 ## Sponsors
 
 <div>
@@ -14,8 +16,6 @@
     <img height="54" alt="UpgradeLink"  src=".readme/UpgradeLink_1.png" />
   </a>
 </div>
-
-<h2>English | <a href="README_CN.md">简体中文</a> </h2>
 
 ## Guide
 
