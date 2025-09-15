@@ -1,8 +1,8 @@
 ## Sponsors
 
 <div>
-    <a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img alt="UpgradeLink" width="100%"  src=".readme/skywork.png" /></a>
-    <img height="54" alt="UpgradeLink"  src=".readme/UpgradeLink_1.png" />
+    <a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img alt="UpgradeLink" width="50%"  src=".readme/skywork.png" /></a>
+    <img alt="UpgradeLink"  src=".readme/UpgradeLink_1.png" />
 </div>
 
 # Lazyeat
