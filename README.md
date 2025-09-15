@@ -2,8 +2,9 @@
 
 <div>
     <a href="https://skywork.ai/p/oVSqHa" target="_blank">
-      <img alt="Skywork" width="50%" src=".readme/skywork.png" />
+      <img alt="Skywork" width="80%" src=".readme/skywork.png" />
     </a>
+    <br/>
     <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
         <img alt="UpgradeLink" height="54"  src=".readme/UpgradeLink_1.png" />
     </a>
