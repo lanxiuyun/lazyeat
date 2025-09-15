@@ -1,7 +1,7 @@
 ## Sponsors
 
 <div>
-    <a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img alt="UpgradeLink"  src=".readme/skywork.png" /></a>
+    <a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img alt="UpgradeLink" width="100%"  src=".readme/skywork.png" /></a>
     <img height="54" alt="UpgradeLink"  src=".readme/UpgradeLink_1.png" />
 </div>
 
