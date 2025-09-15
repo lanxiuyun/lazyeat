@@ -9,6 +9,7 @@
     </a>
 </div>
 
+# Lazyeat
 
 ![](https://img.shields.io/badge/free-pricing?logo=free&color=%20%23155EEF&label=pricing&labelColor=%20%23528bff)
 ![GitHub stars](https://img.shields.io/github/stars/lanxiuyun/lazyeat)
