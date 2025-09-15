@@ -1,4 +1,4 @@
-## Sponsors
+# Sponsors
 
 <div>
     <a href="https://skywork.ai/p/oVSqHa" target="_blank">
