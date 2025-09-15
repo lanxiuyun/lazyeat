@@ -4,7 +4,6 @@
     <a href="https://skywork.ai/p/oVSqHa" target="_blank"><img alt="UpgradeLink" width="45%"  
       src=".readme/skywork.png" />
     </a>
-    
     <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
         <img alt="UpgradeLink" width="45%"  src=".readme/UpgradeLink_1.png" />
     </a>
