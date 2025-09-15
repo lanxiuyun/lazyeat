@@ -1,11 +1,11 @@
 ## Sponsors
 
-<div>
+<div style="display:flex;align-items:center;gap:10px;">
     <a href="https://skywork.ai/p/oVSqHa" target="_blank">
-      <img alt="Skywork" width="45%" src=".readme/skywork.png" />
+      <img alt="Skywork" style="display:block;width:45%;" src=".readme/skywork.png" />
     </a>
     <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
-        <img alt="UpgradeLink" width="45%"  src=".readme/UpgradeLink_1.png" />
+        <img alt="UpgradeLink" style="display:block;width:45%;"  src=".readme/UpgradeLink_1.png" />
     </a>
 </div>
 
