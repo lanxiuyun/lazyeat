@@ -246,8 +246,10 @@ async def _handle_message(
 
         # 处理键盘操作
         elif message.type == WebSocketMessageType.SEND_KEYS:
-            gesture_handler.send_keys(data["key_str"])
-
+            key_str = data["key_str"]
+            # ARROWUP -> UP ARROWDOWN -> DOWN ARROWLEFT -> LEFT ARROWRIGHT -> RIGHT
+            key_str = key_str.replace("ARROWUP", "UP").replace("ARROWDOWN", "DOWN").replace("ARROWLEFT", "LEFT").replace("ARROWRIGHT", "RIGHT")
+            gesture_handler.send_keys(key_str)
         # 处理语音操作
         elif message.type == WebSocketMessageType.VOICE_RECORD:
             await voice_handler.start_recording(websocket)

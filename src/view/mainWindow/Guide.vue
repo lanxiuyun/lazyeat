@@ -100,7 +100,7 @@
               :value="app_store.config.four_fingers_up_send"
               readonly
               :placeholder="$t('点击设置快捷键')"
-              @click="listenForKey"
+              @click="() => listenForKey('four_fingers')"
               :status="isListening ? 'warning' : undefined"
               :bordered="true"
               style="width: 200px"
@@ -112,12 +112,27 @@
           </template>
         </GestureCard>
 
-        <GestureCard :title="$t('退格')" :description="$t('发送退格键')">
+        <GestureCard :title="$t('左大拇指')" :description="$t('发送按键')">
           <template #icon>
             <GestureIcon
               style="transform: rotate(90deg) scaleX(-1)"
               :icon="BadTwo"
             />
+          </template>
+          <template #extra>
+            <n-input
+              :value="app_store.config.delete_key"
+              readonly
+              :placeholder="$t('点击设置快捷键')"
+              @click="() => listenForKey('delete')"
+              :status="isListeningDelete ? 'warning' : undefined"
+              :bordered="true"
+              style="width: 200px"
+            >
+              <template #suffix>
+                {{ isListeningDelete ? $t("请按下按键...") : $t("点击设置") }}
+              </template>
+            </n-input>
           </template>
         </GestureCard>
 
@@ -172,9 +187,11 @@ import { nextTick, ref } from "vue";
 
 const app_store = use_app_store();
 const isListening = ref(false);
+const isListeningDelete = ref(false);
 
-const listenForKey = () => {
-  isListening.value = true;
+const listenForKey = (type: "delete" | "four_fingers") => {
+  const isListeningRef = type === "delete" ? isListeningDelete : isListening;
+  isListeningRef.value = true;
 
   const handleKeyDown = (e: KeyboardEvent) => {
     e.preventDefault();
@@ -196,8 +213,12 @@ const listenForKey = () => {
     }
 
     const shortcut = [...modifiers, key].join("+");
-    app_store.config.four_fingers_up_send = shortcut;
-    isListening.value = false;
+    if (type === "delete") {
+      app_store.config.delete_key = shortcut;
+    } else {
+      app_store.config.four_fingers_up_send = shortcut;
+    }
+    isListeningRef.value = false;
     window.removeEventListener("keydown", handleKeyDown);
   };
 

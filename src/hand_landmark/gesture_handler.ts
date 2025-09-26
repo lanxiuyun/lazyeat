@@ -403,7 +403,8 @@ export class GestureHandler {
       return;
     }
     this.lastDeleteTime = now;
-    this.triggerAction.sendKeys("backspace");
+    const key_str = this.app_store.config.delete_key;
+    this.triggerAction.sendKeys(key_str);
   }
 
   /**

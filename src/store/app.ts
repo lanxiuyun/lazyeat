@@ -19,6 +19,7 @@ export const use_app_store = defineStore("app-store", {
       auto_start: false,
       show_window: false,
       four_fingers_up_send: "f",
+      delete_key: "backspace", // 添加退格键自定义配置
       selected_camera_id: "",
 
       // 识别框
