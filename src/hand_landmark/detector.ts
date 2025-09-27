@@ -21,6 +21,12 @@ export enum HandGesture {
   // 四根手指同时竖起
   FOUR_FINGERS_UP = "four_fingers_up",
 
+  // 向上指👆
+  POINT_UP = "point_up",
+
+  // 向下指👇
+  POINT_DOWN = "point_down",
+
   // 五根手指同时竖起 - 暂停/开始 识别
   STOP_GESTURE = "stop_gesture",
 
@@ -221,6 +227,12 @@ export class Detector {
 
       // 四根手指同时竖起
       ["0,1,1,1,1", HandGesture.FOUR_FINGERS_UP],
+
+      // 👆
+      ["1,1,0,0,0", HandGesture.POINT_UP],
+
+      // 👇
+      ["1,0,1,1,1", HandGesture.POINT_DOWN],
 
       // 五根手指同时竖起 - 暂停/开始 识别
       ["1,1,1,1,1", HandGesture.STOP_GESTURE],

@@ -160,11 +160,15 @@ export class GestureHandler {
   private lastScrollTime: number = 0;
   private lastFullScreenTime: number = 0;
   private lastDeleteTime: number = 0;
+  private lastPointUpTime: number = 0;
+  private lastPointDownTime: number = 0;
 
   // 时间间隔常量（毫秒）
   private readonly CLICK_INTERVAL = 500; // 点击间隔
   private readonly SCROLL_INTERVAL = 100; // 滚动间隔
   private readonly FULL_SCREEN_INTERVAL = 1500; // 全屏切换间隔
+  private readonly POINT_UP_INTERVAL = 1000; // 向上指手势间隔
+  private readonly POINT_DOWN_INTERVAL = 1000; // 向下指手势间隔
 
   // 语音识别参数
   private voice_recording: boolean = false;
@@ -371,6 +375,42 @@ export class GestureHandler {
   }
 
   /**
+   * 处理向上指手势 - 发送快捷键
+   */
+  private handlePointUp() {
+    try {
+      const key_str = this.app_store.config.point_up_send || "F11";
+      const now = Date.now();
+      if (now - this.lastPointUpTime < this.POINT_UP_INTERVAL) {
+        return;
+      }
+      this.lastPointUpTime = now;
+
+      this.triggerAction.sendKeys(key_str);
+    } catch (error) {
+      console.error("处理向上指手势失败:", error);
+    }
+  }
+
+  /**
+   * 处理向下指手势 - 发送快捷键
+   */
+  private handlePointDown() {
+    try {
+      const key_str = this.app_store.config.point_down_send || "ARROWDOWN";
+      const now = Date.now();
+      if (now - this.lastPointDownTime < this.POINT_DOWN_INTERVAL) {
+        return;
+      }
+      this.lastPointDownTime = now;
+
+      this.triggerAction.sendKeys(key_str);
+    } catch (error) {
+      console.error("处理向下指手势失败:", error);
+    }
+  }
+
+  /**
    * 处理拇指和小指同时竖起手势 - 开始语音识别
    */
   async handleVoiceStart() {
@@ -403,7 +443,8 @@ export class GestureHandler {
       return;
     }
     this.lastDeleteTime = now;
-    this.triggerAction.sendKeys("backspace");
+    const key_str = this.app_store.config.delete_key;
+    this.triggerAction.sendKeys(key_str);
   }
 
   /**
@@ -479,6 +520,8 @@ export class GestureHandler {
       return;
     }
 
+    // console.log(gesture);
+
     // 其他手势需要连续确认才执行
     if (this.previousGestureCount >= this.minGestureCount) {
       switch (gesture) {
@@ -494,6 +537,12 @@ export class GestureHandler {
         //   break;
         case HandGesture.FOUR_FINGERS_UP:
           this.handleFourFingers();
+          break;
+        case HandGesture.POINT_UP:
+          this.handlePointUp();
+          break;
+        case HandGesture.POINT_DOWN:
+          this.handlePointDown();
           break;
         case HandGesture.VOICE_GESTURE_START:
           this.handleVoiceStart();

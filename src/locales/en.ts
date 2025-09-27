@@ -47,6 +47,10 @@ export default {
 
   全屏控制: "Full Screen Control",
   四指并拢发送按键: "Four fingers together to send key",
+  向上指: "Hand Up Gesture",
+  向上指发送按键: "Five fingers open with palm up to send key",
+  向下指: "Hand Down Gesture",
+  向下指发送按键: "Thumb up with other fingers closed to send key",
   点击设置快捷键: "Click to set shortcut",
   "请按下按键...": "Please press keys...",
   点击设置: "Click to set",

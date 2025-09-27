@@ -1,14 +1,19 @@
 # Lazyeat
 
 ![](https://img.shields.io/badge/free-pricing?logo=free&color=%20%23155EEF&label=pricing&labelColor=%20%23528bff)
-![GitHub stars](https://img.shields.io/github/stars/maplelost/lazyeat)
+![GitHub stars](https://img.shields.io/github/stars/lanxiuyun/lazyeat)
 ![](https://img.shields.io/github/issues-closed/lanxiuyun/lazyeat)
 
-<div>
-<img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-</div>
+<a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>  <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
+  </a>
 
 <h3><a href="README.md">English</a> | 简体中文 </h3>
+
+## 赞助商
+
+<div>
+    <img height="54" alt="UpgradeLink"  src=".readme/UpgradeLink_1.png" />
+</div>
 
 ## 指南
 
@@ -43,6 +48,9 @@ Lazyeat 是一款基于手势识别的非接触式控制工具。它支持摄像
 | ✅ 测试版 | ✅ 测试版 | 🛠️ 内测版 | 🛠️ 内测版 | 🛠️ 内测版 |
 | [下载](https://download.upgrade.toolsetlink.com/download?appKey=zY0JIMn9x6W7vCs4P1mtgQ) | [下载](https://download.upgrade.toolsetlink.com/download?appKey=zY0JIMn9x6W7vCs4P1mtgQ) | ❌         | ❌         | ❌         |
 
+#### Mac 无法安装？
+[解决Mac安装软件的“已损坏，无法打开。 您应该将它移到废纸篓”问题](https://zhuanlan.zhihu.com/p/135948430)
+
 > [UpgradeLink 提供应用程序升级和下载服务](http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html)
 
 ## 贡献
@@ -54,11 +62,3 @@ Lazyeat 是一款基于手势识别的非接触式控制工具。它支持摄像
 <a href="https://github.com/lanxiuyun/lazyeat/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=lanxiuyun/lazyeat" />
 </a>
-
-## 赞助商
-
-<div>
-  <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
-    <img height="54" alt="UpgradeLink" src=".readme/UpgradeLink_1.png" />
-  </a>
-</div>

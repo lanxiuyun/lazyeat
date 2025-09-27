@@ -1,12 +1,22 @@
+# Sponsors
+
+<div>
+    <a href="https://skywork.ai/p/oVSqHa" target="_blank">
+      <img alt="Skywork" src=".readme/skywork.png" />
+    </a>
+    <br/>
+    <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
+        <img alt="UpgradeLink" height="54"  src=".readme/UpgradeLink_1.png" />
+    </a>
+</div>
+
 # Lazyeat
 
 ![](https://img.shields.io/badge/free-pricing?logo=free&color=%20%23155EEF&label=pricing&labelColor=%20%23528bff)
-![GitHub stars](https://img.shields.io/github/stars/maplelost/lazyeat)
+![GitHub stars](https://img.shields.io/github/stars/lanxiuyun/lazyeat)
 ![](https://img.shields.io/github/issues-closed/lanxiuyun/lazyeat)
 
-<div>
-<img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-</div>
+<a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 <h3>English | <a href="README_CN.md">简体中文</a> </h3>
 
@@ -43,6 +53,9 @@ Currently supports Mac, Windows, and Linux. Thanks to Tauri2's cross-platform ca
 | ✅ beta | ✅ beta | 🛠️ alpha | 🛠️ alpha | 🛠️ alpha |
 | [Download](https://download.upgrade.toolsetlink.com/download?appKey=zY0JIMn9x6W7vCs4P1mtgQ) | [Download](https://download.upgrade.toolsetlink.com/download?appKey=zY0JIMn9x6W7vCs4P1mtgQ) | ❌         | ❌         | ❌         |
 
+#### Mac can not install?
+[Solve the issue of "Damaged, cannot be opened. You should move it to the Trash" when installing software on Mac](https://zhuanlan.zhihu.com/p/135948430)
+
 > [UpgradeLink offers application upgrade and download services](http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html)
 
 ## Contribute
@@ -54,11 +67,3 @@ Currently supports Mac, Windows, and Linux. Thanks to Tauri2's cross-platform ca
 <a href="https://github.com/lanxiuyun/lazyeat/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=lanxiuyun/lazyeat" />
 </a>
-
-## Sponsors
-
-<div>
-  <a href="http://upgrade.toolsetlink.com/upgrade/example/tauri-example.html" target="_blank">
-    <img height="54" alt="UpgradeLink"  src=".readme/UpgradeLink_1.png" />
-  </a>
-</div>
