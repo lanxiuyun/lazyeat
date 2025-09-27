@@ -112,6 +112,27 @@
           </template>
         </GestureCard>
 
+        <GestureCard :title="$t('向上指')" :description="$t('向上指发送按键')">
+          <template #icon>
+            <GestureIcon :icon="HandUp" />
+          </template>
+          <template #extra>
+            <n-input
+              :value="app_store.config.point_up_send"
+              readonly
+              :placeholder="$t('点击设置快捷键')"
+              @click="() => listenForKey('point_up')"
+              :status="isListeningPointUp ? 'warning' : undefined"
+              :bordered="true"
+              style="width: 200px"
+            >
+              <template #suffix>
+                {{ isListeningPointUp ? $t("请按下按键...") : $t("点击设置") }}
+              </template>
+            </n-input>
+          </template>
+        </GestureCard>
+
         <GestureCard :title="$t('左大拇指')" :description="$t('发送按键')">
           <template #icon>
             <GestureIcon
@@ -177,6 +198,7 @@ import {
   Boxing,
   FiveFive,
   FourFour,
+  HandUp,
   Okay,
   OneOne,
   Rock,
@@ -188,9 +210,15 @@ import { nextTick, ref } from "vue";
 const app_store = use_app_store();
 const isListening = ref(false);
 const isListeningDelete = ref(false);
+const isListeningPointUp = ref(false);
 
-const listenForKey = (type: "delete" | "four_fingers") => {
-  const isListeningRef = type === "delete" ? isListeningDelete : isListening;
+const listenForKey = (type: "delete" | "four_fingers" | "point_up") => {
+  const isListeningRef =
+    type === "delete"
+      ? isListeningDelete
+      : type === "point_up"
+      ? isListeningPointUp
+      : isListening;
   isListeningRef.value = true;
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -215,6 +243,8 @@ const listenForKey = (type: "delete" | "four_fingers") => {
     const shortcut = [...modifiers, key].join("+");
     if (type === "delete") {
       app_store.config.delete_key = shortcut;
+    } else if (type === "point_up") {
+      app_store.config.point_up_send = shortcut;
     } else {
       app_store.config.four_fingers_up_send = shortcut;
     }
