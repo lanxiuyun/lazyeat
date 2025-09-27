@@ -133,6 +133,29 @@
           </template>
         </GestureCard>
 
+        <GestureCard :title="$t('向下指')" :description="$t('向下指发送按键')">
+          <template #icon>
+            <GestureIcon :icon="HandDown" style="transform: scaleX(-1)" />
+          </template>
+          <template #extra>
+            <n-input
+              :value="app_store.config.point_down_send"
+              readonly
+              :placeholder="$t('点击设置快捷键')"
+              @click="() => listenForKey('point_down')"
+              :status="isListeningPointDown ? 'warning' : undefined"
+              :bordered="true"
+              style="width: 200px"
+            >
+              <template #suffix>
+                {{
+                  isListeningPointDown ? $t("请按下按键...") : $t("点击设置")
+                }}
+              </template>
+            </n-input>
+          </template>
+        </GestureCard>
+
         <GestureCard :title="$t('左大拇指')" :description="$t('发送按键')">
           <template #icon>
             <GestureIcon
@@ -199,6 +222,7 @@ import {
   FiveFive,
   FourFour,
   HandUp,
+  HandDown,
   Okay,
   OneOne,
   Rock,
@@ -211,13 +235,18 @@ const app_store = use_app_store();
 const isListening = ref(false);
 const isListeningDelete = ref(false);
 const isListeningPointUp = ref(false);
+const isListeningPointDown = ref(false);
 
-const listenForKey = (type: "delete" | "four_fingers" | "point_up") => {
+const listenForKey = (
+  type: "delete" | "four_fingers" | "point_up" | "point_down"
+) => {
   const isListeningRef =
     type === "delete"
       ? isListeningDelete
       : type === "point_up"
       ? isListeningPointUp
+      : type === "point_down"
+      ? isListeningPointDown
       : isListening;
   isListeningRef.value = true;
 
@@ -245,6 +274,8 @@ const listenForKey = (type: "delete" | "four_fingers" | "point_up") => {
       app_store.config.delete_key = shortcut;
     } else if (type === "point_up") {
       app_store.config.point_up_send = shortcut;
+    } else if (type === "point_down") {
+      app_store.config.point_down_send = shortcut;
     } else {
       app_store.config.four_fingers_up_send = shortcut;
     }

@@ -22,7 +22,7 @@ export const use_app_store = defineStore("app-store", {
       //手势发送的按键
       four_fingers_up_send: "f",
       point_up_send: "ARROWUP", // 向上指
-      hand_down_send: "ARROWUP",
+      point_down_send: "ARROWDOWN", // 向下指
       delete_key: "backspace", // 左大拇指
 
       selected_camera_id: "",
