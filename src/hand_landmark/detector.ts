@@ -1,4 +1,5 @@
 import { GestureHandler } from "@/hand_landmark/gesture_handler";
+import use_app_store from "@/store/app";
 import {
   FilesetResolver,
   GestureRecognizer,
@@ -222,7 +223,7 @@ export class Detector {
 
       // 滚动屏幕手势
       ["0,1,1,1,0", HandGesture.THREE_FINGERS_UP],
-      ["1,0,1,1,1", HandGesture.SCROLL_GESTURE_2],
+      // ["1,0,1,1,1", HandGesture.SCROLL_GESTURE_2],
       ["0,0,1,1,1", HandGesture.SCROLL_GESTURE_2],
 
       // 四根手指同时竖起
@@ -233,6 +234,8 @@ export class Detector {
 
       // 👇
       ["1,0,1,1,1", HandGesture.POINT_DOWN],
+      ["1,0,0,1,1", HandGesture.POINT_DOWN],
+      ["1,0,0,0,0", HandGesture.POINT_DOWN],
 
       // 五根手指同时竖起 - 暂停/开始 识别
       ["1,1,1,1,1", HandGesture.STOP_GESTURE],
@@ -243,6 +246,10 @@ export class Detector {
       // 其他手势
       ["0,0,0,0,0", HandGesture.VOICE_GESTURE_STOP],
     ]);
+
+    if (this._isScrollGesture(hand, fingers)) {
+      return HandGesture.SCROLL_GESTURE_2;
+    }
 
     if (gestureMap.has(fingerState)) {
       return gestureMap.get(fingerState) as HandGesture;
@@ -279,6 +286,32 @@ export class Detector {
   }
 
   /**
+   * 检查是否为 滚动手势
+   */
+  private static _isScrollGesture(hand: HandInfo, fingers: number[]): boolean {
+    const indexTip = Detector.getFingerTip(hand, 1);
+    const thumbTip = Detector.getFingerTip(hand, 0);
+
+    try {
+      // 计算食指和拇指的距离
+      const distance = Math.sqrt(
+        (indexTip.x - thumbTip.x) ** 2 + (indexTip.y - thumbTip.y) ** 2
+      );
+
+      // 如果距离大于阈值，说明没有捏合，重置上一次的 Y 坐标
+      if (
+        distance <
+        use_app_store()?.config.scroll_gesture_2_thumb_and_index_threshold
+      ) {
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      return false;
+    }
+  }
+
+  /**
    * 处理检测结果并执行相应动作
    */
   async process(detection: DetectionResult): Promise<void> {
@@ -296,6 +329,8 @@ export class Detector {
     } else if (detection.leftHand) {
       effectiveGesture = leftHandGesture;
     }
+
+    console.debug(effectiveGesture);
 
     // 将手势处理交给GestureHandler
     if (detection.rightHand) {
