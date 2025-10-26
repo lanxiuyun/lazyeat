@@ -235,7 +235,6 @@ export class Detector {
       // 👇
       ["1,0,1,1,1", HandGesture.POINT_DOWN],
       ["1,0,0,1,1", HandGesture.POINT_DOWN],
-      ["1,0,0,0,0", HandGesture.POINT_DOWN],
 
       // 五根手指同时竖起 - 暂停/开始 识别
       ["1,1,1,1,1", HandGesture.STOP_GESTURE],
