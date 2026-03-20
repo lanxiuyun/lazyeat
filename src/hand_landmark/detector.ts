@@ -101,6 +101,28 @@ export class Detector {
   }
 
   /**
+   * 检查手部是否在识别框内
+   */
+  static isHandInBoundary(hand: HandInfo): boolean {
+    const app_store = use_app_store();
+    // 使用手掌中心（中指MCP关节，landmark index 9）作为参考点
+    const palmCenter = hand.landmarks[9];
+
+    // 转换为视频坐标（与 gesture_handler 相同的坐标变换，x 轴镜像）
+    const video_x = app_store.VIDEO_WIDTH - palmCenter.x * app_store.VIDEO_WIDTH;
+    const video_y = palmCenter.y * app_store.VIDEO_HEIGHT;
+
+    const { boundary_left, boundary_top, boundary_width, boundary_height } = app_store.config;
+
+    return (
+      video_x >= boundary_left &&
+      video_x <= boundary_left + boundary_width &&
+      video_y >= boundary_top &&
+      video_y <= boundary_top + boundary_height
+    );
+  }
+
+  /**
    * 从视频帧检测手部
    */
   async detect(video: HTMLVideoElement): Promise<DetectionResult> {
@@ -314,28 +336,44 @@ export class Detector {
    * 处理检测结果并执行相应动作
    */
   async process(detection: DetectionResult): Promise<void> {
-    const rightHandGesture = detection.rightHand
+    let rightHandGesture = detection.rightHand
       ? Detector.getSingleHandGesture(detection.rightHand)
       : HandGesture.OTHER;
-    const leftHandGesture = detection.leftHand
+    let leftHandGesture = detection.leftHand
       ? Detector.getSingleHandGesture(detection.leftHand)
       : HandGesture.OTHER;
 
+    // 边界检查：只对非移动鼠标和非暂停识别的手势进行检查
+    const skipBoundaryCheck = [HandGesture.ONLY_INDEX_UP, HandGesture.STOP_GESTURE];
+
+    if (detection.rightHand && !skipBoundaryCheck.includes(rightHandGesture)) {
+      if (!Detector.isHandInBoundary(detection.rightHand)) {
+        rightHandGesture = HandGesture.OTHER;
+      }
+    }
+
+    if (detection.leftHand && !skipBoundaryCheck.includes(leftHandGesture)) {
+      if (!Detector.isHandInBoundary(detection.leftHand)) {
+        leftHandGesture = HandGesture.OTHER;
+      }
+    }
+
     // 优先使用右手
     let effectiveGesture = rightHandGesture;
+    let effectiveHand = detection.rightHand;
     if (detection.rightHand) {
       effectiveGesture = rightHandGesture;
+      effectiveHand = detection.rightHand;
     } else if (detection.leftHand) {
       effectiveGesture = leftHandGesture;
+      effectiveHand = detection.leftHand;
     }
 
     console.debug(effectiveGesture);
 
     // 将手势处理交给GestureHandler
-    if (detection.rightHand) {
-      this.gestureHandler?.handleGesture(effectiveGesture, detection.rightHand);
-    } else if (detection.leftHand) {
-      this.gestureHandler?.handleGesture(effectiveGesture, detection.leftHand);
+    if (effectiveHand) {
+      this.gestureHandler?.handleGesture(effectiveGesture, effectiveHand);
     }
   }
 }

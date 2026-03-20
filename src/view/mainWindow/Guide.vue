@@ -13,6 +13,12 @@
           <template #icon>
             <GestureIcon :icon="OneOne" />
           </template>
+          <template #extra>
+            <n-switch v-model:value="app_store.config.gestures_enabled.ONLY_INDEX_UP" size="small">
+              <template #checked>{{ $t('启用') }}</template>
+              <template #unchecked>{{ $t('关闭') }}</template>
+            </n-switch>
+          </template>
         </GestureCard>
 
         <GestureCard
@@ -21,6 +27,12 @@
         >
           <template #icon>
             <GestureIcon :icon="TwoTwo" />
+          </template>
+          <template #extra>
+            <n-switch v-model:value="app_store.config.gestures_enabled.INDEX_AND_MIDDLE_UP" size="small">
+              <template #checked>{{ $t('启用') }}</template>
+              <template #unchecked>{{ $t('关闭') }}</template>
+            </n-switch>
           </template>
         </GestureCard>
 
@@ -32,6 +44,10 @@
             <GestureIcon :icon="Rock" />
           </template>
           <template #extra>
+            <n-switch v-model:value="app_store.config.gestures_enabled.ROCK_GESTURE" size="small">
+              <template #checked>{{ $t('启用') }}</template>
+              <template #unchecked>{{ $t('关闭') }}</template>
+            </n-switch>
             <n-space>
               <a href="https://github.com/MiKoto-Railgun" target="_blank">
                 @MiKoto-Railgun
@@ -55,6 +71,10 @@
             <GestureIcon :icon="Okay" />
           </template>
           <template #extra>
+            <n-switch v-model:value="app_store.config.gestures_enabled.SCROLL_GESTURE_2" size="small">
+              <template #checked>{{ $t('启用') }}</template>
+              <template #unchecked>{{ $t('关闭') }}</template>
+            </n-switch>
             <div
               style="
                 display: flex;
@@ -96,6 +116,10 @@
             <GestureIcon :icon="FourFour" />
           </template>
           <template #extra>
+            <n-switch v-model:value="app_store.config.gestures_enabled.FOUR_FINGERS_UP" size="small">
+              <template #checked>{{ $t('启用') }}</template>
+              <template #unchecked>{{ $t('关闭') }}</template>
+            </n-switch>
             <n-input
               :value="app_store.config.four_fingers_up_send"
               readonly
@@ -117,6 +141,10 @@
             <GestureIcon :icon="HandUp" />
           </template>
           <template #extra>
+            <n-switch v-model:value="app_store.config.gestures_enabled.POINT_UP" size="small">
+              <template #checked>{{ $t('启用') }}</template>
+              <template #unchecked>{{ $t('关闭') }}</template>
+            </n-switch>
             <n-input
               :value="app_store.config.point_up_send"
               readonly
@@ -138,6 +166,10 @@
             <GestureIcon :icon="HandDown" style="transform: scaleX(-1)" />
           </template>
           <template #extra>
+            <n-switch v-model:value="app_store.config.gestures_enabled.POINT_DOWN" size="small">
+              <template #checked>{{ $t('启用') }}</template>
+              <template #unchecked>{{ $t('关闭') }}</template>
+            </n-switch>
             <n-input
               :value="app_store.config.point_down_send"
               readonly
@@ -164,6 +196,10 @@
             />
           </template>
           <template #extra>
+            <n-switch v-model:value="app_store.config.gestures_enabled.DELETE_GESTURE" size="small">
+              <template #checked>{{ $t('启用') }}</template>
+              <template #unchecked>{{ $t('关闭') }}</template>
+            </n-switch>
             <n-input
               :value="app_store.config.delete_key"
               readonly
@@ -187,6 +223,12 @@
           <template #icon>
             <GestureIcon :icon="Six" />
           </template>
+          <template #extra>
+            <n-switch v-model:value="app_store.config.gestures_enabled.VOICE_GESTURE_START" size="small">
+              <template #checked>{{ $t('启用') }}</template>
+              <template #unchecked>{{ $t('关闭') }}</template>
+            </n-switch>
+          </template>
         </GestureCard>
 
         <GestureCard
@@ -205,6 +247,12 @@
         >
           <template #icon>
             <GestureIcon :icon="FiveFive" />
+          </template>
+          <template #extra>
+            <n-switch v-model:value="app_store.config.gestures_enabled.STOP_GESTURE" size="small">
+              <template #checked>{{ $t('启用') }}</template>
+              <template #unchecked>{{ $t('关闭') }}</template>
+            </n-switch>
           </template>
         </GestureCard>
       </el-main>

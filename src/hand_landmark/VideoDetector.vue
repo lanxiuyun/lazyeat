@@ -141,6 +141,8 @@ const resizeSnapshot = ref({
   width: 0,
   height: 0,
 });
+const detecting = ref(false);
+const timerWorker = ref(null);
 
 onMounted(() => {
   navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
@@ -200,48 +202,76 @@ const drawHandLandmarks = (ctx, hand, color) => {
   });
 };
 
+// 后台定时器 Worker（窗口隐藏时 requestAnimationFrame 会被暂停）
+const initTimerWorker = () => {
+  const code = `let id=null;self.onmessage=e=>{if(e.data==='start'){if(id)clearInterval(id);id=setInterval(()=>self.postMessage(0),50)}else{if(id){clearInterval(id);id=null}}}`;
+  const blob = new Blob([code], { type: "application/javascript" });
+  const w = new Worker(URL.createObjectURL(blob));
+  w.onmessage = () => {
+    if (document.hidden && app_store.mission_running && !detecting.value) {
+      predictWebcam();
+    }
+  };
+  return w;
+};
+
 // 主要检测逻辑
 const predictWebcam = async () => {
-  const video = videoElement.value;
-  const canvas = canvasElement.value;
-  const ctx = canvas.getContext("2d");
+  if (detecting.value) return;
+  detecting.value = true;
 
-  if (video.currentTime !== lastVideoTime.value) {
-    lastVideoTime.value = video.currentTime;
-    const detection = await detector.value.detect(video);
+  try {
+    const video = videoElement.value;
+    const canvas = canvasElement.value;
+    if (!video || !canvas) return;
+    const ctx = canvas.getContext("2d");
 
-    if (app_store.config.show_window) {
-      // 绘制视频帧
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // 翻转绘制
-      ctx.save();
-      ctx.translate(canvas.width, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    // 窗口隐藏时跳过 currentTime 检查（WebView2 可能冻结视频时间戳）
+    const shouldProcess =
+      document.hidden || video.currentTime !== lastVideoTime.value;
 
-      // 绘制手势点
-      if (detection.leftHand) {
-        drawHandLandmarks(ctx, detection.leftHand, "red");
+    if (shouldProcess) {
+      lastVideoTime.value = video.currentTime;
+      const detection = await detector.value.detect(video);
+
+      if (app_store.config.show_window && !document.hidden) {
+        // 绘制视频帧（仅窗口可见时）
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // 翻转绘制
+        ctx.save();
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // 绘制手势点
+        if (detection.leftHand) {
+          drawHandLandmarks(ctx, detection.leftHand, "red");
+        }
+        if (detection.rightHand) {
+          drawHandLandmarks(ctx, detection.rightHand, "blue");
+        }
+
+        // 恢复绘制状态
+        ctx.restore();
+
+        // 绘制鼠标移动框
+        drawMouseMoveBox(ctx);
       }
-      if (detection.rightHand) {
-        drawHandLandmarks(ctx, detection.rightHand, "blue");
-      }
 
-      // 恢复绘制状态
-      ctx.restore();
+      // 手势处理
+      await detector.value.process(detection);
 
-      // 绘制鼠标移动框
-      drawMouseMoveBox(ctx);
+      // 绘制FPS
+      drawFPS(ctx);
     }
-
-    // 手势处理
-    await detector.value.process(detection);
-
-    // 绘制FPS
-    drawFPS(ctx);
+  } finally {
+    detecting.value = false;
   }
 
-  requestAnimationFrame(predictWebcam);
+  // 窗口可见时使用 requestAnimationFrame，隐藏时由 Worker 定时器驱动
+  if (!document.hidden) {
+    requestAnimationFrame(predictWebcam);
+  }
 };
 
 const initializeCamera = async () => {
@@ -267,6 +297,16 @@ const initializeCamera = async () => {
 const stopCamera = () => {
   if (videoElement.value?.srcObject) {
     videoElement.value.srcObject.getTracks().forEach((track) => track.stop());
+  }
+  detecting.value = false;
+};
+
+// 窗口可见性变化处理
+const handleVisibilityChange = () => {
+  if (!document.hidden && app_store.mission_running) {
+    // 窗口恢复可见时，重置时间戳并重启 RAF 循环
+    lastVideoTime.value = -1;
+    requestAnimationFrame(predictWebcam);
   }
 };
 
@@ -524,18 +564,25 @@ watch(
     if (newValue) {
       await initializeCamera();
       app_store.flag_detecting = true;
+      timerWorker.value?.postMessage("start");
     } else {
       stopCamera();
+      timerWorker.value?.postMessage("stop");
     }
   }
 );
 
 // 生命周期钩子
 onMounted(async () => {
+  // 初始化后台定时器 Worker
+  timerWorker.value = initTimerWorker();
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+
   await detector.value.initialize();
   // 如果 mission_running 为 true，则初始化摄像头
   if (app_store.mission_running) {
     await initializeCamera();
+    timerWorker.value.postMessage("start");
   }
 });
 
@@ -546,6 +593,9 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   stopCamera();
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
+  timerWorker.value?.postMessage("stop");
+  timerWorker.value?.terminate();
   window.removeEventListener("mousemove", handleGlobalMouseMove);
   window.removeEventListener("mouseup", handleGlobalMouseUp);
 });

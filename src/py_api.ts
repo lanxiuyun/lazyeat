@@ -1,3 +1,5 @@
+import { fetch } from '@tauri-apps/plugin-http';
+
 const port = 62334;
 const base_url = `http://localhost:${port}`;
 
@@ -5,7 +7,7 @@ class PyApi {
   async ready(): Promise<boolean> {
     try {
       await fetch(`${base_url}/`, {
-        signal: AbortSignal.timeout(1000),
+        connectTimeout: 1000,
       });
       return true;
     } catch (error) {
@@ -17,7 +19,7 @@ class PyApi {
     try {
       await fetch(`${base_url}/shutdown`, {
         method: "GET",
-        signal: AbortSignal.timeout(500),
+        connectTimeout: 500,
       });
     } catch (error) {
       console.error("关闭服务失败:", error);

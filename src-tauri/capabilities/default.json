@@ -39,6 +39,14 @@
     "core:window:allow-set-size",
 
     "updater:default",
-    "process:default"
+    "process:default",
+
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "http://localhost:62334/*" }
+      ]
+    },
+    "http:allow-fetch"
   ]
 }
