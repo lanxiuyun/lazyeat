@@ -1,28 +1,9 @@
 use enigo::{Enigo, Keyboard, Mouse, Settings, Coordinate};
 use enigo::{Key, Direction};
-use std::sync::Mutex;
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{Emitter, Manager};
 use tauri_plugin_autostart::MacosLauncher;
-
-// 全局 Enigo 实例，用于鼠标和键盘控制
-static ENIGO: Mutex<Option<Enigo>> = Mutex::new(None);
-
-/// 获取或初始化 Enigo 实例
-fn get_enigo() -> Result<Enigo, String> {
-    let mut enigo_opt = ENIGO.lock().map_err(|e| format!("Mutex poisoned: {}", e))?;
-    
-    if enigo_opt.is_none() {
-        let enigo = Enigo::new(&Settings::default())
-            .map_err(|e| format!("Failed to create Enigo: {:?}", e))?;
-        *enigo_opt = Some(enigo);
-    }
-    
-    enigo_opt.as_ref()
-        .map(|e| Enigo::new(&Settings::default()).unwrap_or_else(|_| e.clone()))
-        .ok_or_else(|| "Enigo not initialized".to_string())
-}
 
 /// 解析按键字符串，支持组合键（如 "ctrl+r"）
 fn parse_key(key_str: &str) -> Result<Vec<Key>, String> {
