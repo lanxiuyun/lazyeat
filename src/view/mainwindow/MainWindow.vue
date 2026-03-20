@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import DevTool from "@/components/DevTool.vue";
 import AppMenu from "@/components/Menu.vue";
-import pyApi from "@/py_api";
 import use_app_store from "@/store/app";
 import { getVersion } from "@tauri-apps/api/app";
 import { listen } from "@tauri-apps/api/event";
@@ -18,7 +17,7 @@ import { onMounted, ref, watch } from "vue";
 const is_dev = import.meta.env.DEV;
 const appVersion = ref("");
 const app_store = use_app_store();
-const ready = ref(false);
+const ready = ref(true); // 纯 Rust 架构，无需等待后端加载
 
 // 窗口恢复上一次位置
 const window_store_json = new LazyStore("window_state.json");
@@ -36,15 +35,6 @@ async function saveWindowState() {
 }
 
 onMounted(async () => {
-  ready.value = await pyApi.ready();
-
-  const timer = setInterval(async () => {
-    ready.value = await pyApi.ready();
-    if (ready.value) {
-      clearInterval(timer);
-    }
-  }, 500);
-
   // 关闭窗口时：根据配置决定最小化到托盘或退出
   await getCurrentWindow().onCloseRequested(async (event) => {
     if (app_store.config.minimize_to_tray) {
@@ -54,9 +44,6 @@ onMounted(async () => {
     } else {
       event.preventDefault();
       await saveWindowState();
-      if (!is_dev) {
-        await pyApi.shutdown();
-      }
       await exit(0);
     }
   });
@@ -64,9 +51,6 @@ onMounted(async () => {
   // 托盘"退出"菜单：清理后真正退出
   await listen("tray-quit-requested", async () => {
     await saveWindowState();
-    if (!is_dev) {
-      await pyApi.shutdown();
-    }
     await exit(0);
   });
 });

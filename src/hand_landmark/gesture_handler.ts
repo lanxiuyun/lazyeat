@@ -1,135 +1,76 @@
 import { HandGesture, HandInfo } from "@/hand_landmark/detector";
 import i18n from "@/locales/i18n";
 import use_app_store from "@/store/app";
-
-// WebSocket数据类型定义
-enum WsDataType {
-  // 系统消息类型
-  INFO = "info",
-  SUCCESS = "success",
-  WARNING = "warning",
-  ERROR = "error",
-
-  // 鼠标操作类型
-  MOUSE_MOVE = "mouse_move",
-  MOUSE_CLICK = "mouse_click",
-  MOUSE_SCROLL_UP = "mouse_scroll_up",
-  MOUSE_SCROLL_DOWN = "mouse_scroll_down",
-
-  // 键盘操作类型
-  SEND_KEYS = "send_keys",
-
-  // 语音操作类型
-  VOICE_RECORD = "voice_record",
-  VOICE_STOP = "voice_stop",
-}
-
-interface WsData {
-  type: WsDataType;
-  msg?: string;
-  duration?: number;
-  title?: string;
-  data?: {
-    x?: number;
-    y?: number;
-    key_str?: string;
-  };
-}
+import { invoke } from "@tauri-apps/api/core";
 
 /**
- * 动作触发器类 - 负责发送操作命令到系统
+ * 动作触发器类 - 负责通过 Tauri Commands 发送操作命令到系统
  * 主要职责：
- * 1. 维护WebSocket连接
- * 2. 提供各种操作方法（移动鼠标、点击等）
- * 3. 发送通知
+ * 1. 提供各种操作方法（移动鼠标、点击等）
+ * 2. 所有方法都使用 Tauri invoke 调用 Rust 后端
  */
-export class TriggerAction {
-  private ws: WebSocket | null = null;
-
-  constructor() {
-    this.connectWebSocket();
-  }
-
-  private connectWebSocket() {
+class TriggerAction {
+  async moveMouse(x: number, y: number) {
     try {
-      this.ws = new WebSocket("ws://127.0.0.1:62334/ws_lazyeat");
-      this.ws.onmessage = (event: MessageEvent) => {
-        const response: WsData = JSON.parse(event.data);
-        const app_store = use_app_store();
-        app_store.sub_window_info(response.msg || "");
-      };
-      this.ws.onopen = () => {
-        console.log("ws_lazyeat connected");
-      };
-      this.ws.onclose = () => {
-        console.log("ws_lazyeat closed, retrying...");
-        this.ws = null;
-        setTimeout(() => this.connectWebSocket(), 3000);
-      };
-      this.ws.onerror = (error) => {
-        console.error("ws_lazyeat error:", error);
-        this.ws?.close();
-      };
+      await invoke("move_mouse", {
+        x: Math.round(x),
+        y: Math.round(y),
+      });
     } catch (error) {
-      console.error("Failed to create WebSocket instance:", error);
-      this.ws = null;
-      setTimeout(() => this.connectWebSocket(), 1000);
+      console.error("移动鼠标失败:", error);
     }
   }
 
-  private send(data: { type: WsDataType } & Partial<Omit<WsData, "type">>) {
-    const message: WsData = {
-      type: data.type,
-      msg: data.msg || "",
-      title: data.title || "Lazyeat",
-      duration: data.duration || 1,
-      data: data.data || {},
-    };
-    this.ws?.send(JSON.stringify(message));
+  async clickMouse() {
+    try {
+      await invoke("click_mouse");
+    } catch (error) {
+      console.error("点击鼠标失败:", error);
+    }
   }
 
-  moveMouse(x: number, y: number) {
-    this.send({
-      type: WsDataType.MOUSE_MOVE,
-      data: { x, y },
-    });
+  async scrollUp() {
+    try {
+      await invoke("scroll_up");
+    } catch (error) {
+      console.error("向上滚动失败:", error);
+    }
   }
 
-  clickMouse() {
-    this.send({
-      type: WsDataType.MOUSE_CLICK,
-    });
+  async scrollDown() {
+    try {
+      await invoke("scroll_down");
+    } catch (error) {
+      console.error("向下滚动失败:", error);
+    }
   }
 
-  scrollUp() {
-    this.send({
-      type: WsDataType.MOUSE_SCROLL_UP,
-    });
+  async sendKeys(key_str: string) {
+    try {
+      await invoke("send_keys", { keyStr: key_str });
+    } catch (error) {
+      console.error("发送按键失败:", error);
+    }
   }
 
-  scrollDown() {
-    this.send({
-      type: WsDataType.MOUSE_SCROLL_DOWN,
-    });
+  async voiceRecord() {
+    try {
+      const result = await invoke<string>("start_voice_recording");
+      if (result) {
+        const app_store = use_app_store();
+        app_store.sub_window_info(result);
+      }
+    } catch (error) {
+      console.error("开始语音识别失败:", error);
+    }
   }
 
-  sendKeys(key_str: string) {
-    this.send({
-      type: WsDataType.SEND_KEYS,
-      data: { key_str },
-    });
-  }
-
-  voiceRecord() {
-    this.send({
-      type: WsDataType.VOICE_RECORD,
-    });
-  }
-
-  voiceStop() {
-    this.send({
-      type: WsDataType.VOICE_STOP,
-    });
+  async voiceStop() {
+    try {
+      await invoke("stop_voice_recording");
+    } catch (error) {
+      console.error("停止语音识别失败:", error);
+    }
   }
 }
 
@@ -182,7 +123,7 @@ export class GestureHandler {
   /**
    * 处理食指上举手势 - 鼠标移动
    */
-  private handleIndexFingerUp(hand: HandInfo) {
+  private async handleIndexFingerUp(hand: HandInfo) {
     const indexTip = this.getFingerTip(hand, 1); // 食指指尖
     if (!indexTip) return;
 
@@ -239,7 +180,7 @@ export class GestureHandler {
       // 移动鼠标
       this.app_store.sub_windows.x = screenX + 10;
       this.app_store.sub_windows.y = screenY;
-      this.triggerAction.moveMouse(screenX, screenY);
+      await this.triggerAction.moveMouse(screenX, screenY);
     } catch (error) {
       console.error("处理鼠标移动失败:", error);
     }
@@ -248,62 +189,18 @@ export class GestureHandler {
   /**
    * 处理食指和中指同时竖起手势 - 鼠标左键点击
    */
-  private handleMouseClick() {
+  private async handleMouseClick() {
     const now = Date.now();
     if (now - this.lastClickTime < this.CLICK_INTERVAL) {
       return;
     }
     this.lastClickTime = now;
 
-    this.triggerAction.clickMouse();
-  }
-
-  /**
-   * 处理三根手指同时竖起手势 - 滚动屏幕
-   */
-  private handleScroll(hand: HandInfo) {
-    const indexTip = this.getFingerTip(hand, 1);
-    const middleTip = this.getFingerTip(hand, 2);
-    const ringTip = this.getFingerTip(hand, 3);
-    if (!indexTip || !middleTip || !ringTip) {
-      this.prev_three_fingers_y = 0;
-      return;
-    }
-
-    const now = Date.now();
-    if (now - this.lastScrollTime < this.SCROLL_INTERVAL) {
-      return;
-    }
-    this.lastScrollTime = now;
-
-    // 计算三根手指的平均 Y 坐标
-    const currentY = (indexTip.y + middleTip.y + ringTip.y) / 3;
-
-    // 如果是第一次检测到手势，记录当前 Y 坐标
-    if (this.prev_three_fingers_y === 0) {
-      this.prev_three_fingers_y = currentY;
-      return;
-    }
-
-    // 计算 Y 坐标的变化
-    const deltaY = currentY - this.prev_three_fingers_y;
-
-    // 如果变化超过阈值，则触发滚动
-    if (Math.abs(deltaY) > 0.008) {
-      if (deltaY < 0) {
-        // 手指向上移动，向上滚动
-        this.triggerAction.scrollUp();
-      } else {
-        // 手指向下移动，向下滚动
-        this.triggerAction.scrollDown();
-      }
-      // 更新上一次的 Y 坐标
-      this.prev_three_fingers_y = currentY;
-    }
+    await this.triggerAction.clickMouse();
   }
 
   // 拇指和食指捏合，滚动屏幕
-  private handleScroll2(hand: HandInfo) {
+  private async handleScroll2(hand: HandInfo) {
     const indexTip = this.getFingerTip(hand, 1);
     const thumbTip = this.getFingerTip(hand, 0);
     if (!indexTip || !thumbTip) {
@@ -346,10 +243,10 @@ export class GestureHandler {
     if (Math.abs(deltaY) > 0.008) {
       if (deltaY < 0) {
         // 手指向上移动，向上滚动
-        this.triggerAction.scrollUp();
+        await this.triggerAction.scrollUp();
       } else {
         // 手指向下移动，向下滚动
-        this.triggerAction.scrollDown();
+        await this.triggerAction.scrollDown();
       }
       // 更新上一次的 Y 坐标
       this.prev_scroll2_y = indexTip.y;
@@ -359,7 +256,7 @@ export class GestureHandler {
   /**
    * 处理四根手指同时竖起手势 - 发送快捷键
    */
-  private handleFourFingers() {
+  private async handleFourFingers() {
     try {
       const key_str = this.app_store.config.four_fingers_up_send || "f";
       const now = Date.now();
@@ -368,7 +265,7 @@ export class GestureHandler {
       }
       this.lastFullScreenTime = now;
 
-      this.triggerAction.sendKeys(key_str);
+      await this.triggerAction.sendKeys(key_str);
     } catch (error) {
       console.error("处理四指手势失败:", error);
     }
@@ -377,7 +274,7 @@ export class GestureHandler {
   /**
    * 处理向上指手势 - 发送快捷键
    */
-  private handlePointUp() {
+  private async handlePointUp() {
     try {
       const key_str = this.app_store.config.point_up_send || "F11";
       const now = Date.now();
@@ -386,7 +283,7 @@ export class GestureHandler {
       }
       this.lastPointUpTime = now;
 
-      this.triggerAction.sendKeys(key_str);
+      await this.triggerAction.sendKeys(key_str);
     } catch (error) {
       console.error("处理向上指手势失败:", error);
     }
@@ -395,7 +292,7 @@ export class GestureHandler {
   /**
    * 处理向下指手势 - 发送快捷键
    */
-  private handlePointDown() {
+  private async handlePointDown() {
     try {
       const key_str = this.app_store.config.point_down_send || "ARROWDOWN";
       const now = Date.now();
@@ -404,7 +301,7 @@ export class GestureHandler {
       }
       this.lastPointDownTime = now;
 
-      this.triggerAction.sendKeys(key_str);
+      await this.triggerAction.sendKeys(key_str);
     } catch (error) {
       console.error("处理向下指手势失败:", error);
     }
@@ -419,7 +316,7 @@ export class GestureHandler {
     }
     await this.app_store.sub_window_info("开始语音识别");
     this.voice_recording = true;
-    this.triggerAction.voiceRecord();
+    await this.triggerAction.voiceRecord();
   }
 
   /**
@@ -431,20 +328,20 @@ export class GestureHandler {
     }
     await this.app_store.sub_window_success("停止语音识别");
     this.voice_recording = false;
-    this.triggerAction.voiceStop();
+    await this.triggerAction.voiceStop();
   }
 
   /**
    * 处理删除手势
    */
-  private handleDelete() {
+  private async handleDelete() {
     const now = Date.now();
     if (now - this.lastDeleteTime < 300) {
       return;
     }
     this.lastDeleteTime = now;
     const key_str = this.app_store.config.delete_key;
-    this.triggerAction.sendKeys(key_str);
+    await this.triggerAction.sendKeys(key_str);
   }
 
   /**
@@ -486,7 +383,7 @@ export class GestureHandler {
   /**
    * 处理手势
    */
-  handleGesture(gesture: HandGesture, hand: HandInfo) {
+  async handleGesture(gesture: HandGesture, hand: HandInfo) {
     // 更新手势连续性计数
     if (gesture === this.previousGesture) {
       this.previousGestureCount++;
@@ -500,7 +397,7 @@ export class GestureHandler {
     // 首先处理停止手势
     if (gesture === HandGesture.STOP_GESTURE) {
       if (enabled.STOP_GESTURE && hand.categoryName === "Open_Palm") {
-        this.handleStopGesture();
+        await this.handleStopGesture();
       }
       return;
     }
@@ -512,14 +409,14 @@ export class GestureHandler {
 
     // 只要切换手势就停止语音识别（语音停止不受禁用开关影响，防止无法结束语音）
     if (gesture !== HandGesture.VOICE_GESTURE_START && this.voice_recording) {
-      this.handleVoiceStop();
+      await this.handleVoiceStop();
       return;
     }
 
     // 鼠标移动手势直接执行，不需要连续确认
     if (gesture === HandGesture.ONLY_INDEX_UP) {
       if (enabled.ONLY_INDEX_UP) {
-        this.handleIndexFingerUp(hand);
+        await this.handleIndexFingerUp(hand);
       }
       return;
     }
@@ -528,28 +425,28 @@ export class GestureHandler {
     if (this.previousGestureCount >= this.minGestureCount) {
       switch (gesture) {
         case HandGesture.ROCK_GESTURE:
-          if (enabled.ROCK_GESTURE) this.handleMouseClick();
+          if (enabled.ROCK_GESTURE) await this.handleMouseClick();
           break;
         case HandGesture.INDEX_AND_MIDDLE_UP:
-          if (enabled.INDEX_AND_MIDDLE_UP) this.handleMouseClick();
+          if (enabled.INDEX_AND_MIDDLE_UP) await this.handleMouseClick();
           break;
         case HandGesture.SCROLL_GESTURE_2:
-          if (enabled.SCROLL_GESTURE_2) this.handleScroll2(hand);
+          if (enabled.SCROLL_GESTURE_2) await this.handleScroll2(hand);
           break;
         case HandGesture.FOUR_FINGERS_UP:
-          if (enabled.FOUR_FINGERS_UP) this.handleFourFingers();
+          if (enabled.FOUR_FINGERS_UP) await this.handleFourFingers();
           break;
         case HandGesture.POINT_UP:
-          if (enabled.POINT_UP) this.handlePointUp();
+          if (enabled.POINT_UP) await this.handlePointUp();
           break;
         case HandGesture.POINT_DOWN:
-          if (enabled.POINT_DOWN) this.handlePointDown();
+          if (enabled.POINT_DOWN) await this.handlePointDown();
           break;
         case HandGesture.VOICE_GESTURE_START:
-          if (enabled.VOICE_GESTURE_START) this.handleVoiceStart();
+          if (enabled.VOICE_GESTURE_START) await this.handleVoiceStart();
           break;
         case HandGesture.DELETE_GESTURE:
-          if (enabled.DELETE_GESTURE) this.handleDelete();
+          if (enabled.DELETE_GESTURE) await this.handleDelete();
           break;
       }
     }
