@@ -495,9 +495,11 @@ export class GestureHandler {
       this.previousGestureCount = 1;
     }
 
+    const enabled = this.app_store.config.gestures_enabled;
+
     // 首先处理停止手势
     if (gesture === HandGesture.STOP_GESTURE) {
-      if (hand.categoryName === "Open_Palm") {
+      if (enabled.STOP_GESTURE && hand.categoryName === "Open_Palm") {
         this.handleStopGesture();
       }
       return;
@@ -508,7 +510,7 @@ export class GestureHandler {
       return;
     }
 
-    // 只要切换手势就停止语音识别
+    // 只要切换手势就停止语音识别（语音停止不受禁用开关影响，防止无法结束语音）
     if (gesture !== HandGesture.VOICE_GESTURE_START && this.voice_recording) {
       this.handleVoiceStop();
       return;
@@ -516,39 +518,38 @@ export class GestureHandler {
 
     // 鼠标移动手势直接执行，不需要连续确认
     if (gesture === HandGesture.ONLY_INDEX_UP) {
-      this.handleIndexFingerUp(hand);
+      if (enabled.ONLY_INDEX_UP) {
+        this.handleIndexFingerUp(hand);
+      }
       return;
     }
-
-    // console.log(gesture);
 
     // 其他手势需要连续确认才执行
     if (this.previousGestureCount >= this.minGestureCount) {
       switch (gesture) {
         case HandGesture.ROCK_GESTURE:
+          if (enabled.ROCK_GESTURE) this.handleMouseClick();
+          break;
         case HandGesture.INDEX_AND_MIDDLE_UP:
-          this.handleMouseClick();
+          if (enabled.INDEX_AND_MIDDLE_UP) this.handleMouseClick();
           break;
         case HandGesture.SCROLL_GESTURE_2:
-          this.handleScroll2(hand);
+          if (enabled.SCROLL_GESTURE_2) this.handleScroll2(hand);
           break;
-        // case HandGesture.THREE_FINGERS_UP:
-        //   this.handleScroll(hand);
-        //   break;
         case HandGesture.FOUR_FINGERS_UP:
-          this.handleFourFingers();
+          if (enabled.FOUR_FINGERS_UP) this.handleFourFingers();
           break;
         case HandGesture.POINT_UP:
-          this.handlePointUp();
+          if (enabled.POINT_UP) this.handlePointUp();
           break;
         case HandGesture.POINT_DOWN:
-          this.handlePointDown();
+          if (enabled.POINT_DOWN) this.handlePointDown();
           break;
         case HandGesture.VOICE_GESTURE_START:
-          this.handleVoiceStart();
+          if (enabled.VOICE_GESTURE_START) this.handleVoiceStart();
           break;
         case HandGesture.DELETE_GESTURE:
-          this.handleDelete();
+          if (enabled.DELETE_GESTURE) this.handleDelete();
           break;
       }
     }

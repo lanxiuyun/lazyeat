@@ -18,6 +18,7 @@ export const use_app_store = defineStore("app-store", {
     config: {
       auto_start: false,
       show_window: false,
+      minimize_to_tray: false,
 
       //手势发送的按键
       four_fingers_up_send: "f",
@@ -35,6 +36,20 @@ export const use_app_store = defineStore("app-store", {
 
       // 手势识别
       scroll_gesture_2_thumb_and_index_threshold: 0.02, // 食指和拇指距离阈值
+
+      // 手势启用/禁用
+      gestures_enabled: {
+        ONLY_INDEX_UP: true,           // 光标控制
+        INDEX_AND_MIDDLE_UP: true,     // 双指单击
+        ROCK_GESTURE: true,            // Rock单击
+        SCROLL_GESTURE_2: true,        // 滚动控制
+        FOUR_FINGERS_UP: true,         // 四指按键
+        POINT_UP: true,                // 向上指
+        POINT_DOWN: true,              // 向下指
+        DELETE_GESTURE: true,          // 左大拇指按键
+        VOICE_GESTURE_START: true,     // 语音识别
+        STOP_GESTURE: true,            // 暂停/继续
+      },
     },
 
     sub_windows: {

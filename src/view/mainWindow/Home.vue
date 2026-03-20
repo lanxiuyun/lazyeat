@@ -54,6 +54,16 @@
             <n-space align="center" style="display: flex; align-items: center">
               <span style="display: flex; align-items: center">
                 <n-icon size="20" style="margin-right: 8px">
+                  <ReduceOne />
+                </n-icon>
+                <span>{{ $t("关闭时最小化到托盘") }}</span>
+              </span>
+              <n-switch v-model:value="app_store.config.minimize_to_tray" />
+            </n-space>
+
+            <n-space align="center" style="display: flex; align-items: center">
+              <span style="display: flex; align-items: center">
+                <n-icon size="20" style="margin-right: 8px">
                   <Camera />
                 </n-icon>
                 <span>{{ $t("摄像头选择") }}</span>
@@ -76,7 +86,7 @@
 import AutoStart from "@/components/AutoStart.vue";
 import VideoDetector from "@/hand_landmark/VideoDetector.vue";
 import { use_app_store } from "@/store/app";
-import { Browser, Camera } from "@icon-park/vue-next";
+import { Browser, Camera, ReduceOne } from "@icon-park/vue-next";
 import { computed, onMounted } from "vue";
 
 const is_dev = computed(() => import.meta.env.DEV);

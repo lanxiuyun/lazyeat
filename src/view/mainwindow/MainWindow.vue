@@ -4,11 +4,13 @@ import AppMenu from "@/components/Menu.vue";
 import pyApi from "@/py_api";
 import use_app_store from "@/store/app";
 import { getVersion } from "@tauri-apps/api/app";
+import { listen } from "@tauri-apps/api/event";
 import {
   getCurrentWindow,
   LogicalPosition,
   LogicalSize,
 } from "@tauri-apps/api/window";
+import { exit } from "@tauri-apps/plugin-process";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { ElAside, ElContainer, ElMain } from "element-plus";
 import { onMounted, ref, watch } from "vue";
@@ -17,6 +19,21 @@ const is_dev = import.meta.env.DEV;
 const appVersion = ref("");
 const app_store = use_app_store();
 const ready = ref(false);
+
+// 窗口恢复上一次位置
+const window_store_json = new LazyStore("window_state.json");
+
+async function saveWindowState() {
+  const factor = await getCurrentWindow().scaleFactor();
+  const position = (await getCurrentWindow().innerPosition()).toLogical(factor);
+  const size = (await getCurrentWindow().innerSize()).toLogical(factor);
+  await window_store_json.set("window_state", {
+    x: position.x,
+    y: position.y,
+    width: size.width,
+    height: size.height,
+  });
+}
 
 onMounted(async () => {
   ready.value = await pyApi.ready();
@@ -28,28 +45,31 @@ onMounted(async () => {
     }
   }, 500);
 
-  await getCurrentWindow().onCloseRequested(async () => {
-    // 保存窗口状态
-    const factor = await getCurrentWindow().scaleFactor();
-    const position = (await getCurrentWindow().innerPosition()).toLogical(
-      factor
-    );
-    const size = (await getCurrentWindow().innerSize()).toLogical(factor);
-    await window_store_json.set("window_state", {
-      x: position.x,
-      y: position.y,
-      width: size.width,
-      height: size.height,
-    });
+  // 关闭窗口时：根据配置决定最小化到托盘或退出
+  await getCurrentWindow().onCloseRequested(async (event) => {
+    if (app_store.config.minimize_to_tray) {
+      event.preventDefault();
+      await saveWindowState();
+      await getCurrentWindow().hide();
+    } else {
+      event.preventDefault();
+      await saveWindowState();
+      if (!is_dev) {
+        await pyApi.shutdown();
+      }
+      await exit(0);
+    }
+  });
 
+  // 托盘"退出"菜单：清理后真正退出
+  await listen("tray-quit-requested", async () => {
+    await saveWindowState();
     if (!is_dev) {
       await pyApi.shutdown();
     }
+    await exit(0);
   });
 });
-
-// 窗口恢复上一次位置
-const window_store_json = new LazyStore("window_state.json");
 onMounted(async () => {
   appVersion.value = await getVersion();
   const window_state = await window_store_json.get("window_state");
