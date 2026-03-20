@@ -1,5 +1,9 @@
 import { HandGesture, HandInfo } from "@/hand_landmark/detector";
 import i18n from "@/locales/i18n";
+import {
+  speechService,
+  type SpeechRecognitionResult,
+} from "@/speech/speechRecognition";
 import use_app_store from "@/store/app";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -53,21 +57,33 @@ class TriggerAction {
     }
   }
 
-  async voiceRecord() {
+  async voiceRecord(onResult: (text: string) => void) {
     try {
-      const result = await invoke<string>("start_voice_recording");
-      if (result) {
-        const app_store = use_app_store();
-        app_store.sub_window_info(result);
-      }
+      const success = speechService.start(
+        (result: SpeechRecognitionResult) => {
+          if (result.isFinal) {
+            onResult(result.transcript);
+          }
+        },
+        (error: string) => {
+          console.error("语音识别错误:", error);
+        },
+        {
+          lang: "zh-CN",
+          continuous: true,
+          interimResults: true,
+        }
+      );
+      return success;
     } catch (error) {
       console.error("开始语音识别失败:", error);
+      return false;
     }
   }
 
   async voiceStop() {
     try {
-      await invoke("stop_voice_recording");
+      speechService.stop();
     } catch (error) {
       console.error("停止语音识别失败:", error);
     }
@@ -314,9 +330,54 @@ export class GestureHandler {
     if (this.voice_recording) {
       return;
     }
-    await this.app_store.sub_window_info("开始语音识别");
+
+    // 检查浏览器是否支持语音识别
+    if (!speechService.isSupported()) {
+      await this.app_store.sub_window_info(
+        "浏览器不支持语音识别，请使用 Edge 浏览器"
+      );
+      return;
+    }
+
+    await this.app_store.sub_window_info("🎤 开始语音识别，请说话...");
     this.voice_recording = true;
-    await this.triggerAction.voiceRecord();
+
+    const success = await this.triggerAction.voiceRecord(
+      async (text: string) => {
+        // 语音识别结果回调
+        console.log("[GestureHandler] 语音识别结果:", text);
+        await this.app_store.sub_window_success(`识别结果: ${text}`);
+
+        // 执行语音指令
+        await this.executeVoiceCommand(text);
+      }
+    );
+
+    if (!success) {
+      this.voice_recording = false;
+      await this.app_store.sub_window_info("语音识别启动失败");
+    }
+  }
+
+  /**
+   * 输入语音识别的文本到当前聚焦的文本框
+   */
+  private async executeVoiceCommand(text: string) {
+    if (!text || text.trim().length === 0) {
+      return;
+    }
+
+    // 将识别的文本输入到当前聚焦的文本框
+    await this.triggerAction.typeText(text);
+    await this.app_store.sub_window_success(`已输入: ${text}`);
+  }
+
+  async typeText(text: string) {
+    try {
+      await invoke("type_text", { text });
+    } catch (error) {
+      console.error("输入文本失败:", error);
+    }
   }
 
   /**
@@ -381,6 +442,22 @@ export class GestureHandler {
   }
 
   /**
+   * 手势到处理函数的映射（只包含需要实际处理的手势）
+   */
+  private gestureHandlers: Partial<
+    Record<HandGesture, (hand: HandInfo) => Promise<void>>
+  > = {
+    [HandGesture.ROCK_GESTURE]: () => this.handleMouseClick(),
+    [HandGesture.INDEX_AND_MIDDLE_UP]: () => this.handleMouseClick(),
+    [HandGesture.SCROLL_GESTURE_2]: (hand) => this.handleScroll2(hand),
+    [HandGesture.FOUR_FINGERS_UP]: () => this.handleFourFingers(),
+    [HandGesture.POINT_UP]: () => this.handlePointUp(),
+    [HandGesture.POINT_DOWN]: () => this.handlePointDown(),
+    [HandGesture.VOICE_GESTURE_START]: () => this.handleVoiceStart(),
+    [HandGesture.DELETE_GESTURE]: () => this.handleDelete(),
+  };
+
+  /**
    * 处理手势
    */
   async handleGesture(gesture: HandGesture, hand: HandInfo) {
@@ -394,7 +471,7 @@ export class GestureHandler {
 
     const enabled = this.app_store.config.gestures_enabled;
 
-    // 首先处理停止手势
+    // 处理停止手势
     if (gesture === HandGesture.STOP_GESTURE) {
       if (enabled.STOP_GESTURE && hand.categoryName === "Open_Palm") {
         await this.handleStopGesture();
@@ -402,18 +479,18 @@ export class GestureHandler {
       return;
     }
 
-    // 如果手势识别已暂停，则不处理
+    // 手势识别已暂停，不处理
     if (!this.app_store.flag_detecting) {
       return;
     }
 
-    // 只要切换手势就停止语音识别（语音停止不受禁用开关影响，防止无法结束语音）
+    // 切换手势时停止语音识别
     if (gesture !== HandGesture.VOICE_GESTURE_START && this.voice_recording) {
       await this.handleVoiceStop();
       return;
     }
 
-    // 鼠标移动手势直接执行，不需要连续确认
+    // 鼠标移动直接执行，无需连续确认
     if (gesture === HandGesture.ONLY_INDEX_UP) {
       if (enabled.ONLY_INDEX_UP) {
         await this.handleIndexFingerUp(hand);
@@ -421,34 +498,15 @@ export class GestureHandler {
       return;
     }
 
-    // 其他手势需要连续确认才执行
-    if (this.previousGestureCount >= this.minGestureCount) {
-      switch (gesture) {
-        case HandGesture.ROCK_GESTURE:
-          if (enabled.ROCK_GESTURE) await this.handleMouseClick();
-          break;
-        case HandGesture.INDEX_AND_MIDDLE_UP:
-          if (enabled.INDEX_AND_MIDDLE_UP) await this.handleMouseClick();
-          break;
-        case HandGesture.SCROLL_GESTURE_2:
-          if (enabled.SCROLL_GESTURE_2) await this.handleScroll2(hand);
-          break;
-        case HandGesture.FOUR_FINGERS_UP:
-          if (enabled.FOUR_FINGERS_UP) await this.handleFourFingers();
-          break;
-        case HandGesture.POINT_UP:
-          if (enabled.POINT_UP) await this.handlePointUp();
-          break;
-        case HandGesture.POINT_DOWN:
-          if (enabled.POINT_DOWN) await this.handlePointDown();
-          break;
-        case HandGesture.VOICE_GESTURE_START:
-          if (enabled.VOICE_GESTURE_START) await this.handleVoiceStart();
-          break;
-        case HandGesture.DELETE_GESTURE:
-          if (enabled.DELETE_GESTURE) await this.handleDelete();
-          break;
-      }
+    // 其他手势需要连续确认
+    if (this.previousGestureCount < this.minGestureCount) {
+      return;
+    }
+
+    // 从映射表获取并执行对应处理器
+    const handler = this.gestureHandlers[gesture];
+    if (handler && enabled[gesture]) {
+      await handler(hand);
     }
   }
 }

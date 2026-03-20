@@ -180,6 +180,18 @@ async fn stop_voice_recording() -> Result<String, String> {
     Ok("".to_string())
 }
 
+/// 输入文本到当前聚焦的文本框
+#[tauri::command]
+async fn type_text(text: String) -> Result<(), String> {
+    let mut enigo = Enigo::new(&Settings::default())
+        .map_err(|e| format!("Failed to create Enigo: {:?}", e))?;
+
+    enigo.text(&text)
+        .map_err(|e| format!("Failed to type text: {:?}", e))?;
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -243,7 +255,8 @@ pub fn run() {
             scroll_down,
             send_keys,
             start_voice_recording,
-            stop_voice_recording
+            stop_voice_recording,
+            type_text
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
