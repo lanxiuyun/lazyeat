@@ -2,260 +2,128 @@
   <div class="guide-container">
     <div class="sticky-header">
       <h2>{{ $t("手势指南") }}</h2>
+      <div class="header-actions">
+        <n-space>
+          <n-button size="small" @click="enableAllGestures">
+            {{ $t('启用全部') }}
+          </n-button>
+          <n-button size="small" @click="disableAllGestures">
+            {{ $t('禁用全部') }}
+          </n-button>
+          <n-button size="small" @click="resetAllGestures">
+            {{ $t('重置默认') }}
+          </n-button>
+          <n-tag type="info" size="small">
+            {{ $t('已启用') }}: {{ enabledCount }} / {{ totalGestures }}
+          </n-tag>
+        </n-space>
+      </div>
     </div>
 
     <n-scrollbar>
-      <el-main class="gesture-grid">
-        <GestureCard
-          :title="$t('光标控制')"
-          :description="$t('竖起食指滑动控制光标位置')"
-        >
-          <template #icon>
-            <GestureIcon :icon="OneOne" />
-          </template>
-          <template #extra>
-            <n-switch v-model:value="app_store.config.gestures_enabled.ONLY_INDEX_UP" size="small">
-              <template #checked>{{ $t('启用') }}</template>
-              <template #unchecked>{{ $t('关闭') }}</template>
-            </n-switch>
-          </template>
-        </GestureCard>
-
-        <GestureCard
-          :title="$t('单击操作')"
-          :description="$t('双指举起执行鼠标单击')"
-        >
-          <template #icon>
-            <GestureIcon :icon="TwoTwo" />
-          </template>
-          <template #extra>
-            <n-switch v-model:value="app_store.config.gestures_enabled.INDEX_AND_MIDDLE_UP" size="small">
-              <template #checked>{{ $t('启用') }}</template>
-              <template #unchecked>{{ $t('关闭') }}</template>
-            </n-switch>
-          </template>
-        </GestureCard>
-
-        <GestureCard
-          :title="$t('单击操作')"
-          :description="$t('Rock手势执行鼠标单击')"
-        >
-          <template #icon>
-            <GestureIcon :icon="Rock" />
-          </template>
-          <template #extra>
-            <n-switch v-model:value="app_store.config.gestures_enabled.ROCK_GESTURE" size="small">
-              <template #checked>{{ $t('启用') }}</template>
-              <template #unchecked>{{ $t('关闭') }}</template>
-            </n-switch>
-            <n-space>
-              <a href="https://github.com/MiKoto-Railgun" target="_blank">
-                @MiKoto-Railgun
-              </a>
-
-              <a
-                href="https://github.com/maplelost/lazyeat/issues/26"
-                target="_blank"
+      <div class="gesture-content">
+        <!-- 分组导航 -->
+        <n-tabs v-model:value="activeGroup" type="line" animated>
+          <n-tab-pane 
+            v-for="group in groupInfo" 
+            :key="group.id"
+            :name="group.id"
+            :tab="$t(group.name)"
+          >
+            <template #tab>
+              <n-space align="center" size="small">
+                <span>{{ $t(group.name) }}</span>
+                <n-tag v-if="getGroupEnabledCount(group.id) > 0" type="success" size="tiny">
+                  {{ getGroupEnabledCount(group.id) }}
+                </n-tag>
+              </n-space>
+            </template>
+            
+            <el-main class="gesture-grid">
+              <GestureCard
+                v-for="gesture in getGesturesByGroup(group.id)"
+                :key="gesture.id"
+                :title="$t(gesture.name)"
+                :description="$t(gesture.description)"
+                :isDoubleHand="gesture.id === 'STOP_GESTURE'"
               >
-                issues
-              </a>
-            </n-space>
-          </template>
-        </GestureCard>
+                <template #icon>
+                  <GestureIcon :icon="gesture.icon" :style="getIconStyle(gesture.id)" />
+                </template>
+                <template #extra>
+                  <!-- 启用/禁用开关 -->
+                  <div class="gesture-controls">
+                    <n-switch 
+                      :value="gesture.enabled" 
+                      @update:value="gesture.enabled = $event"
+                      size="small"
+                    >
+                      <template #checked>{{ $t('启用') }}</template>
+                      <template #unchecked>{{ $t('关闭') }}</template>
+                    </n-switch>
 
-        <GestureCard
-          :title="$t('滚动控制')"
-          :description="$t('（okay手势）食指和拇指捏合滚动页面')"
-        >
-          <template #icon>
-            <GestureIcon :icon="Okay" />
-          </template>
-          <template #extra>
-            <n-switch v-model:value="app_store.config.gestures_enabled.SCROLL_GESTURE_2" size="small">
-              <template #checked>{{ $t('启用') }}</template>
-              <template #unchecked>{{ $t('关闭') }}</template>
-            </n-switch>
-            <div
-              style="
-                display: flex;
-                gap: 4px;
-                flex-direction: column;
-                padding-top: 4px;
-              "
-            >
-              <n-input-number
-                v-model:value="
-                  app_store.config.scroll_gesture_2_thumb_and_index_threshold
-                "
-                size="small"
-                style="width: 150px"
-                :min="0"
-                :step="0.01"
-                clearable
-                :on-clear="
-                  async () => {
-                    await nextTick();
-                    app_store.config.scroll_gesture_2_thumb_and_index_threshold = 0.02;
-                  }
-                "
-              />
+                    <!-- 额外配置选项 -->
+                    <div v-if="gesture.hasExtraOptions()" class="extra-options">
+                      <!-- 阈值配置 -->
+                      <div v-if="gesture.threshold !== undefined" class="threshold-config">
+                        <n-input-number
+                          v-model:value="gesture.threshold"
+                          size="small"
+                          style="width: 150px"
+                          :min="0"
+                          :step="0.01"
+                          clearable
+                          :on-clear="
+                            async () => {
+                              await nextTick();
+                              gesture.threshold = 0.02;
+                            }
+                          "
+                        />
+                        <div class="threshold-hint">
+                          {{ $t("食指和拇指距离小于值时滚动页面") }}
+                          <div class="tag-wrap">
+                            {{ $t("可以通过右键->检查->控制台->捏合手势->查看当前距离") }}
+                          </div>
+                        </div>
+                      </div>
 
-              {{ $t("食指和拇指距离小于值时滚动页面") }}
-              <div class="tag-wrap">
-                {{ $t("可以通过右键->检查->控制台->捏合手势->查看当前距离") }}
-              </div>
-            </div>
-          </template>
-        </GestureCard>
+                      <!-- 快捷键配置 -->
+                      <div v-if="gesture.shortcut !== undefined" class="shortcut-config">
+                        <n-input
+                          :value="gesture.shortcut"
+                          readonly
+                          :placeholder="$t('点击设置快捷键')"
+                          @click="() => listenForShortcut(gesture)"
+                          :status="getListeningStatus(gesture.id)"
+                          :bordered="true"
+                          style="width: 200px"
+                        >
+                          <template #suffix>
+                            {{ getListeningText(gesture.id) }}
+                          </template>
+                        </n-input>
+                      </div>
+                    </div>
 
-        <GestureCard
-          :title="$t('全屏控制')"
-          :description="$t('四指并拢发送按键')"
-        >
-          <template #icon>
-            <GestureIcon :icon="FourFour" />
-          </template>
-          <template #extra>
-            <n-switch v-model:value="app_store.config.gestures_enabled.FOUR_FINGERS_UP" size="small">
-              <template #checked>{{ $t('启用') }}</template>
-              <template #unchecked>{{ $t('关闭') }}</template>
-            </n-switch>
-            <n-input
-              :value="app_store.config.four_fingers_up_send"
-              readonly
-              :placeholder="$t('点击设置快捷键')"
-              @click="() => listenForKey('four_fingers')"
-              :status="isListening ? 'warning' : undefined"
-              :bordered="true"
-              style="width: 200px"
-            >
-              <template #suffix>
-                {{ isListening ? $t("请按下按键...") : $t("点击设置") }}
-              </template>
-            </n-input>
-          </template>
-        </GestureCard>
-
-        <GestureCard :title="$t('向上指')" :description="$t('向上指发送按键')">
-          <template #icon>
-            <GestureIcon :icon="HandUp" />
-          </template>
-          <template #extra>
-            <n-switch v-model:value="app_store.config.gestures_enabled.POINT_UP" size="small">
-              <template #checked>{{ $t('启用') }}</template>
-              <template #unchecked>{{ $t('关闭') }}</template>
-            </n-switch>
-            <n-input
-              :value="app_store.config.point_up_send"
-              readonly
-              :placeholder="$t('点击设置快捷键')"
-              @click="() => listenForKey('point_up')"
-              :status="isListeningPointUp ? 'warning' : undefined"
-              :bordered="true"
-              style="width: 200px"
-            >
-              <template #suffix>
-                {{ isListeningPointUp ? $t("请按下按键...") : $t("点击设置") }}
-              </template>
-            </n-input>
-          </template>
-        </GestureCard>
-
-        <GestureCard :title="$t('向下指')" :description="$t('向下指发送按键')">
-          <template #icon>
-            <GestureIcon :icon="HandDown" style="transform: scaleX(-1)" />
-          </template>
-          <template #extra>
-            <n-switch v-model:value="app_store.config.gestures_enabled.POINT_DOWN" size="small">
-              <template #checked>{{ $t('启用') }}</template>
-              <template #unchecked>{{ $t('关闭') }}</template>
-            </n-switch>
-            <n-input
-              :value="app_store.config.point_down_send"
-              readonly
-              :placeholder="$t('点击设置快捷键')"
-              @click="() => listenForKey('point_down')"
-              :status="isListeningPointDown ? 'warning' : undefined"
-              :bordered="true"
-              style="width: 200px"
-            >
-              <template #suffix>
-                {{
-                  isListeningPointDown ? $t("请按下按键...") : $t("点击设置")
-                }}
-              </template>
-            </n-input>
-          </template>
-        </GestureCard>
-
-        <GestureCard :title="$t('左大拇指')" :description="$t('发送按键')">
-          <template #icon>
-            <GestureIcon
-              style="transform: rotate(90deg) scaleX(-1)"
-              :icon="BadTwo"
-            />
-          </template>
-          <template #extra>
-            <n-switch v-model:value="app_store.config.gestures_enabled.DELETE_GESTURE" size="small">
-              <template #checked>{{ $t('启用') }}</template>
-              <template #unchecked>{{ $t('关闭') }}</template>
-            </n-switch>
-            <n-input
-              :value="app_store.config.delete_key"
-              readonly
-              :placeholder="$t('点击设置快捷键')"
-              @click="() => listenForKey('delete')"
-              :status="isListeningDelete ? 'warning' : undefined"
-              :bordered="true"
-              style="width: 200px"
-            >
-              <template #suffix>
-                {{ isListeningDelete ? $t("请按下按键...") : $t("点击设置") }}
-              </template>
-            </n-input>
-          </template>
-        </GestureCard>
-
-        <GestureCard
-          :title="$t('开始语音识别')"
-          :description="$t('六指手势开始语音识别')"
-        >
-          <template #icon>
-            <GestureIcon :icon="Six" />
-          </template>
-          <template #extra>
-            <n-switch v-model:value="app_store.config.gestures_enabled.VOICE_GESTURE_START" size="small">
-              <template #checked>{{ $t('启用') }}</template>
-              <template #unchecked>{{ $t('关闭') }}</template>
-            </n-switch>
-          </template>
-        </GestureCard>
-
-        <GestureCard
-          :title="$t('结束语音识别')"
-          :description="$t('拳头手势结束语音识别')"
-        >
-          <template #icon>
-            <GestureIcon :icon="Boxing" />
-          </template>
-        </GestureCard>
-
-        <GestureCard
-          :title="$t('暂停/继续')"
-          :description="$t('单手张开1.5秒 暂停/继续 手势识别')"
-          :isDoubleHand="true"
-        >
-          <template #icon>
-            <GestureIcon :icon="FiveFive" />
-          </template>
-          <template #extra>
-            <n-switch v-model:value="app_store.config.gestures_enabled.STOP_GESTURE" size="small">
-              <template #checked>{{ $t('启用') }}</template>
-              <template #unchecked>{{ $t('关闭') }}</template>
-            </n-switch>
-          </template>
-        </GestureCard>
-      </el-main>
+                    <!-- 特殊链接（仅限Rock手势） -->
+                    <div v-if="gesture.id === 'ROCK_GESTURE'" class="special-links">
+                      <n-space>
+                        <a href="https://github.com/MiKoto-Railgun" target="_blank">
+                          @MiKoto-Railgun
+                        </a>
+                        <a href="https://github.com/maplelost/lazyeat/issues/26" target="_blank">
+                          issues
+                        </a>
+                      </n-space>
+                    </div>
+                  </div>
+                </template>
+              </GestureCard>
+            </el-main>
+          </n-tab-pane>
+        </n-tabs>
+      </div>
     </n-scrollbar>
   </div>
 </template>
@@ -264,75 +132,115 @@
 import GestureCard from "@/components/GestureCard.vue";
 import GestureIcon from "@/components/GestureIcon.vue";
 import { use_app_store } from "@/store/app";
-import {
-  BadTwo,
-  Boxing,
-  FiveFive,
-  FourFour,
-  HandUp,
-  HandDown,
-  Okay,
-  OneOne,
-  Rock,
-  Six,
-  TwoTwo,
-} from "@icon-park/vue-next";
-import { nextTick, ref } from "vue";
+import { GestureManager } from "@/utils/GestureManager";
+import { GestureFactory } from "@/utils/GestureFactory";
+import { KeyListener, ShortcutUtils } from "@/utils/KeyListener";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 
 const app_store = use_app_store();
-const isListening = ref(false);
-const isListeningDelete = ref(false);
-const isListeningPointUp = ref(false);
-const isListeningPointDown = ref(false);
 
-const listenForKey = (
-  type: "delete" | "four_fingers" | "point_up" | "point_down"
-) => {
-  const isListeningRef =
-    type === "delete"
-      ? isListeningDelete
-      : type === "point_up"
-      ? isListeningPointUp
-      : type === "point_down"
-      ? isListeningPointDown
-      : isListening;
-  isListeningRef.value = true;
+// 手势管理器实例
+const gestureManager = ref<GestureManager | null>(null);
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    e.preventDefault();
+// 键盘监听器实例
+const keyListener = ref(new KeyListener());
 
-    const modifiers = [];
-    if (e.ctrlKey) modifiers.push("Ctrl");
-    if (e.shiftKey) modifiers.push("Shift");
-    if (e.altKey) modifiers.push("Alt");
+// 当前激活的分组
+const activeGroup = ref('basic');
 
-    let key = e.key;
-    if (key.startsWith("F") && key.length > 1) {
-      // F1-F12 保持原样
-    } else if (key === "Control" || key === "Shift" || key === "Alt") {
-      // 忽略单独的修饰键
-      return;
-    } else {
-      // 其他键转换为大写
-      key = key.toUpperCase();
-    }
-
-    const shortcut = [...modifiers, key].join("+");
-    if (type === "delete") {
-      app_store.config.delete_key = shortcut;
-    } else if (type === "point_up") {
-      app_store.config.point_up_send = shortcut;
-    } else if (type === "point_down") {
-      app_store.config.point_down_send = shortcut;
-    } else {
-      app_store.config.four_fingers_up_send = shortcut;
-    }
-    isListeningRef.value = false;
-    window.removeEventListener("keydown", handleKeyDown);
-  };
-
-  window.addEventListener("keydown", handleKeyDown);
+// 初始化手势管理器
+const initializeGestureManager = () => {
+  const manager = new GestureManager();
+  const gestures = GestureFactory.createAllGestures(app_store.config);
+  
+  // 按分组注册手势
+  const groupedGestures = GestureFactory.createGesturesByGroup(app_store.config);
+  Object.entries(groupedGestures).forEach(([group, groupGestures]) => {
+    groupGestures.forEach(gesture => {
+      manager.register(gesture, group);
+    });
+  });
+  
+  return manager;
 };
+
+// 计算属性
+const totalGestures = computed(() => {
+  return gestureManager.value?.getAllGestures().length || 0;
+});
+
+const enabledCount = computed(() => {
+  return gestureManager.value?.getEnabledCount() || 0;
+});
+
+const groupInfo = computed(() => {
+  return GestureFactory.getGroupInfo();
+});
+
+// 方法
+const getGesturesByGroup = (groupId: string) => {
+  return gestureManager.value?.getGesturesByGroup(groupId) || [];
+};
+
+const getGroupEnabledCount = (groupId: string) => {
+  const gestures = getGesturesByGroup(groupId);
+  return gestures.filter(g => g.enabled).length;
+};
+
+const getIconStyle = (gestureId: string) => {
+  const styles: Record<string, any> = {
+    'HandDown': { transform: 'scaleX(-1)' },
+    'BadTwo': { transform: 'rotate(90deg) scaleX(-1)' },
+  };
+  return styles[gestureId] || {};
+};
+
+const getListeningStatus = (gestureId: string) => {
+  const listeningGesture = keyListener.value.listening ? gestureId : null;
+  return listeningGesture === gestureId ? 'warning' : undefined;
+};
+
+const getListeningText = (gestureId: string) => {
+  const listeningGesture = keyListener.value.listening ? gestureId : null;
+  return listeningGesture === gestureId 
+    ? $t('请按下按键...') 
+    : $t('点击设置');
+};
+
+// 手势管理方法
+const enableAllGestures = () => {
+  gestureManager.value?.enableAll();
+};
+
+const disableAllGestures = () => {
+  gestureManager.value?.disableAll();
+};
+
+const resetAllGestures = () => {
+  gestureManager.value?.resetAll();
+};
+
+// 快捷键监听方法
+const listenForShortcut = (gesture: any) => {
+  if (!gesture.extraOptions?.hasShortcut || !gesture.extraOptions.shortcutKey) {
+    return;
+  }
+
+  keyListener.value.startListening((shortcut: string) => {
+    if (ShortcutUtils.isValidShortcut(shortcut)) {
+      gesture.shortcut = shortcut;
+    }
+  });
+};
+
+// 生命周期
+onMounted(() => {
+  gestureManager.value = initializeGestureManager();
+});
+
+onUnmounted(() => {
+  keyListener.value.stopListening();
+});
 </script>
 
 <style scoped>
@@ -344,6 +252,47 @@ const listenForKey = (
 
 .sticky-header {
   border-bottom: 1px solid #e5e5e5;
+  padding: 16px 20px;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.sticky-header h2 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gesture-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+:deep(.n-tabs) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+:deep(.n-tabs-nav) {
+  padding: 0 20px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+:deep(.n-tab-pane) {
+  padding: 0;
+  height: 100%;
+  overflow: auto;
 }
 
 .gesture-grid {
@@ -355,10 +304,37 @@ const listenForKey = (
 
 :deep(.n-card) {
   transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
 }
 
 :deep(.n-card:hover) {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
+}
+
+.gesture-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.extra-options {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.threshold-config,
+.shortcut-config {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.threshold-hint {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
 }
 
 .tag-wrap {
@@ -366,10 +342,63 @@ const listenForKey = (
   flex-wrap: wrap;
   background-color: #fafafc;
   border: 1px solid #e5e9f2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #4b5563;
 }
+
 .tag-wrap .n-tag {
   white-space: normal !important;
   word-break: break-all;
   max-width: 100%;
+}
+
+.special-links {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.special-links a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.special-links a:hover {
+  text-decoration: underline;
+  color: #2563eb;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .gesture-grid {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 16px;
+  }
+  
+  .sticky-header {
+    padding: 12px 16px;
+  }
+  
+  :deep(.n-tabs-nav) {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gesture-grid {
+    padding: 8px;
+    gap: 12px;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
 </style>
