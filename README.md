@@ -16,7 +16,7 @@
 ![GitHub stars](https://img.shields.io/github/stars/lanxiuyun/lazyeat)
 ![](https://img.shields.io/github/issues-closed/lanxiuyun/lazyeat)
 
-<a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+<a href="https://hellogithub.com/repository/lanxiuyun/lazyeat" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=286c84fcdd9945569ce9b9cbde402adc&claim_uid=EHFzTtsO05vQrh3&theme=neutral" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 <h3>English | <a href="README_CN.md">简体中文</a> </h3>
 
